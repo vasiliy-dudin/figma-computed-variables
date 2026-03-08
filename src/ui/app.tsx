@@ -3,7 +3,7 @@ import { useEffect, useState } from "preact/hooks";
 import { JsonEditor } from "@ui/components/JsonEditor";
 import { Toolbar } from "@ui/components/Toolbar";
 import { ErrorDisplay } from "@ui/components/ErrorDisplay";
-import { StatusBar } from "@ui/components/StatusBar";
+import { Footer } from "@ui/components/Footer";
 import { EmptyState } from "@ui/components/EmptyState";
 import { ResizeHandle } from "@ui/components/ResizeHandle";
 import { EXAMPLE_TOKEN_JSON } from "@core/constants";
@@ -153,6 +153,7 @@ function App() {
 					onLoadExample={handleLoadExample}
 					onStartFromScratch={handleStartFromScratch}
 				/>
+				<Footer tokenCount={tokenCount} collectionCount={collectionCount} />
 				<ResizeHandle />
 			</div>
 		);
@@ -178,7 +179,7 @@ function App() {
 				isEmpty={jsonText.trim() === ''}
 			/>
 			
-			<StatusBar tokenCount={tokenCount} collectionCount={collectionCount} />
+			<Footer tokenCount={tokenCount} collectionCount={collectionCount} />
 			<ResizeHandle />
 		</div>
 	);
