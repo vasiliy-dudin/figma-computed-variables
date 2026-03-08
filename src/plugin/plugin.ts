@@ -25,7 +25,9 @@ async function bootstrap() {
 		sendToUI({ type: 'LOAD_JSON', json: savedJSON });
 
 		const collections = await figma.variables.getLocalVariableCollectionsAsync();
-		sendToUI({ type: 'STARTUP_INFO', hasVariables: collections.length > 0 });
+		const hasVariables = collections.length > 0;
+		const hasSavedJSON = savedJSON !== null && Object.keys(savedJSON).length > 0;
+		sendToUI({ type: 'STARTUP_INFO', hasVariables: hasVariables || hasSavedJSON });
 	} catch (err) {
 		console.error("Error loading saved JSON:", err);
 	}
