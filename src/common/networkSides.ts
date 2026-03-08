@@ -1,13 +1,10 @@
 import { Networker } from "monorepo-networker";
+import type { PluginToUIMessage, UIToPluginMessage } from "@core/messages";
 
 export const UI = Networker.createSide("UI-side").listens<{
-  ping(): "pong";
-  hello(text: string): void;
+  message(msg: PluginToUIMessage): void;
 }>();
 
 export const PLUGIN = Networker.createSide("Plugin-side").listens<{
-  ping(): "pong";
-  hello(text: string): void;
-  createRect(width: number, height: number): void;
-  exportSelection(): Promise<string>;
+  message(msg: UIToPluginMessage): void;
 }>();

@@ -10,10 +10,3 @@ export const PLUGIN_CHANNEL = PLUGIN.channelBuilder()
     return () => figma.ui.off("message", listener);
   })
   .startListening();
-
-// ---------- Message handlers
-
-(PLUGIN_CHANNEL as any).registerMessageHandler("message", (data: any) => {
-  // Handler is registered here but actual logic is in plugin.ts via subscribe
-  // This registration makes the "message" event type available
-});
