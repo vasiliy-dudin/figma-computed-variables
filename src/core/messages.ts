@@ -14,7 +14,8 @@ export type PluginToUIMessage =
 	| { type: 'APPLY_ERROR'; errors: ValidationError[] }
 	| { type: 'SAVE_SUCCESS' }
 	| { type: 'SAVE_ERROR'; error: string }
-	| { type: 'LOAD_JSON'; json: TokenJSON | null };
+	| { type: 'LOAD_JSON'; json: TokenJSON | null }
+	| { type: 'STARTUP_INFO'; hasVariables: boolean };
 
 // Message channel names
 export const MESSAGE_CHANNELS = {

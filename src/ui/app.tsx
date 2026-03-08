@@ -4,6 +4,8 @@ import { JsonEditor } from "@ui/components/JsonEditor";
 import { Toolbar } from "@ui/components/Toolbar";
 import { ErrorDisplay } from "@ui/components/ErrorDisplay";
 import { StatusBar } from "@ui/components/StatusBar";
+import { EmptyState } from "@ui/components/EmptyState";
+import { EXAMPLE_TOKEN_JSON } from "@core/constants";
 import { countTokens } from "@core/tokenUtils";
 import { validate } from "@core/validator";
 import type { TokenJSON, ValidationError } from "@core/types";
@@ -14,6 +16,7 @@ function App() {
 	const [errors, setErrors] = useState<ValidationError[]>([]);
 	const [tokenCount, setTokenCount] = useState(0);
 	const [collectionCount, setCollectionCount] = useState(0);
+	const [showEmptyState, setShowEmptyState] = useState(false);
 
 	// Listen for messages from plugin
 	useEffect(() => {
@@ -23,6 +26,7 @@ function App() {
 					if (msg.json) {
 						setJsonText(JSON.stringify(msg.json, null, 2));
 						updateStats(msg.json);
+						setShowEmptyState(false);
 					}
 					break;
 
@@ -53,6 +57,12 @@ function App() {
 
 				case 'SAVE_ERROR':
 					setErrors([{ collection: 'save', token: '', errorType: 'schema', message: msg.error }]);
+					break;
+
+				case 'STARTUP_INFO':
+					if (!msg.hasVariables) {
+						setShowEmptyState(true);
+					}
 					break;
 			}
 		});
@@ -93,6 +103,16 @@ function App() {
 		setCollectionCount(Object.keys(json).length);
 	}
 
+	function handleLoadExample(): void {
+		setJsonText(JSON.stringify(EXAMPLE_TOKEN_JSON, null, 2));
+		setShowEmptyState(false);
+	}
+
+	function handleStartFromScratch(): void {
+		setJsonText("");
+		setShowEmptyState(false);
+	}
+
 	function handleImport(): void {
 		sendToPlugin({ type: 'IMPORT_VARIABLES' });
 	}
@@ -123,6 +143,17 @@ function App() {
 				message: `Cannot save: ${err instanceof Error ? err.message : String(err)}`
 			}]);
 		}
+	}
+
+	if (showEmptyState) {
+		return (
+			<div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
+				<EmptyState
+					onLoadExample={handleLoadExample}
+					onStartFromScratch={handleStartFromScratch}
+				/>
+			</div>
+		);
 	}
 
 	return (

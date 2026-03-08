@@ -19,10 +19,13 @@ async function bootstrap() {
 
 	console.log("Computed Variables plugin initialized");
 
-	// Load saved JSON on startup
+	// Load saved JSON and check for existing variables on startup
 	try {
 		const savedJSON = await loadJSON();
 		sendToUI({ type: 'LOAD_JSON', json: savedJSON });
+
+		const collections = await figma.variables.getLocalVariableCollectionsAsync();
+		sendToUI({ type: 'STARTUP_INFO', hasVariables: collections.length > 0 });
 	} catch (err) {
 		console.error("Error loading saved JSON:", err);
 	}
