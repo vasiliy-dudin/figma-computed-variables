@@ -4,7 +4,8 @@ import { TokenJSON, ValidationError } from './types';
 export type UIToPluginMessage =
 	| { type: 'IMPORT_VARIABLES' }
 	| { type: 'APPLY_TO_VARIABLES'; json: TokenJSON }
-	| { type: 'SAVE_JSON'; json: TokenJSON };
+	| { type: 'SAVE_JSON'; json: TokenJSON }
+	| { type: 'RESIZE_WINDOW'; width: number; height: number };
 
 // Plugin → UI messages
 export type PluginToUIMessage =

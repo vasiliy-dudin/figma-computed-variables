@@ -63,6 +63,11 @@ async function bootstrap() {
 					sendToUI({ type: 'SAVE_SUCCESS' });
 					break;
 				}
+
+				case 'RESIZE_WINDOW': {
+					figma.ui.resize(msg.width, msg.height);
+					break;
+				}
 			}
 		} catch (err) {
 			console.error("Error handling message:", err);

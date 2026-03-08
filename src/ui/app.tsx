@@ -5,6 +5,7 @@ import { Toolbar } from "@ui/components/Toolbar";
 import { ErrorDisplay } from "@ui/components/ErrorDisplay";
 import { StatusBar } from "@ui/components/StatusBar";
 import { EmptyState } from "@ui/components/EmptyState";
+import { ResizeHandle } from "@ui/components/ResizeHandle";
 import { EXAMPLE_TOKEN_JSON } from "@core/constants";
 import { countTokens } from "@core/tokenUtils";
 import { validate } from "@core/validator";
@@ -147,17 +148,18 @@ function App() {
 
 	if (showEmptyState) {
 		return (
-			<div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
+			<div style={{ display: 'flex', flexDirection: 'column', height: '100vh', position: 'relative' }}>
 				<EmptyState
 					onLoadExample={handleLoadExample}
 					onStartFromScratch={handleStartFromScratch}
 				/>
+				<ResizeHandle />
 			</div>
 		);
 	}
 
 	return (
-		<div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
+		<div style={{ display: 'flex', flexDirection: 'column', height: '100vh', position: 'relative' }}>
 			<div style={{ flex: 1, overflow: 'hidden' }}>
 				<JsonEditor value={jsonText} onChange={setJsonText} />
 			</div>
@@ -177,6 +179,7 @@ function App() {
 			/>
 			
 			<StatusBar tokenCount={tokenCount} collectionCount={collectionCount} />
+			<ResizeHandle />
 		</div>
 	);
 }
