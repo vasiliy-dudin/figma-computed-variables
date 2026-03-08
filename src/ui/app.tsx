@@ -11,136 +11,136 @@ import type { TokenJSON, ValidationError } from "@core/types";
 import { sendToPlugin, onPluginMessage } from "@ui/messaging";
 
 function App() {
-  const [jsonText, setJsonText] = useState<string>(JSON.stringify(DEFAULT_TOKEN_JSON, null, 2));
-  const [errors, setErrors] = useState<ValidationError[]>([]);
-  const [tokenCount, setTokenCount] = useState(0);
-  const [collectionCount, setCollectionCount] = useState(0);
+	const [jsonText, setJsonText] = useState<string>(JSON.stringify(DEFAULT_TOKEN_JSON, null, 2));
+	const [errors, setErrors] = useState<ValidationError[]>([]);
+	const [tokenCount, setTokenCount] = useState(0);
+	const [collectionCount, setCollectionCount] = useState(0);
 
-  // Listen for messages from plugin
-  useEffect(() => {
-    return onPluginMessage((msg) => {
-      switch (msg.type) {
-        case 'LOAD_JSON':
-          if (msg.json) {
-            setJsonText(JSON.stringify(msg.json, null, 2));
-            updateStats(msg.json);
-          }
-          break;
+	// Listen for messages from plugin
+	useEffect(() => {
+		return onPluginMessage((msg) => {
+			switch (msg.type) {
+				case 'LOAD_JSON':
+					if (msg.json) {
+						setJsonText(JSON.stringify(msg.json, null, 2));
+						updateStats(msg.json);
+					}
+					break;
 
-        case 'IMPORT_SUCCESS':
-          setJsonText(JSON.stringify(msg.json, null, 2));
-          updateStats(msg.json);
-          setErrors([]);
-          console.log("Import successful");
-          break;
+				case 'IMPORT_SUCCESS':
+					setJsonText(JSON.stringify(msg.json, null, 2));
+					updateStats(msg.json);
+					setErrors([]);
+					console.log("Import successful");
+					break;
 
-        case 'IMPORT_ERROR':
-          setErrors([{ collection: 'import', token: '', errorType: 'schema', message: msg.error }]);
-          break;
+				case 'IMPORT_ERROR':
+					setErrors([{ collection: 'import', token: '', errorType: 'schema', message: msg.error }]);
+					break;
 
         case 'APPLY_SUCCESS':
-          console.log(msg.message);
-          setErrors([]);
-          break;
+					console.log(msg.message);
+					setErrors([]);
+					break;
 
-        case 'APPLY_ERROR':
-          setErrors(msg.errors);
-          break;
+				case 'APPLY_ERROR':
+					setErrors(msg.errors);
+					break;
 
-        case 'SAVE_SUCCESS':
-          console.log("JSON saved");
-          setErrors([]);
-          break;
+				case 'SAVE_SUCCESS':
+					console.log("JSON saved");
+					setErrors([]);
+					break;
 
-        case 'SAVE_ERROR':
-          setErrors([{ collection: 'save', token: '', errorType: 'schema', message: msg.error }]);
-          break;
-      }
-    });
-  }, []);
+				case 'SAVE_ERROR':
+					setErrors([{ collection: 'save', token: '', errorType: 'schema', message: msg.error }]);
+					break;
+			}
+		});
+	}, []);
 
-  // Validate JSON when it changes
-  useEffect(() => {
-    try {
-      const parsed = JSON.parse(jsonText);
-      const result = validate(parsed);
-      
-      if (result.valid) {
-        setErrors([]);
-        updateStats(result.data);
-      } else {
-        // Type narrowing: if not valid, result has errors property
-        setErrors(result.errors);
-      }
-    } catch (err) {
-      setErrors([{
-        collection: 'json',
-        token: '',
-        errorType: 'syntax',
+	// Validate JSON when it changes
+	useEffect(() => {
+		try {
+			const parsed = JSON.parse(jsonText);
+			const result = validate(parsed);
+			
+			if (result.valid) {
+				setErrors([]);
+				updateStats(result.data);
+			} else {
+				// Type narrowing: if not valid, result has errors property
+				setErrors(result.errors);
+			}
+		} catch (err) {
+			setErrors([{
+				collection: 'json',
+				token: '',
+				errorType: 'syntax',
         message: `JSON Parse Error: ${err instanceof Error ? err.message : String(err)}`
-      }]);
-    }
-  }, [jsonText]);
+			}]);
+		}
+	}, [jsonText]);
 
-  function updateStats(json: TokenJSON) {
-    setTokenCount(countTokens(json));
-    setCollectionCount(Object.keys(json).length);
-  }
+	function updateStats(json: TokenJSON) {
+		setTokenCount(countTokens(json));
+		setCollectionCount(Object.keys(json).length);
+	}
 
-  function handleImport(): void {
-    sendToPlugin({ type: 'IMPORT_VARIABLES' });
-  }
+	function handleImport(): void {
+		sendToPlugin({ type: 'IMPORT_VARIABLES' });
+	}
 
-  function handleApply(): void {
-    try {
-      const parsed = JSON.parse(jsonText);
-      sendToPlugin({ type: 'APPLY_TO_VARIABLES', json: parsed });
-    } catch (err) {
-      setErrors([{
-        collection: 'json',
-        token: '',
-        errorType: 'syntax',
-        message: `Cannot apply: ${err instanceof Error ? err.message : String(err)}`
-      }]);
-    }
-  }
+	function handleApply(): void {
+		try {
+			const parsed = JSON.parse(jsonText);
+			sendToPlugin({ type: 'APPLY_TO_VARIABLES', json: parsed });
+		} catch (err) {
+			setErrors([{
+				collection: 'json',
+				token: '',
+				errorType: 'syntax',
+				message: `Cannot apply: ${err instanceof Error ? err.message : String(err)}`
+			}]);
+		}
+	}
 
-  function handleSave(): void {
-    try {
-      const parsed = JSON.parse(jsonText);
-      sendToPlugin({ type: 'SAVE_JSON', json: parsed });
-    } catch (err) {
-      setErrors([{
-        collection: 'json',
-        token: '',
-        errorType: 'syntax',
-        message: `Cannot save: ${err instanceof Error ? err.message : String(err)}`
-      }]);
-    }
-  }
+	function handleSave(): void {
+		try {
+			const parsed = JSON.parse(jsonText);
+			sendToPlugin({ type: 'SAVE_JSON', json: parsed });
+		} catch (err) {
+			setErrors([{
+				collection: 'json',
+				token: '',
+				errorType: 'syntax',
+				message: `Cannot save: ${err instanceof Error ? err.message : String(err)}`
+			}]);
+		}
+	}
 
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
-      <Toolbar
-        onImport={handleImport}
-        onApply={handleApply}
-        onSave={handleSave}
-        hasErrors={errors.length > 0}
-      />
-      
-      <div style={{ flex: 1, overflow: 'hidden' }}>
-        <JsonEditor value={jsonText} onChange={setJsonText} />
-      </div>
-      
-      {errors.length > 0 && (
-        <div style={{ flexShrink: 0 }}>
-          <ErrorDisplay errors={errors} />
-        </div>
-      )}
-      
-      <StatusBar tokenCount={tokenCount} collectionCount={collectionCount} />
-    </div>
-  );
+	return (
+		<div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
+			<Toolbar
+				onImport={handleImport}
+				onApply={handleApply}
+				onSave={handleSave}
+				hasErrors={errors.length > 0}
+			/>
+			
+			<div style={{ flex: 1, overflow: 'hidden' }}>
+				<JsonEditor value={jsonText} onChange={setJsonText} />
+			</div>
+			
+			{errors.length > 0 && (
+				<div style={{ flexShrink: 0 }}>
+					<ErrorDisplay errors={errors} />
+				</div>
+			)}
+			
+			<StatusBar tokenCount={tokenCount} collectionCount={collectionCount} />
+		</div>
+	);
 }
 
 export default App;

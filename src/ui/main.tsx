@@ -6,13 +6,13 @@ import { h } from "preact";
 import "./styles.css";
 
 async function bootstrap() {
-  Networker.initialize(UI, UI_CHANNEL);
+	Networker.initialize(UI, UI_CHANNEL);
 
-  const App = (await import("./app")).default;
+	const App = (await import("./app")).default;
 
-  const rootElement = document.getElementById("root") as HTMLElement;
+	const rootElement = document.getElementById("root") as HTMLElement;
 
-  render(<App />, rootElement);
+	render(<App />, rootElement);
 }
 
 bootstrap();
