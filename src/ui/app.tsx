@@ -4,14 +4,13 @@ import { JsonEditor } from "@ui/components/JsonEditor";
 import { Toolbar } from "@ui/components/Toolbar";
 import { ErrorDisplay } from "@ui/components/ErrorDisplay";
 import { StatusBar } from "@ui/components/StatusBar";
-import { DEFAULT_TOKEN_JSON } from "@core/constants";
 import { countTokens } from "@core/tokenUtils";
 import { validate } from "@core/validator";
 import type { TokenJSON, ValidationError } from "@core/types";
 import { sendToPlugin, onPluginMessage } from "@ui/messaging";
 
 function App() {
-	const [jsonText, setJsonText] = useState<string>(JSON.stringify(DEFAULT_TOKEN_JSON, null, 2));
+	const [jsonText, setJsonText] = useState<string>("");
 	const [errors, setErrors] = useState<ValidationError[]>([]);
 	const [tokenCount, setTokenCount] = useState(0);
 	const [collectionCount, setCollectionCount] = useState(0);
@@ -61,6 +60,13 @@ function App() {
 
 	// Validate JSON when it changes
 	useEffect(() => {
+		if (jsonText.trim() === '') {
+			setErrors([]);
+			setTokenCount(0);
+			setCollectionCount(0);
+			return;
+		}
+
 		try {
 			const parsed = JSON.parse(jsonText);
 			const result = validate(parsed);
@@ -77,7 +83,7 @@ function App() {
 				collection: 'json',
 				token: '',
 				errorType: 'syntax',
-        message: `JSON Parse Error: ${err instanceof Error ? err.message : String(err)}`
+				message: `JSON Parse Error: ${err instanceof Error ? err.message : String(err)}`
 			}]);
 		}
 	}, [jsonText]);

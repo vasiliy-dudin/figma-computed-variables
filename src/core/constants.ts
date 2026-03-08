@@ -33,16 +33,3 @@ export const PATTERNS = {
 	rgbaColor: /^rgba\((\d+),\s*(\d+),\s*(\d+),\s*([\d.]+)\)$/,
 };
 
-// Default empty JSON for first-time users
-export const DEFAULT_TOKEN_JSON = {
-	"foundation": {
-		"color/primary": {
-			"$type": "color",
-			"$value": { "light": "#0066FF", "dark": "#3388FF" }
-		},
-		"spacing/base": {
-			"$type": "number",
-			"$value": { "light": 8, "dark": 8 }
-		}
-	}
-};
