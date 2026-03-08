@@ -1,0 +1,7 @@
+/* Import base Figma UI styles */
+@import '../../node_modules/@create-figma-plugin/ui/lib/css/base.css';
+
+body {
+  margin: 0;
+  padding: 0;
+}
