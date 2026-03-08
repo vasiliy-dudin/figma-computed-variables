@@ -9,7 +9,8 @@ import { StatusBar } from "@ui/components/StatusBar";
 import { DEFAULT_TOKEN_JSON } from "@core/constants";
 import { countTokens } from "@core/tokenUtils";
 import { validate } from "@core/validator";
-import type { TokenJSON, ValidationError, UIToPluginMessage, PluginToUIMessage } from "@core/types";
+import type { TokenJSON, ValidationError } from "@core/types";
+import type { UIToPluginMessage, PluginToUIMessage } from "@core/messages";
 
 function App() {
   const [jsonText, setJsonText] = useState<string>(JSON.stringify(DEFAULT_TOKEN_JSON, null, 2));

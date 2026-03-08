@@ -78,19 +78,3 @@ export interface TokenMap {
   has(path: string): boolean;
   getFullPath(collectionName: string, tokenPath: string): string;
 }
-
-// UI → Plugin messages
-export type UIToPluginMessage =
-  | { type: 'IMPORT_VARIABLES' }
-  | { type: 'APPLY_TO_VARIABLES'; json: TokenJSON }
-  | { type: 'SAVE_JSON'; json: TokenJSON };
-
-// Plugin → UI messages
-export type PluginToUIMessage =
-  | { type: 'IMPORT_SUCCESS'; json: TokenJSON }
-  | { type: 'IMPORT_ERROR'; error: string }
-  | { type: 'APPLY_SUCCESS'; message: string }
-  | { type: 'APPLY_ERROR'; errors: ValidationError[] }
-  | { type: 'SAVE_SUCCESS' }
-  | { type: 'SAVE_ERROR'; error: string }
-  | { type: 'LOAD_JSON'; json: TokenJSON | null };
