@@ -1,7 +1,6 @@
 {
-  "name": "figma-plugin-react-vite",
-  "private": true,
-  "version": "1.2.0",
+  "name": "figma-computed-variables",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "start": "run-s dev",
