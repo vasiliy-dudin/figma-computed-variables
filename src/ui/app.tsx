@@ -127,22 +127,22 @@ function App() {
 
 	return (
 		<div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
+			<div style={{ flex: 1, overflow: 'hidden' }}>
+				<JsonEditor value={jsonText} onChange={setJsonText} />
+			</div>
+
+			{errors.length > 0 && (
+				<div style={{ flexShrink: 0 }}>
+					<ErrorDisplay errors={errors} />
+				</div>
+			)}
+
 			<Toolbar
 				onImport={handleImport}
 				onApply={handleApply}
 				onSave={handleSave}
 				hasErrors={errors.length > 0}
 			/>
-			
-			<div style={{ flex: 1, overflow: 'hidden' }}>
-				<JsonEditor value={jsonText} onChange={setJsonText} />
-			</div>
-			
-			{errors.length > 0 && (
-				<div style={{ flexShrink: 0 }}>
-					<ErrorDisplay errors={errors} />
-				</div>
-			)}
 			
 			<StatusBar tokenCount={tokenCount} collectionCount={collectionCount} />
 		</div>
