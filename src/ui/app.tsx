@@ -173,6 +173,7 @@ function App() {
 				onApply={handleApply}
 				onSave={handleSave}
 				hasErrors={errors.length > 0}
+				isEmpty={jsonText.trim() === ''}
 			/>
 			
 			<StatusBar tokenCount={tokenCount} collectionCount={collectionCount} />

@@ -6,9 +6,20 @@ interface ToolbarProps {
 	onApply: () => void;
 	onSave: () => void;
 	hasErrors: boolean;
+	isEmpty: boolean;
 }
 
-export function Toolbar({ onImport, onApply, onSave, hasErrors }: ToolbarProps) {
+export function Toolbar({ onImport, onApply, onSave, hasErrors, isEmpty }: ToolbarProps) {
+	if (isEmpty) {
+		return (
+			<div style={{ padding: '12px', borderTop: '1px solid var(--color-border)', display: 'flex', justifyContent: 'flex-start', alignItems: 'center' }}>
+				<Button onClick={onImport} secondary>
+					Import from Variables
+				</Button>
+			</div>
+		);
+	}
+
 	return (
 		<div style={{ padding: '12px', borderTop: '1px solid var(--color-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
 			<div>
