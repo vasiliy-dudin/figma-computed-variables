@@ -10,15 +10,15 @@ export function Footer({ tokenCount, collectionCount }: FooterProps) {
 		<div style={{ 
 			borderTop: '1px solid var(--color-border, #e0e0e0)', 
 			background: 'var(--color-bg-secondary)',
-			display: 'flex', 
-			justifyContent: 'space-between',
+			display: 'flex',
 			alignItems: 'center',
 			padding: '8px 12px',
+			gap: '16px',
 			fontSize: '12px',
 			color: 'var(--color-text-secondary)',
 			flexShrink: 0
 		}}>
-			<div style={{ fontSize: '11px' }}>
+			<div style={{ fontSize: '12px' }}>
 				Status: {tokenCount} tokens | {collectionCount} collections
 			</div>
 			<div style={{ display: 'flex', gap: '16px' }}>
