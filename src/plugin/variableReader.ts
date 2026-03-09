@@ -43,11 +43,7 @@ function formatValue(value: VariableValue, type: VariableResolvedDataType): stri
 		const target = figma.variables.getVariableById(value.id);
 		if (!target) return '';
 		
-		// Get the collection name for the target variable
-		const targetCollection = figma.variables.getVariableCollectionById(target.variableCollectionId);
-		if (!targetCollection) return '';
-		
-		return `{${targetCollection.name}.${target.name}}`;
+		return `{${target.name}}`;
 	}
 	
 	switch (type) {

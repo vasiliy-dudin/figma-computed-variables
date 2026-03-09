@@ -104,25 +104,17 @@ function setVariableValue(
 }
 
 /**
- * Find a variable by its full path (collection.tokenPath)
+ * Find a variable by its token path, searching across all collections
  */
 function findVariableByPath(path: string): Variable | null {
-	const dotIndex = path.indexOf('.');
-	if (dotIndex === -1) return null;
-	
-	const collectionName = path.substring(0, dotIndex);
-	const tokenPath = path.substring(dotIndex + 1);
-	
-	// Find collection
 	const collections = figma.variables.getLocalVariableCollections();
-	const collection = collections.find(c => c.name === collectionName);
-	if (!collection) return null;
 	
-	// Find variable in collection
-	for (const varId of collection.variableIds) {
-		const variable = figma.variables.getVariableById(varId);
-		if (variable && variable.name === tokenPath) {
-			return variable;
+	for (const collection of collections) {
+		for (const varId of collection.variableIds) {
+			const variable = figma.variables.getVariableById(varId);
+			if (variable && variable.name === path) {
+				return variable;
+			}
 		}
 	}
 	

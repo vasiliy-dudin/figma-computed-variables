@@ -15,10 +15,23 @@ export function createTokenMap(json: TokenJSON): TokenMap {
 	
 	return {
 		get(path: string) {
-			return map.get(path);
+			if (map.has(path)) return map.get(path);
+			// Fall back: search by bare tokenPath across all collections
+			for (const [key, token] of map.entries()) {
+				const dotIndex = key.indexOf('.');
+				if (dotIndex !== -1 && key.substring(dotIndex + 1) === path) {
+					return token;
+				}
+			}
+			return undefined;
 		},
 		has(path: string) {
-			return map.has(path);
+			if (map.has(path)) return true;
+			for (const key of map.keys()) {
+				const dotIndex = key.indexOf('.');
+				if (dotIndex !== -1 && key.substring(dotIndex + 1) === path) return true;
+			}
+			return false;
 		},
 		getFullPath(collectionName: string, tokenPath: string) {
 			return `${collectionName}.${tokenPath}`;
