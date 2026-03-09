@@ -20,6 +20,7 @@ function App() {
 	const [showEmptyState, setShowEmptyState] = useState(false);
 	const [saveSuccess, setSaveSuccess] = useState<number>(0);
 	const [applySuccess, setApplySuccess] = useState<number>(0);
+	const [isDocsDropdownOpen, setIsDocsDropdownOpen] = useState(false);
 
 	// Listen for messages from plugin
 	useEffect(() => {
@@ -123,6 +124,14 @@ function App() {
 		setCollectionCount(Object.keys(json).length);
 	}
 
+	function handleOpenDocsDropdown(): void {
+		setIsDocsDropdownOpen(true);
+	}
+
+	function handleCloseDocsDropdown(): void {
+		setIsDocsDropdownOpen(false);
+	}
+
 	function handleLoadExample(): void {
 		setJsonText(JSON.stringify(EXAMPLE_TOKEN_JSON, null, 2));
 		setShowEmptyState(false);
@@ -191,14 +200,17 @@ function App() {
 			)}
 
 			<Toolbar
-			onImport={handleImport}
-			onApply={handleApply}
-			onSave={handleSave}
-			hasErrors={errors.length > 0}
-			isEmpty={jsonText.trim() === ''}
-			saveSuccess={saveSuccess}
-			applySuccess={applySuccess}
-		/>
+				onImport={handleImport}
+				onApply={handleApply}
+				onSave={handleSave}
+				hasErrors={errors.length > 0}
+				isEmpty={jsonText.trim() === ''}
+				saveSuccess={saveSuccess}
+				applySuccess={applySuccess}
+				onOpenDocsDropdown={handleOpenDocsDropdown}
+				onCloseDocsDropdown={handleCloseDocsDropdown}
+				isDocsDropdownOpen={isDocsDropdownOpen}
+			/>
 			
 			<Footer tokenCount={tokenCount} collectionCount={collectionCount} />
 			<ResizeHandle />

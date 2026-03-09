@@ -23,17 +23,6 @@ export function Footer({ tokenCount, collectionCount }: FooterProps) {
 			</div>
 			<div style={{ display: 'flex', gap: '16px' }}>
 				<a
-					href="https://github.com/vasiliy-dudin/figma-computed-variables"
-					target="_blank"
-					rel="noopener noreferrer"
-					style={{ 
-						color: 'inherit', 
-						textDecoration: 'underline'
-					}}
-				>
-					Documentation
-				</a>
-				<a
 					href="https://github.com/vasiliy-dudin/figma-computed-variables/issues"
 					target="_blank"
 					rel="noopener noreferrer"
