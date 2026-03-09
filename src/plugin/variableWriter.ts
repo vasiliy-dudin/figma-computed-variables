@@ -1,6 +1,6 @@
 import { TokenJSON, ResolvedValue, RGBA } from '@core/types';
 import { TYPE_MAP } from '@core/constants';
-import { createTokenMap, flattenTokenGroup } from '@core/tokenUtils';
+import { createTokenMap, flattenTokenGroup, normalizeModeValues } from '@core/tokenUtils';
 import { resolveToken, hexToRgba } from '@core/resolver';
 
 /**
@@ -22,8 +22,10 @@ export async function applyToVariables(json: TokenJSON): Promise<string> {
 		const flatTokens = flattenTokenGroup(tokens);
 		const modes = new Set<string>();
 		for (const token of flatTokens.values()) {
-			for (const mode of Object.keys(token.$value)) {
-				modes.add(mode);
+			if (typeof token.$value !== 'string' && typeof token.$value !== 'number') {
+				for (const mode of Object.keys(token.$value)) {
+					modes.add(mode);
+				}
 			}
 		}
 		
@@ -32,6 +34,9 @@ export async function applyToVariables(json: TokenJSON): Promise<string> {
 			if (!existingModes.includes(modeName)) {
 				collection.addMode(modeName);
 			}
+		}
+		if (modes.size === 0 && existingModes.length === 0) {
+			collection.addMode('Mode 1');
 		}
 		
 		// 3. Create token map for resolution
@@ -58,10 +63,11 @@ export async function applyToVariables(json: TokenJSON): Promise<string> {
 				variable = figma.variables.createVariable(figmaVarName, collection, figmaType);
 			}
 			
-			// Set values for each mode
+			// Set values for each mode — normalize shorthand scalar to per-mode record first
+			const modeNames = collection.modes.map(m => m.name);
+			const normalizedValue = normalizeModeValues(token.$value, modeNames);
 			for (const mode of collection.modes) {
-				const modeValue = token.$value[mode.name];
-				if (modeValue === undefined) continue;
+				if (normalizedValue[mode.name] === undefined) continue;
 				
 				try {
 					const fullPath = `${collectionName}.${tokenPath}`;

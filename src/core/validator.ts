@@ -2,6 +2,8 @@ import { TokenJSONSchema, TokenJSON, ValidationError, TokenMap } from './types';
 import { createTokenMap, detectAmbiguousAliases, extractTokenReferences, flattenTokenGroup } from './tokenUtils';
 import { ZodIssue } from 'zod';
 
+const SCALAR_MODE_SENTINEL = '';
+
 /**
  * Validate token JSON schema
  */
@@ -30,10 +32,14 @@ export function detectCircularDependencies(json: TokenJSON, tokenMap: TokenMap =
 	
 	for (const [collectionName, group] of Object.entries(json)) {
 		for (const [tokenPath, token] of flattenTokenGroup(group)) {
-			for (const [mode, value] of Object.entries(token.$value)) {
+			const fullPath = `${collectionName}.${tokenPath}`;
+			const modeEntries: Array<[string, string | number]> =
+				typeof token.$value === 'string' || typeof token.$value === 'number'
+					? [['', token.$value]]
+					: Object.entries(token.$value);
+
+			for (const [mode, value] of modeEntries) {
 				const visited = new Set<string>();
-				const fullPath = `${collectionName}.${tokenPath}`;
-				
 				try {
 					checkCircular(String(value), fullPath, mode, tokenMap, visited);
 				} catch (err) {
@@ -41,7 +47,7 @@ export function detectCircularDependencies(json: TokenJSON, tokenMap: TokenMap =
 						errors.push({
 							collection: collectionName,
 							token: tokenPath,
-							mode,
+							mode: mode || undefined,
 							errorType: 'circular',
 							message: err.message
 						});
@@ -83,9 +89,18 @@ function checkCircular(
 		const referencedToken = tokenMap.get(ref);
 		if (!referencedToken) continue;
 		
-		const referencedValue = referencedToken.$value[mode];
-		if (referencedValue !== undefined) {
-			checkCircular(String(referencedValue), ref, mode, tokenMap, new Set(visited));
+		const rawRef = referencedToken.$value;
+		if (typeof rawRef === 'string' || typeof rawRef === 'number') {
+			checkCircular(String(rawRef), ref, mode, tokenMap, new Set(visited));
+		} else if (mode === SCALAR_MODE_SENTINEL) {
+			for (const modeValue of Object.values(rawRef)) {
+				checkCircular(String(modeValue), ref, mode, tokenMap, new Set(visited));
+			}
+		} else {
+			const referencedValue = rawRef[mode];
+			if (referencedValue !== undefined) {
+				checkCircular(String(referencedValue), ref, mode, tokenMap, new Set(visited));
+			}
 		}
 	}
 }
@@ -98,7 +113,12 @@ export function validateReferences(json: TokenJSON, tokenMap: TokenMap = createT
 
 	for (const [collectionName, group] of Object.entries(json)) {
 		for (const [tokenPath, token] of flattenTokenGroup(group)) {
-			for (const [mode, value] of Object.entries(token.$value)) {
+			const modeEntries: Array<[string, string | number]> =
+				typeof token.$value === 'string' || typeof token.$value === 'number'
+					? [['', token.$value]]
+					: Object.entries(token.$value);
+
+			for (const [mode, value] of modeEntries) {
 				const references = extractTokenReferences(String(value));
 				
 				for (const ref of references) {
@@ -107,7 +127,7 @@ export function validateReferences(json: TokenJSON, tokenMap: TokenMap = createT
 						errors.push({
 							collection: collectionName,
 							token: tokenPath,
-							mode,
+							mode: mode || undefined,
 							errorType: 'reference',
 							message: `Reference "{${ref}}" does not exist`
 						});

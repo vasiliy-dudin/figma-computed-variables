@@ -24,7 +24,10 @@ export function resolveToken(
 		throw new Error(`Token not found: ${tokenPath}`);
 	}
 	
-	const value = token.$value[mode];
+	const value =
+		typeof token.$value === 'string' || typeof token.$value === 'number'
+			? token.$value
+			: token.$value[mode];
 	if (value === undefined) {
 		throw new Error(`Mode "${mode}" not found for token: ${tokenPath}`);
 	}

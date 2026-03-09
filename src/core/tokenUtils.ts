@@ -1,4 +1,4 @@
-import { TokenJSON, Token, TokenGroup, TokenMap, ValidationError } from './types';
+import { TokenJSON, Token, TokenGroup, TokenMap, TokenValue, ModeValues, ValidationError } from './types';
 
 /**
  * Type guard: returns true if value is a Token (has $type), not a nested group
@@ -45,6 +45,22 @@ export function nestifyFlatPaths(flat: Map<string, Token>): TokenGroup {
 		current[parts[parts.length - 1]] = token;
 	}
 	return result;
+}
+
+/**
+ * Expand a token $value to a full mode-keyed record.
+ * If value is already a record, return it as-is.
+ * If value is a scalar shorthand, replicate it for each mode name.
+ */
+export function normalizeModeValues(value: TokenValue, modeNames: string[]): ModeValues {
+	if (typeof value === 'string' || typeof value === 'number') {
+		const result: ModeValues = {};
+		for (const mode of modeNames) {
+			result[mode] = value;
+		}
+		return result;
+	}
+	return value;
 }
 
 /**
@@ -126,6 +142,7 @@ export function extractModes(json: TokenJSON): Set<string> {
 	
 	for (const group of Object.values(json)) {
 		for (const token of flattenTokenGroup(group).values()) {
+			if (typeof token.$value === 'string' || typeof token.$value === 'number') continue;
 			for (const mode of Object.keys(token.$value)) {
 				modes.add(mode);
 			}
@@ -154,7 +171,11 @@ export function detectAmbiguousAliases(json: TokenJSON): ValidationError[] {
 
 	for (const [collectionName, group] of Object.entries(json)) {
 		for (const [tokenPath, token] of flattenTokenGroup(group)) {
-			for (const ref of extractBareAliases(Object.values(token.$value).map(String).join(' '))) {
+			const rawValues =
+				typeof token.$value === 'string' || typeof token.$value === 'number'
+					? [token.$value]
+					: Object.values(token.$value);
+			for (const ref of extractBareAliases(rawValues.map(String).join(' '))) {
 				const errorKey = `${collectionName}.${tokenPath}::${ref}`;
 				if (!ambiguous.has(ref) || seen.has(errorKey)) continue;
 				seen.add(errorKey);

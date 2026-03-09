@@ -23,10 +23,19 @@ export const ModeValuesSchema = z.record(z.string(), z.union([
 
 export type ModeValues = z.infer<typeof ModeValuesSchema>;
 
+// Token value — either a shorthand scalar (applies to all modes) or a per-mode record
+export const TokenValueSchema = z.union([
+	z.string(),
+	z.number(),
+	ModeValuesSchema,
+]);
+
+export type TokenValue = z.infer<typeof TokenValueSchema>;
+
 // Token schema
 export const TokenSchema = z.object({
 	$type: TokenTypeSchema,
-	$value: ModeValuesSchema,
+	$value: TokenValueSchema,
 	$description: z.string().optional(),
 });
 
