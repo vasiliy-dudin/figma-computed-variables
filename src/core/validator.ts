@@ -1,5 +1,5 @@
 import { TokenJSONSchema, TokenJSON, ValidationError, TokenMap } from './types';
-import { createTokenMap } from './tokenUtils';
+import { createTokenMap, detectBarePathCollisions } from './tokenUtils';
 import { ZodIssue } from 'zod';
 
 /**
@@ -154,8 +154,11 @@ export function validate(data: unknown):
 	
 	// 3. Circular dependency detection
 	const circularErrors = detectCircularDependencies(tokenJson);
-	
-	const allErrors = [...referenceErrors, ...circularErrors];
+
+	// 4. Collision detection
+	const collisionErrors = detectBarePathCollisions(tokenJson);
+
+	const allErrors = [...referenceErrors, ...circularErrors, ...collisionErrors];
 	
 	if (allErrors.length > 0) {
 		return { valid: false, errors: allErrors };

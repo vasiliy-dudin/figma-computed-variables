@@ -64,12 +64,22 @@ export function extractModes(json: TokenJSON): Set<string> {
  */
 export function detectBarePathCollisions(json: TokenJSON): ValidationError[] {
 	const seen = new Map<string, string>();
+	const reportedFirst = new Set<string>();
 	const errors: ValidationError[] = [];
 
 	for (const [collectionName, collection] of Object.entries(json)) {
 		for (const tokenPath of Object.keys(collection)) {
 			const existing = seen.get(tokenPath);
 			if (existing !== undefined) {
+				if (!reportedFirst.has(tokenPath)) {
+					errors.push({
+						collection: existing,
+						token: tokenPath,
+						errorType: 'collision',
+						message: `Token "${tokenPath}" exists in both "${existing}" and "${collectionName}"`
+					});
+					reportedFirst.add(tokenPath);
+				}
 				errors.push({
 					collection: collectionName,
 					token: tokenPath,
