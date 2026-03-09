@@ -32,13 +32,18 @@ export const TokenSchema = z.object({
 
 export type Token = z.infer<typeof TokenSchema>;
 
-// Collection schema (foundation, semantic, components, etc.)
-export const CollectionSchema = z.record(z.string(), TokenSchema);
+// Token group schema — each key is either a Token (has $type) or a nested group.
+// Zod requires lazy() for recursive types.
+export type TokenGroup = {
+	[key: string]: Token | TokenGroup;
+};
 
-export type Collection = z.infer<typeof CollectionSchema>;
+export const TokenGroupSchema: z.ZodType<TokenGroup> = z.lazy(() =>
+	z.record(z.string(), z.union([TokenSchema, TokenGroupSchema]))
+);
 
-// Full token JSON schema (multiple collections)
-export const TokenJSONSchema = z.record(z.string(), CollectionSchema);
+// Full token JSON schema: top-level keys are collection names
+export const TokenJSONSchema = z.record(z.string(), TokenGroupSchema);
 
 export type TokenJSON = z.infer<typeof TokenJSONSchema>;
 

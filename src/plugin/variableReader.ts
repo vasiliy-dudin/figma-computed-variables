@@ -1,4 +1,5 @@
-import { TokenJSON } from '@core/types';
+import { TokenJSON, Token } from '@core/types';
+import { nestifyFlatPaths } from '@core/tokenUtils';
 import { FIGMA_TYPE_MAP } from '@core/constants';
 import { rgbaToHex } from '@core/resolver';
 
@@ -10,10 +11,11 @@ export async function importVariablesToJSON(): Promise<TokenJSON> {
 	const result: TokenJSON = {};
 	
 	for (const collection of collections) {
-		result[collection.name] = {};
-		
 		// Get all variables in this collection
 		const variables = collection.variableIds.map(id => figma.variables.getVariableById(id)!).filter(Boolean);
+		
+		// Build flat map: dot-path → Token
+		const flatTokens = new Map<string, Token>();
 		
 		for (const variable of variables) {
 			const modes: Record<string, string | number> = {};
@@ -25,11 +27,16 @@ export async function importVariablesToJSON(): Promise<TokenJSON> {
 			}
 			
 			const tokenType = FIGMA_TYPE_MAP[variable.resolvedType];
-			result[collection.name][variable.name] = {
+			// Figma uses '/' for groups; convert to dot-path for plugin JSON
+			const dotPath = variable.name.replace(/\//g, '.');
+			flatTokens.set(dotPath, {
 				$type: (tokenType === 'color' || tokenType === 'number' || tokenType === 'string') ? tokenType : 'string',
 				$value: modes
-			};
+			});
 		}
+		
+		// Convert flat map to nested structure
+		result[collection.name] = nestifyFlatPaths(flatTokens);
 	}
 	
 	return result;
@@ -42,10 +49,11 @@ function formatValue(value: VariableValue, type: VariableResolvedDataType): stri
 	if (value !== null && typeof value === 'object' && 'type' in value && value.type === 'VARIABLE_ALIAS') {
 		const target = figma.variables.getVariableById(value.id);
 		if (!target) return '';
-		
-		return `{${target.name}}`;
+
+		// Convert Figma slash-path to dot-path for plugin alias syntax
+		return `{${target.name.replace(/\//g, '.')}}`;
 	}
-	
+
 	switch (type) {
 		case 'COLOR':
 			if (value !== null && typeof value === 'object' && 'r' in value) {

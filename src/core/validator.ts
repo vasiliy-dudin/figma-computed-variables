@@ -1,5 +1,5 @@
 import { TokenJSONSchema, TokenJSON, ValidationError, TokenMap } from './types';
-import { createTokenMap, detectAmbiguousAliases, extractTokenReferences } from './tokenUtils';
+import { createTokenMap, detectAmbiguousAliases, extractTokenReferences, flattenTokenGroup } from './tokenUtils';
 import { ZodIssue } from 'zod';
 
 /**
@@ -28,8 +28,8 @@ export function validateSchema(json: unknown): { valid: true; data: TokenJSON } 
 export function detectCircularDependencies(json: TokenJSON, tokenMap: TokenMap = createTokenMap(json)): ValidationError[] {
 	const errors: ValidationError[] = [];
 	
-	for (const [collectionName, collection] of Object.entries(json)) {
-		for (const [tokenPath, token] of Object.entries(collection)) {
+	for (const [collectionName, group] of Object.entries(json)) {
+		for (const [tokenPath, token] of flattenTokenGroup(group)) {
 			for (const [mode, value] of Object.entries(token.$value)) {
 				const visited = new Set<string>();
 				const fullPath = `${collectionName}.${tokenPath}`;
@@ -96,8 +96,8 @@ function checkCircular(
 export function validateReferences(json: TokenJSON, tokenMap: TokenMap = createTokenMap(json)): ValidationError[] {
 	const errors: ValidationError[] = [];
 
-	for (const [collectionName, collection] of Object.entries(json)) {
-		for (const [tokenPath, token] of Object.entries(collection)) {
+	for (const [collectionName, group] of Object.entries(json)) {
+		for (const [tokenPath, token] of flattenTokenGroup(group)) {
 			for (const [mode, value] of Object.entries(token.$value)) {
 				const references = extractTokenReferences(String(value));
 				

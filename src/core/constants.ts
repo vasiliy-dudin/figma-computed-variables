@@ -23,13 +23,19 @@ export const FIGMA_TYPE_MAP: Record<VariableResolvedDataType, string> = {
 // Example token JSON shown when user picks "Load example" on first run
 export const EXAMPLE_TOKEN_JSON = {
 	"foundation": {
-		"color/primary": { "$type": "color", "$value": { "light": "#0066FF", "dark": "#3388FF" } },
-		"color/surface": { "$type": "color", "$value": { "light": "#FFFFFF", "dark": "#1A1A1A" } },
-		"spacing/base": { "$type": "number", "$value": { "light": 8, "dark": 8 } }
+		"color": {
+			"primary": { "$type": "color", "$value": { "light": "#0066FF", "dark": "#3388FF" } },
+			"surface": { "$type": "color", "$value": { "light": "#FFFFFF", "dark": "#1A1A1A" } }
+		},
+		"spacing": {
+			"base": { "$type": "number", "$value": { "light": 8, "dark": 8 } }
+		}
 	},
 	"semantic": {
-		"button/background": { "$type": "color", "$value": { "light": "{foundation.color/primary}", "dark": "{foundation.color/primary}" } },
-		"button/padding": { "$type": "number", "$value": { "light": "{foundation.spacing/base} * 2", "dark": "{foundation.spacing/base} * 2" } }
+		"button": {
+			"background": { "$type": "color", "$value": { "light": "{foundation.color.primary}", "dark": "{foundation.color.primary}" } },
+			"padding": { "$type": "number", "$value": { "light": "{foundation.spacing.base} * 2", "dark": "{foundation.spacing.base} * 2" } }
+		}
 	}
 };
 

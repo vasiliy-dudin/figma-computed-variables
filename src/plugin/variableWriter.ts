@@ -1,6 +1,6 @@
 import { TokenJSON, ResolvedValue, RGBA } from '@core/types';
 import { TYPE_MAP } from '@core/constants';
-import { createTokenMap } from '@core/tokenUtils';
+import { createTokenMap, flattenTokenGroup } from '@core/tokenUtils';
 import { resolveToken, hexToRgba } from '@core/resolver';
 
 /**
@@ -18,9 +18,10 @@ export async function applyToVariables(json: TokenJSON): Promise<string> {
 			collection = figma.variables.createVariableCollection(collectionName);
 		}
 		
-		// 2. Extract and merge modes
+		// 2. Extract and merge modes (flatten nested structure first)
+		const flatTokens = flattenTokenGroup(tokens);
 		const modes = new Set<string>();
-		for (const token of Object.values(tokens)) {
+		for (const token of flatTokens.values()) {
 			for (const mode of Object.keys(token.$value)) {
 				modes.add(mode);
 			}
@@ -41,17 +42,20 @@ export async function applyToVariables(json: TokenJSON): Promise<string> {
 			.map(id => figma.variables.getVariableById(id))
 			.filter(Boolean) as Variable[];
 		
-		for (const [tokenPath, token] of Object.entries(tokens)) {
+		for (const [tokenPath, token] of flatTokens) {
 			const figmaType = TYPE_MAP[token.$type];
 			if (!figmaType) {
 				console.warn(`Unknown token type: ${token.$type} for ${tokenPath}`);
 				continue;
 			}
 			
+			// Figma uses '/' for variable groups; dot-path maps to slash-path
+			const figmaVarName = tokenPath.replace(/\./g, '/');
+			
 			// Find or create variable
-			let variable = collectionVariables.find(v => v.name === tokenPath);
+			let variable = collectionVariables.find(v => v.name === figmaVarName);
 			if (!variable) {
-				variable = figma.variables.createVariable(tokenPath, collection, figmaType);
+				variable = figma.variables.createVariable(figmaVarName, collection, figmaType);
 			}
 			
 			// Set values for each mode
@@ -110,13 +114,15 @@ function findVariableByPath(path: string): Variable | null {
 	const collections = figma.variables.getLocalVariableCollections();
 	const dotIndex = path.indexOf('.');
 	const collectionName = dotIndex !== -1 ? path.substring(0, dotIndex) : null;
-	const tokenName = dotIndex !== -1 ? path.substring(dotIndex + 1) : path;
+	// Convert dot-path to slash-path to match Figma variable names
+	const tokenDotPath = dotIndex !== -1 ? path.substring(dotIndex + 1) : path;
+	const figmaVarName = tokenDotPath.replace(/\./g, '/');
 
 	for (const collection of collections) {
 		if (collectionName !== null && collection.name !== collectionName) continue;
 		for (const varId of collection.variableIds) {
 			const variable = figma.variables.getVariableById(varId);
-			if (variable && variable.name === tokenName) {
+			if (variable && variable.name === figmaVarName) {
 				return variable;
 			}
 		}

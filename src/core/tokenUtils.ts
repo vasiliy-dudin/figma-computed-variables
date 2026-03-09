@@ -1,4 +1,51 @@
-import { TokenJSON, Token, TokenMap, ValidationError } from './types';
+import { TokenJSON, Token, TokenGroup, TokenMap, ValidationError } from './types';
+
+/**
+ * Type guard: returns true if value is a Token (has $type), not a nested group
+ */
+export function isToken(value: Token | TokenGroup): value is Token {
+	return '$type' in value;
+}
+
+/**
+ * Recursively flatten a TokenGroup into a map of dot-separated paths → Token.
+ * e.g. { color: { primary: { $type, $value } } } → Map { "color.primary" → Token }
+ */
+export function flattenTokenGroup(group: TokenGroup, prefix: string = ''): Map<string, Token> {
+	const result = new Map<string, Token>();
+	for (const [key, value] of Object.entries(group)) {
+		const path = prefix ? `${prefix}.${key}` : key;
+		if (isToken(value)) {
+			result.set(path, value);
+		} else {
+			for (const [nestedPath, token] of flattenTokenGroup(value, path)) {
+				result.set(nestedPath, token);
+			}
+		}
+	}
+	return result;
+}
+
+/**
+ * Convert a flat Map<dotPath, Token> back into a nested TokenGroup.
+ * e.g. Map { "color.primary" → Token } → { color: { primary: Token } }
+ */
+export function nestifyFlatPaths(flat: Map<string, Token>): TokenGroup {
+	const result: TokenGroup = {};
+	for (const [path, token] of flat) {
+		const parts = path.split('.');
+		let current = result;
+		for (let i = 0; i < parts.length - 1; i++) {
+			const part = parts[i];
+			if (!(part in current) || isToken(current[part] as Token | TokenGroup)) {
+				current[part] = {};
+			}
+			current = current[part] as TokenGroup;
+		}
+		current[parts[parts.length - 1]] = token;
+	}
+	return result;
+}
 
 /**
  * Build a map from bare token path → list of collection names that define it.
@@ -6,8 +53,8 @@ import { TokenJSON, Token, TokenMap, ValidationError } from './types';
  */
 function buildBarePathCollectionsMap(json: TokenJSON): Map<string, string[]> {
 	const result = new Map<string, string[]>();
-	for (const [collectionName, collection] of Object.entries(json)) {
-		for (const tokenPath of Object.keys(collection)) {
+	for (const [collectionName, group] of Object.entries(json)) {
+		for (const tokenPath of flattenTokenGroup(group).keys()) {
 			const existing = result.get(tokenPath);
 			if (existing) {
 				existing.push(collectionName);
@@ -32,8 +79,8 @@ export function createTokenMap(json: TokenJSON): TokenMap {
 			.map(([tokenPath]) => tokenPath)
 	);
 
-	for (const [collectionName, collection] of Object.entries(json)) {
-		for (const [tokenPath, token] of Object.entries(collection)) {
+	for (const [collectionName, group] of Object.entries(json)) {
+		for (const [tokenPath, token] of flattenTokenGroup(group)) {
 			map.set(`${collectionName}.${tokenPath}`, token);
 			if (!ambiguousBare.has(tokenPath)) {
 				bareMap.set(tokenPath, token);
@@ -77,8 +124,8 @@ export function parseTokenPath(path: string): { collection: string; tokenPath: s
 export function extractModes(json: TokenJSON): Set<string> {
 	const modes = new Set<string>();
 	
-	for (const collection of Object.values(json)) {
-		for (const token of Object.values(collection)) {
+	for (const group of Object.values(json)) {
+		for (const token of flattenTokenGroup(group).values()) {
 			for (const mode of Object.keys(token.$value)) {
 				modes.add(mode);
 			}
@@ -105,8 +152,8 @@ export function detectAmbiguousAliases(json: TokenJSON): ValidationError[] {
 	const errors: ValidationError[] = [];
 	const seen = new Set<string>();
 
-	for (const [collectionName, collection] of Object.entries(json)) {
-		for (const [tokenPath, token] of Object.entries(collection)) {
+	for (const [collectionName, group] of Object.entries(json)) {
+		for (const [tokenPath, token] of flattenTokenGroup(group)) {
 			for (const ref of extractBareAliases(Object.values(token.$value).map(String).join(' '))) {
 				const errorKey = `${collectionName}.${tokenPath}::${ref}`;
 				if (!ambiguous.has(ref) || seen.has(errorKey)) continue;
@@ -144,8 +191,8 @@ function extractBareAliases(value: string): string[] {
  */
 export function countTokens(json: TokenJSON): number {
 	let count = 0;
-	for (const collection of Object.values(json)) {
-		count += Object.keys(collection).length;
+	for (const group of Object.values(json)) {
+		count += flattenTokenGroup(group).size;
 	}
 	return count;
 }
