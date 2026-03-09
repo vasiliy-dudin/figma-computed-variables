@@ -1,4 +1,4 @@
-import { TokenJSON, ResolvedValue, RGBA } from '@core/types';
+import { TokenJSON, ResolvedValue, RGBA, ValidationError, ApplyResult } from '@core/types';
 import { TYPE_MAP } from '@core/constants';
 import { createTokenMap, flattenTokenGroup, normalizeModeValues } from '@core/tokenUtils';
 import { resolveToken, hexToRgba } from '@core/resolver';
@@ -7,8 +7,9 @@ import { resolveToken, hexToRgba } from '@core/resolver';
  * Apply token JSON to Figma Variables
  * Updates existing collections/variables, creates missing ones, merges modes
  */
-export async function applyToVariables(json: TokenJSON): Promise<string> {
+export async function applyToVariables(json: TokenJSON): Promise<ApplyResult> {
 	let totalVariables = 0;
+	const collectionErrors: ValidationError[] = [];
 	const collections = await figma.variables.getLocalVariableCollectionsAsync();
 	
 	for (const [collectionName, tokens] of Object.entries(json)) {
@@ -50,7 +51,12 @@ export async function applyToVariables(json: TokenJSON): Promise<string> {
 		for (const [tokenPath, token] of flatTokens) {
 			const figmaType = TYPE_MAP[token.$type];
 			if (!figmaType) {
-				console.warn(`Unknown token type: ${token.$type} for ${tokenPath}`);
+				collectionErrors.push({
+					collection: collectionName,
+					token: tokenPath,
+					errorType: 'schema',
+					message: `Unknown token type: "${token.$type}"`,
+				});
 				continue;
 			}
 			
@@ -75,7 +81,13 @@ export async function applyToVariables(json: TokenJSON): Promise<string> {
 					
 					setVariableValue(variable, mode.modeId, resolved, figmaType);
 				} catch (err) {
-					console.error(`Error setting value for ${collectionName}.${tokenPath} (${mode.name}):`, err);
+					collectionErrors.push({
+						collection: collectionName,
+						token: tokenPath,
+						mode: mode.name,
+						errorType: 'schema',
+						message: err instanceof Error ? err.message : String(err),
+					});
 				}
 			}
 			
@@ -83,7 +95,10 @@ export async function applyToVariables(json: TokenJSON): Promise<string> {
 		}
 	}
 	
-	return `Applied ${totalVariables} variables across ${Object.keys(json).length} collections`;
+	return {
+		message: `Applied ${totalVariables} variables across ${Object.keys(json).length} collections`,
+		errors: collectionErrors,
+	};
 }
 
 /**

@@ -86,6 +86,12 @@ export interface ValidationError {
 	message: string;
 }
 
+// Result type for applyToVariables
+export interface ApplyResult {
+	message: string;
+	errors: ValidationError[];
+}
+
 // Token map for quick lookups
 export interface TokenMap {
 	get(path: string): Token | undefined;

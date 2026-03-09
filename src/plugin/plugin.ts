@@ -4,7 +4,7 @@ import { Networker } from "monorepo-networker";
 import { loadJSON, saveJSON } from "@plugin/storage";
 import { importVariablesToJSON } from "@plugin/variableReader";
 import { applyToVariables } from "@plugin/variableWriter";
-import { validate } from "@core/validator";
+import { validate, validateSchema } from "@core/validator";
 import { sendToUI, onUIMessage } from "@plugin/messaging";
 
 async function bootstrap() {
@@ -48,18 +48,22 @@ async function bootstrap() {
 						sendToUI({ type: 'APPLY_ERROR', errors: validationResult.errors });
 						break;
 					}
-					const message = await applyToVariables(validationResult.data);
-					sendToUI({ type: 'APPLY_SUCCESS', message });
+					const result = await applyToVariables(validationResult.data);
+					if (result.errors.length > 0) {
+						sendToUI({ type: 'APPLY_ERROR', errors: result.errors });
+					} else {
+						sendToUI({ type: 'APPLY_SUCCESS', message: result.message });
+					}
 					break;
 				}
 
 				case 'SAVE_JSON': {
-					const validationResult = validate(msg.json);
-					if (!validationResult.valid) {
-						sendToUI({ type: 'SAVE_ERROR', error: 'Cannot save invalid JSON' });
+					const schemaResult = validateSchema(msg.json);
+					if (!schemaResult.valid) {
+						sendToUI({ type: 'SAVE_ERROR', error: 'Cannot save: invalid JSON structure' });
 						break;
 					}
-					await saveJSON(validationResult.data);
+					await saveJSON(schemaResult.data);
 					sendToUI({ type: 'SAVE_SUCCESS' });
 					break;
 				}
@@ -71,15 +75,20 @@ async function bootstrap() {
 			}
 		} catch (err) {
 			console.error("Error handling message:", err);
-			sendToUI({
-				type: 'APPLY_ERROR',
-				errors: [{
-					collection: 'unknown',
-					token: 'unknown',
-					errorType: 'schema',
-					message: err instanceof Error ? err.message : String(err)
-				}]
-			});
+			const errorMessage = err instanceof Error ? err.message : String(err);
+			if (msg.type === 'SAVE_JSON') {
+				sendToUI({ type: 'SAVE_ERROR', error: errorMessage });
+			} else {
+				sendToUI({
+					type: 'APPLY_ERROR',
+					errors: [{
+						collection: 'unknown',
+						token: 'unknown',
+						errorType: 'schema',
+						message: errorMessage
+					}]
+				});
+			}
 		}
 	});
 }
