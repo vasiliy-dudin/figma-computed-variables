@@ -77,4 +77,5 @@ export interface TokenMap {
 	get(path: string): Token | undefined;
 	has(path: string): boolean;
 	getFullPath(collectionName: string, tokenPath: string): string;
+	ambiguousBare: Set<string>;
 }

@@ -1,26 +1,53 @@
 import { TokenJSON, Token, TokenMap, ValidationError } from './types';
 
 /**
+ * Build a map from bare token path → list of collection names that define it.
+ * Used to detect ambiguous bare-path aliases.
+ */
+function buildBarePathCollectionsMap(json: TokenJSON): Map<string, string[]> {
+	const result = new Map<string, string[]>();
+	for (const [collectionName, collection] of Object.entries(json)) {
+		for (const tokenPath of Object.keys(collection)) {
+			const existing = result.get(tokenPath);
+			if (existing) {
+				existing.push(collectionName);
+			} else {
+				result.set(tokenPath, [collectionName]);
+			}
+		}
+	}
+	return result;
+}
+
+/**
  * Create a TokenMap for efficient token lookups
  */
 export function createTokenMap(json: TokenJSON): TokenMap {
 	const map = new Map<string, Token>();
 	const bareMap = new Map<string, Token>();
-	
+	const collectionsMap = buildBarePathCollectionsMap(json);
+	const ambiguousBare = new Set(
+		[...collectionsMap.entries()]
+			.filter(([, cols]) => cols.length > 1)
+			.map(([tokenPath]) => tokenPath)
+	);
+
 	for (const [collectionName, collection] of Object.entries(json)) {
 		for (const [tokenPath, token] of Object.entries(collection)) {
-			const fullPath = `${collectionName}.${tokenPath}`;
-			map.set(fullPath, token);
-			bareMap.set(tokenPath, token);
+			map.set(`${collectionName}.${tokenPath}`, token);
+			if (!ambiguousBare.has(tokenPath)) {
+				bareMap.set(tokenPath, token);
+			}
 		}
 	}
-	
+
 	return {
+		ambiguousBare,
 		get(path: string) {
-			return map.get(path) ?? bareMap.get(path);
+			return map.get(path) ?? (ambiguousBare.has(path) ? undefined : bareMap.get(path));
 		},
 		has(path: string) {
-			return map.has(path) || bareMap.has(path);
+			return map.has(path) || (!ambiguousBare.has(path) && bareMap.has(path));
 		},
 		getFullPath(collectionName: string, tokenPath: string) {
 			return `${collectionName}.${tokenPath}`;
@@ -60,39 +87,66 @@ export function extractModes(json: TokenJSON): Set<string> {
 }
 
 /**
- * Detect tokens with the same bare name across different collections
+ * Detect ambiguous bare-path aliases — bare {name} references that match tokens
+ * in more than one collection, making resolution impossible.
  */
-export function detectBarePathCollisions(json: TokenJSON): ValidationError[] {
-	const seen = new Map<string, string>();
-	const reportedFirst = new Set<string>();
+export function detectAmbiguousAliases(json: TokenJSON): ValidationError[] {
+	const collectionsMap = buildBarePathCollectionsMap(json);
+	const ambiguous = new Set(
+		[...collectionsMap.entries()]
+			.filter(([, cols]) => cols.length > 1)
+			.map(([tokenPath]) => tokenPath)
+	);
+
+	if (ambiguous.size === 0) return [];
+
 	const errors: ValidationError[] = [];
+	const seen = new Set<string>();
 
 	for (const [collectionName, collection] of Object.entries(json)) {
-		for (const tokenPath of Object.keys(collection)) {
-			const existing = seen.get(tokenPath);
-			if (existing !== undefined) {
-				if (!reportedFirst.has(tokenPath)) {
-					errors.push({
-						collection: existing,
-						token: tokenPath,
-						errorType: 'collision',
-						message: `Token "${tokenPath}" exists in both "${existing}" and "${collectionName}"`
-					});
-					reportedFirst.add(tokenPath);
-				}
+		for (const [tokenPath, token] of Object.entries(collection)) {
+			for (const ref of extractBareAliases(Object.values(token.$value).map(String).join(' '))) {
+				const errorKey = `${collectionName}.${tokenPath}::${ref}`;
+				if (!ambiguous.has(ref) || seen.has(errorKey)) continue;
+				seen.add(errorKey);
+				const matchingCollections = collectionsMap.get(ref)!;
 				errors.push({
 					collection: collectionName,
 					token: tokenPath,
 					errorType: 'collision',
-					message: `Token "${tokenPath}" exists in both "${existing}" and "${collectionName}"`
+					message: `Ambiguous alias "{${ref}}": found in collections ${matchingCollections.map(c => `"${c}"`).join(', ')}. Use the full path, e.g. "{${matchingCollections[0]}.${ref}}".`
 				});
-			} else {
-				seen.set(tokenPath, collectionName);
 			}
 		}
 	}
 
 	return errors;
+}
+
+/**
+ * Extract all token reference paths from a value string, e.g. {primary} and {foundation.primary}
+ */
+export function extractTokenReferences(value: string): string[] {
+	return [...value.matchAll(/\{([^}]+)\}/g)].map(m => m[1]);
+}
+
+/**
+ * Extract only bare (dot-free) alias references from a value string, e.g. {primary} but not {foundation.primary}
+ */
+function extractBareAliases(value: string): string[] {
+	return extractTokenReferences(value).filter(ref => !ref.includes('.'));
+}
+
+/**
+ * Return the set of bare token paths that appear in more than one collection.
+ */
+export function getAmbiguousBareAliases(json: TokenJSON): Set<string> {
+	const collectionsMap = buildBarePathCollectionsMap(json);
+	return new Set(
+		[...collectionsMap.entries()]
+			.filter(([, cols]) => cols.length > 1)
+			.map(([tokenPath]) => tokenPath)
+	);
 }
 
 /**

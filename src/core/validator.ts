@@ -1,5 +1,5 @@
 import { TokenJSONSchema, TokenJSON, ValidationError, TokenMap } from './types';
-import { createTokenMap, detectBarePathCollisions } from './tokenUtils';
+import { createTokenMap, detectAmbiguousAliases, extractTokenReferences } from './tokenUtils';
 import { ZodIssue } from 'zod';
 
 /**
@@ -91,26 +91,12 @@ function checkCircular(
 }
 
 /**
- * Extract token references from a value string
- */
-function extractTokenReferences(value: string): string[] {
-	const references: string[] = [];
-	const regex = /\{([^}]+)\}/g;
-	let match;
-	
-	while ((match = regex.exec(value)) !== null) {
-		references.push(match[1]);
-	}
-	
-	return references;
-}
-
-/**
  * Validate token references exist
  */
 export function validateReferences(json: TokenJSON): ValidationError[] {
 	const errors: ValidationError[] = [];
 	const tokenMap = createTokenMap(json);
+	const { ambiguousBare } = tokenMap;
 	
 	for (const [collectionName, collection] of Object.entries(json)) {
 		for (const [tokenPath, token] of Object.entries(collection)) {
@@ -118,6 +104,7 @@ export function validateReferences(json: TokenJSON): ValidationError[] {
 				const references = extractTokenReferences(String(value));
 				
 				for (const ref of references) {
+					if (ambiguousBare.has(ref)) continue;
 					if (!tokenMap.has(ref)) {
 						errors.push({
 							collection: collectionName,
@@ -155,10 +142,10 @@ export function validate(data: unknown):
 	// 3. Circular dependency detection
 	const circularErrors = detectCircularDependencies(tokenJson);
 
-	// 4. Collision detection
-	const collisionErrors = detectBarePathCollisions(tokenJson);
+	// 4. Ambiguous alias detection
+	const ambiguousErrors = detectAmbiguousAliases(tokenJson);
 
-	const allErrors = [...referenceErrors, ...circularErrors, ...collisionErrors];
+	const allErrors = [...referenceErrors, ...circularErrors, ...ambiguousErrors];
 	
 	if (allErrors.length > 0) {
 		return { valid: false, errors: allErrors };
