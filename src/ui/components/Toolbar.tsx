@@ -7,9 +7,11 @@ interface ToolbarProps {
 	onSave: () => void;
 	hasErrors: boolean;
 	isEmpty: boolean;
+	saveSuccess: number;
+	applySuccess: number;
 }
 
-export function Toolbar({ onImport, onApply, onSave, hasErrors, isEmpty }: ToolbarProps) {
+export function Toolbar({ onImport, onApply, onSave, hasErrors, isEmpty, saveSuccess, applySuccess }: ToolbarProps) {
 	if (isEmpty) {
 		return (
 			<div style={{ padding: '12px', borderTop: '1px solid var(--color-border)', display: 'flex', justifyContent: 'flex-start', alignItems: 'center' }}>
@@ -29,10 +31,10 @@ export function Toolbar({ onImport, onApply, onSave, hasErrors, isEmpty }: Toolb
 			</div>
 			<div style={{ display: 'flex', gap: '8px' }}>
 				<Button onClick={onApply} disabled={hasErrors}>
-					Apply to Variables
+					{applySuccess > 0 ? "✓ Applied" : "Apply to Variables"}
 				</Button>
 				<Button onClick={onSave} disabled={hasErrors}>
-					Save
+					{saveSuccess > 0 ? "✓ Saved" : "Save"}
 				</Button>
 			</div>
 		</div>

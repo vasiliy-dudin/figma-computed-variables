@@ -18,6 +18,8 @@ function App() {
 	const [tokenCount, setTokenCount] = useState(0);
 	const [collectionCount, setCollectionCount] = useState(0);
 	const [showEmptyState, setShowEmptyState] = useState(false);
+	const [saveSuccess, setSaveSuccess] = useState<number>(0);
+	const [applySuccess, setApplySuccess] = useState<number>(0);
 
 	// Listen for messages from plugin
 	useEffect(() => {
@@ -43,18 +45,20 @@ function App() {
 					break;
 
         case 'APPLY_SUCCESS':
-					console.log(msg.message);
-					setErrors([]);
-					break;
+			console.log(msg.message);
+			setErrors([]);
+			setApplySuccess(Date.now());
+			break;
 
 				case 'APPLY_ERROR':
 					setErrors(msg.errors);
 					break;
 
 				case 'SAVE_SUCCESS':
-					console.log("JSON saved");
-					setErrors([]);
-					break;
+			console.log("JSON saved");
+			setErrors([]);
+			setSaveSuccess(Date.now());
+			break;
 
 				case 'SAVE_ERROR':
 					setErrors([{ collection: 'save', token: '', errorType: 'schema', message: msg.error }]);
@@ -68,6 +72,21 @@ function App() {
 			}
 		});
 	}, []);
+
+	// Clear success notifications after 2 seconds
+	useEffect(() => {
+		if (saveSuccess > 0) {
+			const timer = setTimeout(() => setSaveSuccess(0), 2000);
+			return () => clearTimeout(timer);
+		}
+	}, [saveSuccess]);
+
+	useEffect(() => {
+		if (applySuccess > 0) {
+			const timer = setTimeout(() => setApplySuccess(0), 2000);
+			return () => clearTimeout(timer);
+		}
+	}, [applySuccess]);
 
 	// Validate JSON when it changes
 	useEffect(() => {
@@ -172,12 +191,14 @@ function App() {
 			)}
 
 			<Toolbar
-				onImport={handleImport}
-				onApply={handleApply}
-				onSave={handleSave}
-				hasErrors={errors.length > 0}
-				isEmpty={jsonText.trim() === ''}
-			/>
+			onImport={handleImport}
+			onApply={handleApply}
+			onSave={handleSave}
+			hasErrors={errors.length > 0}
+			isEmpty={jsonText.trim() === ''}
+			saveSuccess={saveSuccess}
+			applySuccess={applySuccess}
+		/>
 			
 			<Footer tokenCount={tokenCount} collectionCount={collectionCount} />
 			<ResizeHandle />
