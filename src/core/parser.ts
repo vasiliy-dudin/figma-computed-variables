@@ -1,4 +1,4 @@
-import { Expression, TokenType } from './types';
+import { Expression, TokenType, ColorModifyFn } from './types';
 import { PATTERNS } from './constants';
 
 /**
@@ -23,8 +23,19 @@ export function parseExpression(input: string | number, type: TokenType): Expres
 			alpha: parseFloat(alphaMatch[2])
 		};
 	}
-	
-	// 3. Type-specific parsing
+
+	// 3. Detect color modifier functions: darken({token}, 0.2), lighten(...), etc.
+	const colorModifyMatch = valueStr.match(PATTERNS.colorModifyFunction);
+	if (colorModifyMatch) {
+		return {
+			type: 'colorModify',
+			fn: colorModifyMatch[1] as ColorModifyFn,
+			tokenPath: colorModifyMatch[2],
+			amount: parseFloat(colorModifyMatch[3])
+		};
+	}
+
+	// 4. Type-specific parsing
 	switch (type) {
 		case 'color':
 			return { type: 'literal', value: valueStr };

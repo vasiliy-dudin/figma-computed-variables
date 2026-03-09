@@ -56,11 +56,15 @@ export const TokenJSONSchema = z.record(z.string(), TokenGroupSchema);
 
 export type TokenJSON = z.infer<typeof TokenJSONSchema>;
 
+// Supported color modifier function names
+export type ColorModifyFn = 'darken' | 'lighten' | 'saturate' | 'desaturate' | 'hueShift';
+
 // Expression AST types
 export type Expression =
 	| { type: 'literal'; value: string | number }
 	| { type: 'alias'; path: string }
 	| { type: 'alpha'; tokenPath: string; alpha: number }
+	| { type: 'colorModify'; fn: ColorModifyFn; tokenPath: string; amount: number }
 	| { type: 'math'; expression: string }
 	| { type: 'concat'; parts: Array<string | { type: 'token'; path: string }> };
 
