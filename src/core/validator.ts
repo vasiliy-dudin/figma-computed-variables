@@ -25,9 +25,8 @@ export function validateSchema(json: unknown): { valid: true; data: TokenJSON } 
 /**
  * Detect circular dependencies in token references
  */
-export function detectCircularDependencies(json: TokenJSON): ValidationError[] {
+export function detectCircularDependencies(json: TokenJSON, tokenMap: TokenMap = createTokenMap(json)): ValidationError[] {
 	const errors: ValidationError[] = [];
-	const tokenMap = createTokenMap(json);
 	
 	for (const [collectionName, collection] of Object.entries(json)) {
 		for (const [tokenPath, token] of Object.entries(collection)) {
@@ -76,7 +75,8 @@ function checkCircular(
 	
 	for (const ref of references) {
 		if (!tokenMap.has(ref)) {
-			// Reference error will be caught separately
+			// Covers both missing refs and ambiguous bare refs (tokenMap.has returns false for
+			// ambiguous paths). Reference/ambiguity errors are reported by their own validators.
 			continue;
 		}
 		
@@ -93,18 +93,16 @@ function checkCircular(
 /**
  * Validate token references exist
  */
-export function validateReferences(json: TokenJSON): ValidationError[] {
+export function validateReferences(json: TokenJSON, tokenMap: TokenMap = createTokenMap(json)): ValidationError[] {
 	const errors: ValidationError[] = [];
-	const tokenMap = createTokenMap(json);
-	const { ambiguousBare } = tokenMap;
-	
+
 	for (const [collectionName, collection] of Object.entries(json)) {
 		for (const [tokenPath, token] of Object.entries(collection)) {
 			for (const [mode, value] of Object.entries(token.$value)) {
 				const references = extractTokenReferences(String(value));
 				
 				for (const ref of references) {
-					if (ambiguousBare.has(ref)) continue;
+					if (tokenMap.isAmbiguous(ref)) continue;
 					if (!tokenMap.has(ref)) {
 						errors.push({
 							collection: collectionName,
@@ -135,12 +133,13 @@ export function validate(data: unknown):
 	}
 	
 	const tokenJson = schemaResult.data;
-	
+	const tokenMap = createTokenMap(tokenJson);
+
 	// 2. Reference validation
-	const referenceErrors = validateReferences(tokenJson);
+	const referenceErrors = validateReferences(tokenJson, tokenMap);
 	
 	// 3. Circular dependency detection
-	const circularErrors = detectCircularDependencies(tokenJson);
+	const circularErrors = detectCircularDependencies(tokenJson, tokenMap);
 
 	// 4. Ambiguous alias detection
 	const ambiguousErrors = detectAmbiguousAliases(tokenJson);

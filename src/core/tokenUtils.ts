@@ -42,7 +42,9 @@ export function createTokenMap(json: TokenJSON): TokenMap {
 	}
 
 	return {
-		ambiguousBare,
+		isAmbiguous(path: string) {
+			return ambiguousBare.has(path);
+		},
 		get(path: string) {
 			return map.get(path) ?? (ambiguousBare.has(path) ? undefined : bareMap.get(path));
 		},
@@ -135,18 +137,6 @@ export function extractTokenReferences(value: string): string[] {
  */
 function extractBareAliases(value: string): string[] {
 	return extractTokenReferences(value).filter(ref => !ref.includes('.'));
-}
-
-/**
- * Return the set of bare token paths that appear in more than one collection.
- */
-export function getAmbiguousBareAliases(json: TokenJSON): Set<string> {
-	const collectionsMap = buildBarePathCollectionsMap(json);
-	return new Set(
-		[...collectionsMap.entries()]
-			.filter(([, cols]) => cols.length > 1)
-			.map(([tokenPath]) => tokenPath)
-	);
 }
 
 /**
