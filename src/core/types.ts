@@ -68,7 +68,7 @@ export interface ValidationError {
 	collection: string;
 	token: string;
 	mode?: string;
-	errorType: 'schema' | 'circular' | 'syntax' | 'reference';
+	errorType: 'schema' | 'circular' | 'syntax' | 'reference' | 'collision';
 	message: string;
 }
 

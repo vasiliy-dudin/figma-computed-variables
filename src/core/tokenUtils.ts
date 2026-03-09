@@ -1,37 +1,26 @@
-import { TokenJSON, Token, TokenMap } from './types';
+import { TokenJSON, Token, TokenMap, ValidationError } from './types';
 
 /**
  * Create a TokenMap for efficient token lookups
  */
 export function createTokenMap(json: TokenJSON): TokenMap {
 	const map = new Map<string, Token>();
+	const bareMap = new Map<string, Token>();
 	
 	for (const [collectionName, collection] of Object.entries(json)) {
 		for (const [tokenPath, token] of Object.entries(collection)) {
 			const fullPath = `${collectionName}.${tokenPath}`;
 			map.set(fullPath, token);
+			bareMap.set(tokenPath, token);
 		}
 	}
 	
 	return {
 		get(path: string) {
-			if (map.has(path)) return map.get(path);
-			// Fall back: search by bare tokenPath across all collections
-			for (const [key, token] of map.entries()) {
-				const dotIndex = key.indexOf('.');
-				if (dotIndex !== -1 && key.substring(dotIndex + 1) === path) {
-					return token;
-				}
-			}
-			return undefined;
+			return map.get(path) ?? bareMap.get(path);
 		},
 		has(path: string) {
-			if (map.has(path)) return true;
-			for (const key of map.keys()) {
-				const dotIndex = key.indexOf('.');
-				if (dotIndex !== -1 && key.substring(dotIndex + 1) === path) return true;
-			}
-			return false;
+			return map.has(path) || bareMap.has(path);
 		},
 		getFullPath(collectionName: string, tokenPath: string) {
 			return `${collectionName}.${tokenPath}`;
@@ -68,6 +57,32 @@ export function extractModes(json: TokenJSON): Set<string> {
 	}
 	
 	return modes;
+}
+
+/**
+ * Detect tokens with the same bare name across different collections
+ */
+export function detectBarePathCollisions(json: TokenJSON): ValidationError[] {
+	const seen = new Map<string, string>();
+	const errors: ValidationError[] = [];
+
+	for (const [collectionName, collection] of Object.entries(json)) {
+		for (const tokenPath of Object.keys(collection)) {
+			const existing = seen.get(tokenPath);
+			if (existing !== undefined) {
+				errors.push({
+					collection: collectionName,
+					token: tokenPath,
+					errorType: 'collision',
+					message: `Token "${tokenPath}" exists in both "${existing}" and "${collectionName}"`
+				});
+			} else {
+				seen.set(tokenPath, collectionName);
+			}
+		}
+	}
+
+	return errors;
 }
 
 /**
