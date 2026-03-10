@@ -30,6 +30,16 @@ const singleModeSample: TokenJSON = {
 	},
 };
 
+const overlappingSample: TokenJSON = {
+	components: {
+		button: {
+			$self: { $type: 'string', $value: 'base-button' },
+			fontSize: { $type: 'number', $value: 16 },
+			fontWeight: { $type: 'number', $value: 600 },
+		},
+	},
+};
+
 const multiModeSample: TokenJSON = {
 	foundation: {
 		color: {
@@ -128,6 +138,16 @@ const validSamples: SampleDefinition[] = [
 			'semantic.status.successOverlay',
 			'semantic.status.accentShift',
 			'semantic.status.muted',
+		],
+	},
+	{
+		name: 'overlapping-components',
+		json: overlappingSample,
+		modes: ['light'],
+		tokensToResolve: [
+			'components.button',
+			'components.button.fontSize',
+			'components.button.fontWeight',
 		],
 	},
 ];

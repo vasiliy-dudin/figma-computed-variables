@@ -42,14 +42,18 @@ export const TokenSchema = z.object({
 
 export type Token = z.infer<typeof TokenSchema>;
 
-// Token group schema — each key is either a Token (has $type) or a nested group.
-// Zod requires lazy() for recursive types.
+// Token group schema — allows a node to hold its own token via $self while nesting children.
 export type TokenGroup = {
-	[key: string]: Token | TokenGroup;
+	$self?: Token;
+	[key: string]: Token | TokenGroup | undefined;
 };
 
 export const TokenGroupSchema: z.ZodType<TokenGroup> = z.lazy(() =>
-	z.record(z.string(), z.union([TokenSchema, TokenGroupSchema]))
+	z
+		.object({
+			$self: TokenSchema.optional(),
+		})
+		.catchall(z.union([TokenSchema, TokenGroupSchema]))
 );
 
 // Full token JSON schema: top-level keys are collection names

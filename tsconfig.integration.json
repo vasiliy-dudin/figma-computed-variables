@@ -10,7 +10,7 @@
 		"types": ["node"]
 	},
 	"include": [
-		"scripts/integration-check.cts",
+		"scripts/integration-check.ts",
 		"src/core/**/*.ts"
 	],
 	"exclude": [

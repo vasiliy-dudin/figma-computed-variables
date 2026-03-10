@@ -1,7 +1,8 @@
 import * as assert from 'node:assert/strict';
 
-import { condenseModeValues } from '../tokenUtils.ts';
-import type { ModeValues } from '../types';
+import { condenseModeValues, flattenTokenGroup, nestifyFlatPaths } from '../tokenUtils.ts';
+import { TokenGroupSchema } from '../types';
+import type { ModeValues, Token, TokenGroup } from '../types';
 
 type TestCase = {
 	name: string;
@@ -31,6 +32,36 @@ const tests: TestCase[] = [
 			const value: ModeValues = {};
 			const result = condenseModeValues(value);
 			assert.deepStrictEqual(result, {});
+		},
+	},
+	{
+		name: 'nestifyFlatPaths preserves parent token alongside nested children',
+		run: () => {
+			const parentToken: Token = { $type: 'string', $value: 'button' };
+			const childToken: Token = { $type: 'number', $value: 16 };
+			const flat = new Map<string, Token>([
+				['button', parentToken],
+				['button.fontSize', childToken],
+			]);
+			const result = nestifyFlatPaths(flat);
+			const roundTrip = flattenTokenGroup(result);
+			assert.strictEqual(roundTrip.get('button'), parentToken);
+			assert.strictEqual(roundTrip.get('button.fontSize'), childToken);
+		},
+	},
+	{
+		name: 'TokenGroupSchema accepts $self token with nested children',
+		run: () => {
+			const parentToken: Token = { $type: 'string', $value: 'button' };
+			const childToken: Token = { $type: 'number', $value: 16 };
+			const parsed = TokenGroupSchema.parse({
+				$self: parentToken,
+				child: { $self: childToken },
+			});
+			assert.deepStrictEqual(parsed.$self, parentToken);
+			const parsedChild = parsed.child as TokenGroup | undefined;
+			assert.ok(parsedChild);
+			assert.deepStrictEqual(parsedChild.$self, childToken);
 		},
 	},
 ];

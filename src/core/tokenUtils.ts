@@ -13,16 +13,21 @@ export function isToken(value: Token | TokenGroup): value is Token {
  */
 export function flattenTokenGroup(group: TokenGroup, prefix: string = ''): Map<string, Token> {
 	const result = new Map<string, Token>();
-	for (const [key, value] of Object.entries(group)) {
-		const path = prefix ? `${prefix}.${key}` : key;
-		if (isToken(value)) {
-			result.set(path, value);
-		} else {
-			for (const [nestedPath, token] of flattenTokenGroup(value, path)) {
-				result.set(nestedPath, token);
+	const traverse = (node: TokenGroup, currentPath: string) => {
+		if (node.$self && currentPath) {
+			result.set(currentPath, node.$self);
+		}
+		for (const [key, value] of Object.entries(node)) {
+			if (key === '$self' || value === undefined) continue;
+			const nextPath = currentPath ? `${currentPath}.${key}` : key;
+			if (isToken(value)) {
+				result.set(nextPath, value);
+			} else {
+				traverse(value, nextPath);
 			}
 		}
-	}
+	};
+	traverse(group, prefix);
 	return result;
 }
 
@@ -35,14 +40,27 @@ export function nestifyFlatPaths(flat: Map<string, Token>): TokenGroup {
 	for (const [path, token] of flat) {
 		const parts = path.split('.');
 		let current = result;
-		for (let i = 0; i < parts.length - 1; i++) {
+		for (let i = 0; i < parts.length; i++) {
 			const part = parts[i];
-			if (!(part in current) || isToken(current[part] as Token | TokenGroup)) {
-				current[part] = {};
+			const isLeaf = i === parts.length - 1;
+			const existing = current[part];
+			if (isLeaf) {
+				if (!existing) {
+					current[part] = token;
+				} else if (isToken(existing)) {
+					current[part] = token;
+				} else {
+					(existing as TokenGroup).$self = token;
+				}
+			} else {
+				if (!existing) {
+					current[part] = {};
+				} else if (isToken(existing)) {
+					current[part] = { $self: existing };
+				}
+				current = current[part] as TokenGroup;
 			}
-			current = current[part] as TokenGroup;
 		}
-		current[parts[parts.length - 1]] = token;
 	}
 	return result;
 }
