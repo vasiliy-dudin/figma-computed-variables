@@ -19,7 +19,7 @@ export function Footer({ tokenCount, collectionCount }: FooterProps) {
 			flexShrink: 0
 		}}>
 			<div style={{ fontSize: '12px' }}>
-				Status: {tokenCount} tokens | {collectionCount} collections
+				{tokenCount} tokens | {collectionCount} collections
 			</div>
 			<div style={{ display: 'flex', gap: '16px' }}>
 				<a
