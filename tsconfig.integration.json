@@ -12,5 +12,8 @@
 	"include": [
 		"scripts/integration-check.cts",
 		"src/core/**/*.ts"
+	],
+	"exclude": [
+		"src/**/__tests__/**/*"
 	]
 }

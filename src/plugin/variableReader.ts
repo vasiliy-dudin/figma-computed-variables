@@ -1,5 +1,5 @@
-import { TokenJSON, Token } from '@core/types';
-import { nestifyFlatPaths } from '@core/tokenUtils';
+import { TokenJSON, Token, ModeValues } from '@core/types';
+import { condenseModeValues, nestifyFlatPaths } from '@core/tokenUtils';
 import { FIGMA_TYPE_MAP } from '@core/constants';
 import { rgbaToHex } from '@core/resolver';
 
@@ -18,7 +18,7 @@ export async function importVariablesToJSON(): Promise<TokenJSON> {
 		const flatTokens = new Map<string, Token>();
 		
 		for (const variable of variables) {
-			const modes: Record<string, string | number> = {};
+			const modes: ModeValues = {};
 			
 			// Get values for each mode
 			for (const mode of collection.modes) {
@@ -31,7 +31,7 @@ export async function importVariablesToJSON(): Promise<TokenJSON> {
 			const dotPath = variable.name.replace(/\//g, '.');
 			flatTokens.set(dotPath, {
 				$type: (tokenType === 'color' || tokenType === 'number' || tokenType === 'string') ? tokenType : 'string',
-				$value: modes
+				$value: condenseModeValues(modes)
 			});
 		}
 		
