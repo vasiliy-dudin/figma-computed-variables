@@ -4,6 +4,9 @@ import { viteSingleFile } from "vite-plugin-singlefile";
 import react from "@vitejs/plugin-react";
 import richSvg from "vite-plugin-react-rich-svg";
 import postcssUrl from "postcss-url";
+import type { AcceptedPlugin } from "postcss";
+
+const inlineUrlPlugin = postcssUrl({ url: "inline" }) as AcceptedPlugin;
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
@@ -25,12 +28,10 @@ export default defineConfig(({ mode }) => ({
 	},
 	css: {
 		postcss: {
-			plugins: [postcssUrl({ url: "inline" })],
+			plugins: [inlineUrlPlugin],
 		},
 		preprocessorOptions: {
-			scss: {
-				api: "modern-compiler",
-			},
+			scss: {},
 		},
 	},
 	resolve: {
