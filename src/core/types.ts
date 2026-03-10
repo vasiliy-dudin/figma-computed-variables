@@ -24,6 +24,7 @@ export const ModeValuesSchema = z.record(z.string(), z.union([
 export type ModeValues = z.infer<typeof ModeValuesSchema>;
 
 // Token value — either a shorthand scalar (applies to all modes) or a per-mode record
+// Single-mode imports must collapse to the scalar form to keep JSON concise. [Explicit]
 export const TokenValueSchema = z.union([
 	z.string(),
 	z.number(),

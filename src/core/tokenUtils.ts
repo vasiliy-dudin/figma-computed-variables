@@ -63,6 +63,18 @@ export function normalizeModeValues(value: TokenValue, modeNames: string[]): Mod
 	return value;
 }
 
+/** Collapse ModeValues with ≤1 entry back to TokenValue form. */
+export function condenseModeValues(value: ModeValues): TokenValue {
+	const entries = Object.entries(value);
+	if (entries.length === 0) {
+		return {};
+	}
+	if (entries.length === 1) {
+		return entries[0][1];
+	}
+	return value;
+}
+
 /**
  * Build a map from bare token path → list of collection names that define it.
  * Used to detect ambiguous bare-path aliases.
