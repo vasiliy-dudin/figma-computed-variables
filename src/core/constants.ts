@@ -35,15 +35,15 @@ export const EXAMPLE_TOKEN_JSON = {
 	"semantic": {
 		"button": {
 			"background": { "$type": "color", "$value": { "light": "{foundation.color.primary}", "dark": "{foundation.color.primary}" } },
-			"backgroundHover": { "$type": "color", "$value": { "light": "darken({foundation.color.primary}, 0.1)", "dark": "lighten({foundation.color.primary}, 0.1)" } },
-			"backgroundMuted": { "$type": "color", "$value": { "light": "alpha({foundation.color.primary}, 0.15)", "dark": "alpha({foundation.color.primary}, 0.15)" } },
+			"backgroundHover": { "$type": "color", "$value": { "light": "darken({foundation.color.primary}, 10%)", "dark": "lighten({foundation.color.primary}, 10%)" } },
+			"backgroundMuted": { "$type": "color", "$value": { "light": "alpha({foundation.color.primary}, 15%)", "dark": "alpha({foundation.color.primary}, 15%)" } },
 			"padding": { "$type": "number", "$value": { "light": "{foundation.spacing.base} * 2", "dark": "{foundation.spacing.base} * 2" } }
 		},
 		"text": {
 			"primary": { "$type": "color", "$value": { "light": "{foundation.color.primary}", "dark": "{foundation.color.primary}" } },
-			"primaryHover": { "$type": "color", "$value": { "light": "saturate({semantic.text.primary}, 0.05)", "dark": "saturate({semantic.text.primary}, 0.05)" } },
-			"secondary": { "$type": "color", "$value": { "light": "desaturate({semantic.text.primary}, 0.1)", "dark": "desaturate({semantic.text.primary}, 0.1)" } },
-			"accent": { "$type": "color", "$value": { "light": "hueShift({semantic.text.primary}, 30)", "dark": "hueShift({semantic.text.primary}, 30)" } }
+			"primaryHover": { "$type": "color", "$value": { "light": "saturate({semantic.text.primary}, 5%)", "dark": "saturate({semantic.text.primary}, 5%)" } },
+			"secondary": { "$type": "color", "$value": { "light": "desaturate({semantic.text.primary}, 10%)", "dark": "desaturate({semantic.text.primary}, 10%)" } },
+			"accent": { "$type": "color", "$value": { "light": "hueShift({semantic.text.primary}, 30deg)", "dark": "hueShift({semantic.text.primary}, 30deg)" } }
 		}
 	}
 };
@@ -54,8 +54,8 @@ export const MATH_OPERATORS = ['+', '-', '*', '/', '(', ')'];
 // Regex patterns for expression parsing
 export const PATTERNS = {
 	bareAlias: /^\{([^}]+)\}$/,
-	alphaFunction: /^alpha\(\{([^}]+)\},\s*([\d.]+)\)$/,
-	colorModifyFunction: /^(darken|lighten|saturate|desaturate|hueShift)\(\{([^}]+)\},\s*([\d.+-]+)\)$/,
+	alphaFunction: /^alpha\(\{([^}]+)\},\s*(\d*\.?\d+)%\)$/,
+	colorModifyFunction: /^(darken|lighten|saturate|desaturate|hueShift)\(\{([^}]+)\},\s*(?:(\d*\.?\d+)%|([-+]?\d*\.?\d+)deg)\)$/,
 	tokenReference: /\{([^}]+)\}/g,
 	oklchColor: /^oklch\(\s*([\d.]+)\s+([\d.]+)\s+([\d.]+)(?:\s*\/\s*([\d.]+))?\s*\)$/,
 	hexColor: /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/,

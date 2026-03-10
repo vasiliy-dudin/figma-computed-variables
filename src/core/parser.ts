@@ -14,24 +14,37 @@ export function parseExpression(input: string | number, type: TokenType): Expres
 		return { type: 'alias', path: aliasMatch[1] };
 	}
 	
-	// 2. Detect alpha() function: alpha({token}, 0.5)
+	// 2. Detect alpha() function: alpha({token}, 15%)
 	const alphaMatch = valueStr.match(PATTERNS.alphaFunction);
 	if (alphaMatch) {
 		return {
 			type: 'alpha',
 			tokenPath: alphaMatch[1],
-			alpha: parseFloat(alphaMatch[2])
+			alpha: parseFloat(alphaMatch[2]) / 100
 		};
 	}
 
-	// 3. Detect color modifier functions: darken({token}, 0.2), lighten(...), etc.
+	// 3. Detect color modifier functions: darken({token}, 20%), lighten(...), hueShift({token}, 50deg)
 	const colorModifyMatch = valueStr.match(PATTERNS.colorModifyFunction);
 	if (colorModifyMatch) {
+		// Group [3] = unsigned % amount, group [4] = signed deg amount (mutually exclusive by regex)
+		// Enforce per-function suffix rules: hueShift requires deg, others require %
+		const fn = colorModifyMatch[1] as ColorModifyFn;
+		const percentGroup = colorModifyMatch[3];
+		const degGroup = colorModifyMatch[4];
+		const isHueShift = fn === 'hueShift';
+		if (isHueShift && percentGroup !== undefined) {
+			return { type: 'literal', value: valueStr };
+		}
+		if (!isHueShift && degGroup !== undefined) {
+			return { type: 'literal', value: valueStr };
+		}
+		const rawAmount = percentGroup ?? degGroup;
 		return {
 			type: 'colorModify',
-			fn: colorModifyMatch[1] as ColorModifyFn,
+			fn,
 			tokenPath: colorModifyMatch[2],
-			amount: parseFloat(colorModifyMatch[3])
+			amount: parseFloat(rawAmount)
 		};
 	}
 
@@ -49,7 +62,7 @@ export function parseExpression(input: string | number, type: TokenType): Expres
 			
 		case 'string':
 			// Check if contains token references for concatenation
-			if (PATTERNS.tokenReference.test(valueStr)) {
+			if (new RegExp(PATTERNS.tokenReference.source).test(valueStr)) {
 				return parseStringConcat(valueStr);
 			}
 			return { type: 'literal', value: valueStr };

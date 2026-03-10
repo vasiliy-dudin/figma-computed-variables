@@ -124,9 +124,8 @@ function applyAlpha(value: string | number | RGBA, alpha: number): RGBA {
 /**
  * Apply a perceptual colour modification using oklch space
  * @param amount - Numeric amount based on function type:
- *   - darken/lighten: 0-1 (0 = no change, 0.2 = 20% darker/lighter)
- *   - saturate/desaturate: 0-0.4 (0 = no change, 0.1 = noticeable saturation shift)
- *   - hueShift: 0-360 (degrees, 30 = subtle hue rotation, 180 = complementary color)
+ *   - darken/lighten/saturate/desaturate: 0-100 (percentage, 20 = 20% change)
+ *   - hueShift: -360 to 360 (degrees, 30 = subtle shift, -30 = opposite direction, 180 = complementary)
  */
 function applyColorModify(value: string | number | RGBA, fn: ColorModifyFn, amount: number): RGBA {
 	const rgba: RGBA = typeof value === 'object' && 'r' in value
@@ -136,28 +135,37 @@ function applyColorModify(value: string | number | RGBA, fn: ColorModifyFn, amou
 	const rgbColor = { mode: 'rgb' as const, r: rgba.r, g: rgba.g, b: rgba.b, alpha: rgba.a };
 	const oklch = toOklch(rgbColor);
 
+	// Convert percentage to decimal for 4 functions (20% → 0.20), degrees unchanged for hueShift
+	const effectiveAmount = (fn === 'hueShift') ? amount : amount / 100;
+
 	const modified = { ...oklch };
 	switch (fn) {
 		case 'darken':
-			// Reduce lightness (l) by amount: 0 = no change, 0.2 = 20% darker
-			modified.l = Math.max(0, (oklch.l ?? 0) - amount);
+			// Reduce lightness (l) by percentage: 20 = 20% darker
+			modified.l = Math.max(0, (oklch.l ?? 0) - effectiveAmount);
 			break;
 		case 'lighten':
-			// Increase lightness (l) by amount: 0 = no change, 0.2 = 20% lighter
-			modified.l = Math.min(1, (oklch.l ?? 0) + amount);
+			// Increase lightness (l) by percentage: 20 = 20% lighter
+			modified.l = Math.min(1, (oklch.l ?? 0) + effectiveAmount);
 			break;
 		case 'saturate':
-			// Increase chroma (c) by amount: 0 = no change, 0.1 = more vivid
-			modified.c = Math.max(0, (oklch.c ?? 0) + amount);
+			// Increase chroma (c) by relative percentage: 10% → c * 1.10
+			modified.c = (oklch.c ?? 0) * (1 + effectiveAmount);
 			break;
 		case 'desaturate':
-			// Decrease chroma (c) by amount: 0 = no change, 0.1 = less vivid
-			modified.c = Math.max(0, (oklch.c ?? 0) - amount);
+			// Decrease chroma (c) by relative percentage: 10% → c * 0.90
+			modified.c = Math.max(0, (oklch.c ?? 0) * (1 - effectiveAmount));
 			break;
-		case 'hueShift':
+		case 'hueShift': {
+			// Achromatic colors (grays, black, white) have no meaningful hue — skip
+			const ACHROMATIC_CHROMA_EPSILON = 0.001;
+			if ((oklch.c ?? 0) < ACHROMATIC_CHROMA_EPSILON) {
+				return rgba;
+			}
 			// Rotate hue (h) by degrees: 30 = subtle shift, 180 = complementary color
-			modified.h = ((oklch.h ?? 0) + amount) % 360;
+			modified.h = ((oklch.h ?? 0) + effectiveAmount) % 360;
 			break;
+		}
 	}
 
 	const rgb = toRgb(modified);
