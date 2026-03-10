@@ -1,5 +1,7 @@
 {
   "compilerOptions": {
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
     "target": "ES2022",
     "useDefineForClassFields": true,
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
@@ -14,7 +16,7 @@
     "noEmit": true,
     "jsx": "react-jsx",
     "jsxImportSource": "preact",
-    "typeRoots": ["./node_modules/@figma"],
+    "typeRoots": ["./node_modules/@figma", "./node_modules/@types"],
     "paths": {
       "@common/*": ["./src/common/*"],
       "@ui/*": ["./src/ui/*"],

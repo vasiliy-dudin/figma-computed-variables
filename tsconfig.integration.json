@@ -1,0 +1,16 @@
+{
+	"extends": "./tsconfig.json",
+	"compilerOptions": {
+		"module": "CommonJS",
+		"moduleResolution": "Node",
+		"noEmit": false,
+		"outDir": ".integration-dist",
+		"rootDir": ".",
+		"allowImportingTsExtensions": false,
+		"types": ["node"]
+	},
+	"include": [
+		"scripts/integration-check.cts",
+		"src/core/**/*.ts"
+	]
+}

@@ -7,6 +7,23 @@ import { PATTERNS } from './constants';
 const toRgb = converter('rgb');
 const toOklch = converter('oklch');
 
+const ACHROMATIC_CHROMA_EPSILON = 0.001;
+const MIN_PERCENT = 0;
+const MAX_PERCENT = 100;
+const MIN_HUE_SHIFT = -360;
+const MAX_HUE_SHIFT = 360;
+
+const clamp = (value: number, min: number, max: number): number => Math.min(max, Math.max(min, value));
+const clamp01 = (value: number): number => clamp(value, 0, 1);
+const clampRgbChannel = (value?: number): number => clamp01(value ?? 0);
+const clampPercent = (value: number): number => clamp(value, MIN_PERCENT, MAX_PERCENT);
+const normalizePercent = (value: number): number => clampPercent(value) / 100;
+const clampHueShift = (value: number): number => clamp(value, MIN_HUE_SHIFT, MAX_HUE_SHIFT);
+const wrapDegrees = (value: number): number => {
+	const normalized = value % 360;
+	return normalized < 0 ? normalized + 360 : normalized;
+};
+
 /**
  * Parse any color string to a culori Color object.
  * Handles CSS oklch() syntax which culori's parse() does not support natively.
@@ -103,7 +120,7 @@ export function resolveToken(
 function applyAlpha(value: string | number | RGBA, alpha: number): RGBA {
 	if (typeof value === 'object' && 'r' in value) {
 		// Already an RGBA object
-		return { ...value, a: value.a * alpha };
+		return { ...value, a: clamp01(value.a * alpha) };
 	}
 	
 	// Parse color string and normalise to sRGB
@@ -114,17 +131,17 @@ function applyAlpha(value: string | number | RGBA, alpha: number): RGBA {
 	const color = toRgb(parsed);
 	
 	return {
-		r: color.r ?? 0,
-		g: color.g ?? 0,
-		b: color.b ?? 0,
-		a: (color.alpha ?? 1) * alpha
+		r: clampRgbChannel(color.r),
+		g: clampRgbChannel(color.g),
+		b: clampRgbChannel(color.b),
+		a: clamp01((color.alpha ?? 1) * alpha)
 	};
 }
 
 /**
  * Apply a perceptual colour modification using oklch space
  * @param amount - Numeric amount based on function type:
- *   - darken/lighten/saturate/desaturate: 0-100 (percentage, 20 = 20% change)
+ *   - darken/lighten/saturate/desaturate: 0-100 (percentage, 20 = 20% change relative to current value)
  *   - hueShift: -360 to 360 (degrees, 30 = subtle shift, -30 = opposite direction, 180 = complementary)
  */
 function applyColorModify(value: string | number | RGBA, fn: ColorModifyFn, amount: number): RGBA {
@@ -134,46 +151,56 @@ function applyColorModify(value: string | number | RGBA, fn: ColorModifyFn, amou
 
 	const rgbColor = { mode: 'rgb' as const, r: rgba.r, g: rgba.g, b: rgba.b, alpha: rgba.a };
 	const oklch = toOklch(rgbColor);
+	if (!oklch) {
+		throw new Error('Unable to convert color to oklch for modification.');
+	}
 
-	// Convert percentage to decimal for 4 functions (20% → 0.20), degrees unchanged for hueShift
-	const effectiveAmount = (fn === 'hueShift') ? amount : amount / 100;
+	const percentAmount = fn === 'hueShift' ? undefined : normalizePercent(amount);
+	const hueShiftAmount = fn === 'hueShift' ? clampHueShift(amount) : undefined;
 
 	const modified = { ...oklch };
+	const lightness = clamp01(oklch.l ?? 0);
+	const chroma = Math.max(0, oklch.c ?? 0);
 	switch (fn) {
 		case 'darken':
-			// Reduce lightness (l) by percentage: 20 = 20% darker
-			modified.l = Math.max(0, (oklch.l ?? 0) - effectiveAmount);
+			// Reduce lightness relative to current value
+			modified.l = clamp01(lightness - lightness * (percentAmount ?? 0));
 			break;
 		case 'lighten':
-			// Increase lightness (l) by percentage: 20 = 20% lighter
-			modified.l = Math.min(1, (oklch.l ?? 0) + effectiveAmount);
+			// Increase lightness relative to remaining headroom
+			const remaining = 1 - lightness;
+			modified.l = clamp01(lightness + remaining * (percentAmount ?? 0));
 			break;
 		case 'saturate':
-			// Increase chroma (c) by relative percentage: 10% → c * 1.10
-			modified.c = (oklch.c ?? 0) * (1 + effectiveAmount);
+			// Increase chroma (c) by relative percentage: 10% → c + c*0.10
+			modified.c = chroma + chroma * (percentAmount ?? 0);
 			break;
 		case 'desaturate':
-			// Decrease chroma (c) by relative percentage: 10% → c * 0.90
-			modified.c = Math.max(0, (oklch.c ?? 0) * (1 - effectiveAmount));
+			// Decrease chroma (c) by relative percentage: 10% → c - c*0.10
+			modified.c = Math.max(0, chroma - chroma * (percentAmount ?? 0));
+			if (modified.c < ACHROMATIC_CHROMA_EPSILON) {
+				modified.c = 0;
+				delete modified.h;
+			}
 			break;
 		case 'hueShift': {
 			// Achromatic colors (grays, black, white) have no meaningful hue — skip
-			const ACHROMATIC_CHROMA_EPSILON = 0.001;
-			if ((oklch.c ?? 0) < ACHROMATIC_CHROMA_EPSILON) {
+			if (chroma < ACHROMATIC_CHROMA_EPSILON) {
 				return rgba;
 			}
 			// Rotate hue (h) by degrees: 30 = subtle shift, 180 = complementary color
-			modified.h = ((oklch.h ?? 0) + effectiveAmount) % 360;
+			const baseHue = oklch.h ?? 0;
+			modified.h = wrapDegrees(baseHue + (hueShiftAmount ?? 0));
 			break;
 		}
 	}
 
 	const rgb = toRgb(modified);
 	return {
-		r: Math.max(0, Math.min(1, rgb.r ?? 0)),
-		g: Math.max(0, Math.min(1, rgb.g ?? 0)),
-		b: Math.max(0, Math.min(1, rgb.b ?? 0)),
-		a: rgb.alpha ?? 1
+		r: clamp01(rgb.r ?? 0),
+		g: clamp01(rgb.g ?? 0),
+		b: clamp01(rgb.b ?? 0),
+		a: clamp01(rgb.alpha ?? 1)
 	};
 }
 
@@ -276,9 +303,9 @@ export function hexToRgba(hex: string): RGBA {
 	
 	// Clamp to [0,1]: oklch colors may be out of sRGB gamut, producing values outside this range
 	return {
-		r: Math.max(0, Math.min(1, color.r ?? 0)),
-		g: Math.max(0, Math.min(1, color.g ?? 0)),
-		b: Math.max(0, Math.min(1, color.b ?? 0)),
-		a: color.alpha ?? 1
+		r: clampRgbChannel(color.r),
+		g: clampRgbChannel(color.g),
+		b: clampRgbChannel(color.b),
+		a: clamp01(color.alpha ?? 1)
 	};
 }

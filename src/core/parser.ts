@@ -23,29 +23,33 @@ export function parseExpression(input: string | number, type: TokenType): Expres
 			alpha: parseFloat(alphaMatch[2]) / 100
 		};
 	}
+	if (PATTERNS.alphaFunctionPrefix.test(valueStr)) {
+		throw new Error('Invalid alpha() syntax: use percentages such as alpha({token}, 15%).');
+	}
 
 	// 3. Detect color modifier functions: darken({token}, 20%), lighten(...), hueShift({token}, 50deg)
-	const colorModifyMatch = valueStr.match(PATTERNS.colorModifyFunction);
-	if (colorModifyMatch) {
-		// Group [3] = unsigned % amount, group [4] = signed deg amount (mutually exclusive by regex)
-		// Enforce per-function suffix rules: hueShift requires deg, others require %
-		const fn = colorModifyMatch[1] as ColorModifyFn;
-		const percentGroup = colorModifyMatch[3];
-		const degGroup = colorModifyMatch[4];
-		const isHueShift = fn === 'hueShift';
-		if (isHueShift && percentGroup !== undefined) {
-			return { type: 'literal', value: valueStr };
-		}
-		if (!isHueShift && degGroup !== undefined) {
-			return { type: 'literal', value: valueStr };
-		}
-		const rawAmount = percentGroup ?? degGroup;
+	const colorPercentMatch = valueStr.match(PATTERNS.colorPercentFunction);
+	if (colorPercentMatch) {
 		return {
 			type: 'colorModify',
-			fn,
-			tokenPath: colorModifyMatch[2],
-			amount: parseFloat(rawAmount)
+			fn: colorPercentMatch[1] as ColorModifyFn,
+			tokenPath: colorPercentMatch[2],
+			amount: parseFloat(colorPercentMatch[3])
 		};
+	}
+
+	const hueShiftMatch = valueStr.match(PATTERNS.hueShiftFunction);
+	if (hueShiftMatch) {
+		return {
+			type: 'colorModify',
+			fn: 'hueShift',
+			tokenPath: hueShiftMatch[1],
+			amount: parseFloat(hueShiftMatch[2])
+		};
+	}
+
+	if (PATTERNS.colorFunctionPrefix.test(valueStr)) {
+		throw new Error('Invalid color modifier syntax: use percentages for darken/lighten/saturate/desaturate and degrees for hueShift.');
 	}
 
 	// 4. Type-specific parsing
@@ -77,7 +81,8 @@ export function parseExpression(input: string | number, type: TokenType): Expres
  */
 function containsMathOrTokens(value: string): boolean {
 	// Contains token references
-	if (PATTERNS.tokenReference.test(value)) return true;
+	const tokenReferenceRegex = new RegExp(PATTERNS.tokenReference);
+	if (tokenReferenceRegex.test(value)) return true;
 	
 	// Contains math operators
 	if (/[+\-*/()]/.test(value)) return true;
