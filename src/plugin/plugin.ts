@@ -17,7 +17,7 @@ async function bootstrap() {
 	Networker.initialize(PLUGIN, PLUGIN_CHANNEL);
 
 	figma.showUI(__html__, {
-		width: 900,
+		width: 600,
 		height: 700,
 		title: "Computed Variables",
 		themeColors: true,
