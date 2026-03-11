@@ -62,11 +62,11 @@ export function Toolbar({
 				</div>
 			</div>
 			<div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+				<Button onClick={onSave} disabled={hasErrors} secondary>
+					{saveSuccess > 0 ? "✓ Saved" : "Save"}
+				</Button>
 				<Button onClick={onApply} disabled={hasErrors || applyStatus === 'running'}>
 					{applySuccess > 0 ? "✓ Applied" : applyStatus === 'queued' ? 'Apply queued…' : applyStatus === 'running' ? 'Applying…' : "Apply to Variables"}
-				</Button>
-				<Button onClick={onSave} disabled={hasErrors}>
-					{saveSuccess > 0 ? "✓ Saved" : "Save"}
 				</Button>
 			</div>
 		</div>
