@@ -1,5 +1,7 @@
 import { TokenJSON, ValidationError } from './types';
 
+export type ApplyStatus = 'idle' | 'running' | 'queued';
+
 // UI → Plugin messages
 export type UIToPluginMessage =
 	| { type: 'IMPORT_VARIABLES' }
@@ -16,7 +18,8 @@ export type PluginToUIMessage =
 	| { type: 'SAVE_SUCCESS' }
 	| { type: 'SAVE_ERROR'; error: string }
 	| { type: 'LOAD_JSON'; json: TokenJSON | null }
-	| { type: 'STARTUP_INFO'; hasVariables: boolean };
+	| { type: 'STARTUP_INFO'; hasVariables: boolean }
+	| { type: 'APPLY_STATUS'; state: ApplyStatus };
 
 // Message channel names
 export const MESSAGE_CHANNELS = {

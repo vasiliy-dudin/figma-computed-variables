@@ -11,6 +11,7 @@ import { countTokens } from "@core/tokenUtils";
 import { validate } from "@core/validator";
 import type { TokenJSON, ValidationError } from "@core/types";
 import { sendToPlugin, onPluginMessage } from "@ui/messaging";
+import type { ApplyStatus } from "@core/messages";
 
 function App() {
 	const [jsonText, setJsonText] = useState<string>("");
@@ -21,6 +22,7 @@ function App() {
 	const [saveSuccess, setSaveSuccess] = useState<number>(0);
 	const [applySuccess, setApplySuccess] = useState<number>(0);
 	const [isDocsDropdownOpen, setIsDocsDropdownOpen] = useState(false);
+	const [applyStatus, setApplyStatus] = useState<ApplyStatus>('idle');
 
 	// Listen for messages from plugin
 	useEffect(() => {
@@ -69,6 +71,10 @@ function App() {
 					if (!msg.hasVariables) {
 						setShowEmptyState(true);
 					}
+					break;
+
+				case 'APPLY_STATUS':
+					setApplyStatus(msg.state);
 					break;
 			}
 		});
@@ -207,6 +213,7 @@ function App() {
 				isEmpty={jsonText.trim() === ''}
 				saveSuccess={saveSuccess}
 				applySuccess={applySuccess}
+				applyStatus={applyStatus}
 				onOpenDocsDropdown={handleOpenDocsDropdown}
 				onCloseDocsDropdown={handleCloseDocsDropdown}
 				isDocsDropdownOpen={isDocsDropdownOpen}

@@ -1,6 +1,7 @@
 import { Button } from '@create-figma-plugin/ui';
 import { h } from 'preact';
 import { DocsDropdown } from './DocsDropdown';
+import type { ApplyStatus } from '@core/messages';
 
 interface ToolbarProps {
 	onImport: () => void;
@@ -10,6 +11,7 @@ interface ToolbarProps {
 	isEmpty: boolean;
 	saveSuccess: number;
 	applySuccess: number;
+	applyStatus: ApplyStatus;
 	onOpenDocsDropdown: () => void;
 	onCloseDocsDropdown: () => void;
 	isDocsDropdownOpen: boolean;
@@ -23,6 +25,7 @@ export function Toolbar({
 	isEmpty, 
 	saveSuccess, 
 	applySuccess,
+	applyStatus,
 	onOpenDocsDropdown,
 	onCloseDocsDropdown,
 	isDocsDropdownOpen
@@ -58,9 +61,9 @@ export function Toolbar({
 					/>
 				</div>
 			</div>
-			<div style={{ display: 'flex', gap: '8px' }}>
-				<Button onClick={onApply} disabled={hasErrors}>
-					{applySuccess > 0 ? "✓ Applied" : "Apply to Variables"}
+			<div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+				<Button onClick={onApply} disabled={hasErrors || applyStatus === 'running'}>
+					{applySuccess > 0 ? "✓ Applied" : applyStatus === 'queued' ? 'Apply queued…' : applyStatus === 'running' ? 'Applying…' : "Apply to Variables"}
 				</Button>
 				<Button onClick={onSave} disabled={hasErrors}>
 					{saveSuccess > 0 ? "✓ Saved" : "Save"}

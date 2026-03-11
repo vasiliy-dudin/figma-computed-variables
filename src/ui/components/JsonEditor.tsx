@@ -13,6 +13,7 @@ interface JsonEditorProps {
 export function JsonEditor({ value, onChange }: JsonEditorProps) {
 	const editorRef = useRef<HTMLDivElement>(null);
 	const viewRef = useRef<EditorView | null>(null);
+	const isInternalChange = useRef(false);
 
 	useEffect(() => {
 		if (!editorRef.current) return;
@@ -25,6 +26,7 @@ export function JsonEditor({ value, onChange }: JsonEditorProps) {
 				oneDark,
 				EditorView.updateListener.of((update) => {
 					if (update.docChanged) {
+						isInternalChange.current = true;
 						onChange(update.state.doc.toString());
 					}
 				}),
@@ -41,8 +43,12 @@ export function JsonEditor({ value, onChange }: JsonEditorProps) {
 		};
 	}, []);
 
-	// Update editor when value changes externally
+	// Update editor only when value changes from an external source (e.g. Import)
 	useEffect(() => {
+		if (isInternalChange.current) {
+			isInternalChange.current = false;
+			return;
+		}
 		if (viewRef.current && value !== viewRef.current.state.doc.toString()) {
 			viewRef.current.dispatch({
 				changes: {
