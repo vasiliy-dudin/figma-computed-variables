@@ -133,10 +133,19 @@ function setVariableValue(
  */
 function findVariableByPath(path: string): Variable | null {
 	const collections = figma.variables.getLocalVariableCollections();
+	const collectionNames = new Set(collections.map(c => c.name));
+
+	// Determine whether the path has a collection prefix by checking if
+	// the segment before the first dot matches an actual collection name.
+	// This handles bare token paths like "text.primary" (no collection prefix)
+	// and full paths like "Semantic/Colors.text.primary" (has collection prefix).
 	const dotIndex = path.indexOf('.');
-	const collectionName = dotIndex !== -1 ? path.substring(0, dotIndex) : null;
+	const potentialCollection = dotIndex !== -1 ? path.substring(0, dotIndex) : null;
+	const hasCollectionPrefix = potentialCollection !== null && collectionNames.has(potentialCollection);
+
+	const collectionName = hasCollectionPrefix ? potentialCollection : null;
+	const tokenDotPath = hasCollectionPrefix ? path.substring(dotIndex + 1) : path;
 	// Convert dot-path to slash-path to match Figma variable names
-	const tokenDotPath = dotIndex !== -1 ? path.substring(dotIndex + 1) : path;
 	const figmaVarName = tokenDotPath.replace(/\./g, '/');
 
 	for (const collection of collections) {
