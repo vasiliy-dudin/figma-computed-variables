@@ -6,6 +6,7 @@ import { ErrorDisplay } from "@ui/components/ErrorDisplay";
 import { Footer } from "@ui/components/Footer";
 import { EmptyState } from "@ui/components/EmptyState";
 import { ResizeHandle } from "@ui/components/ResizeHandle";
+import { Toast } from "@ui/components/Toast";
 import { generateExampleJSON } from "@core/constants";
 import type { ExampleOptions } from "@core/constants";
 import { countTokens } from "@core/tokenUtils";
@@ -20,11 +21,13 @@ function App() {
 	const [tokenCount, setTokenCount] = useState(0);
 	const [collectionCount, setCollectionCount] = useState(0);
 	const [showEmptyState, setShowEmptyState] = useState(false);
-	const [importSuccess, setImportSuccess] = useState<number>(0);
-	const [saveSuccess, setSaveSuccess] = useState<number>(0);
-	const [applySuccess, setApplySuccess] = useState<number>(0);
+	const [toastState, setToastState] = useState<{ message: string; id: number } | null>(null);
 	const [isDocsDropdownOpen, setIsDocsDropdownOpen] = useState(false);
 	const [applyStatus, setApplyStatus] = useState<ApplyStatus>('idle');
+
+	function showToast(message: string): void {
+		setToastState({ message, id: Date.now() });
+	}
 
 	// Listen for messages from plugin
 	useEffect(() => {
@@ -42,28 +45,26 @@ function App() {
 					setJsonText(JSON.stringify(msg.json, null, 2));
 					updateStats(msg.json);
 					setErrors([]);
-					setImportSuccess(Date.now());
+					showToast('Variables imported');
 					break;
 
 				case 'IMPORT_ERROR':
 					setErrors([{ collection: 'import', token: '', errorType: 'schema', message: msg.error }]);
 					break;
 
-        case 'APPLY_SUCCESS':
-			console.log(msg.message);
-			setErrors([]);
-			setApplySuccess(Date.now());
-			break;
+				case 'APPLY_SUCCESS':
+					setErrors([]);
+					showToast('Applied to Variables');
+					break;
 
 				case 'APPLY_ERROR':
 					setErrors(msg.errors);
 					break;
 
 				case 'SAVE_SUCCESS':
-			console.log("JSON saved");
-			setErrors([]);
-			setSaveSuccess(Date.now());
-			break;
+					setErrors([]);
+					showToast('Saved');
+					break;
 
 				case 'SAVE_ERROR':
 					setErrors([{ collection: 'save', token: '', errorType: 'schema', message: msg.error }]);
@@ -82,27 +83,12 @@ function App() {
 		});
 	}, []);
 
-	// Clear success notifications after 2 seconds
+	// Clear toast after animation completes
 	useEffect(() => {
-		if (saveSuccess > 0) {
-			const timer = setTimeout(() => setSaveSuccess(0), 2000);
-			return () => clearTimeout(timer);
-		}
-	}, [saveSuccess]);
-
-	useEffect(() => {
-		if (applySuccess > 0) {
-			const timer = setTimeout(() => setApplySuccess(0), 2000);
-			return () => clearTimeout(timer);
-		}
-	}, [applySuccess]);
-
-	useEffect(() => {
-		if (importSuccess > 0) {
-			const timer = setTimeout(() => setImportSuccess(0), 2000);
-			return () => clearTimeout(timer);
-		}
-	}, [importSuccess]);
+		if (!toastState) return;
+		const timer = setTimeout(() => setToastState(null), 2000);
+		return () => clearTimeout(timer);
+	}, [toastState]);
 
 	// Validate JSON when it changes
 	useEffect(() => {
@@ -116,12 +102,11 @@ function App() {
 		try {
 			const parsed = JSON.parse(jsonText);
 			const result = validate(parsed);
-			
+
 			if (result.valid) {
 				setErrors([]);
 				updateStats(result.data);
 			} else {
-				// Type narrowing: if not valid, result has errors property
 				setErrors(result.errors);
 			}
 		} catch (err) {
@@ -220,15 +205,14 @@ function App() {
 				onSave={handleSave}
 				hasErrors={errors.length > 0}
 				isEmpty={jsonText.trim() === ''}
-				importSuccess={importSuccess}
-				saveSuccess={saveSuccess}
-				applySuccess={applySuccess}
 				applyStatus={applyStatus}
 				onOpenDocsDropdown={handleOpenDocsDropdown}
 				onCloseDocsDropdown={handleCloseDocsDropdown}
 				isDocsDropdownOpen={isDocsDropdownOpen}
 			/>
-			
+
+			{toastState && <Toast key={toastState.id} message={toastState.message} />}
+
 			<Footer tokenCount={tokenCount} collectionCount={collectionCount} />
 			<ResizeHandle />
 		</div>

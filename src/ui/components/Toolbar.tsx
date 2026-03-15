@@ -9,9 +9,6 @@ interface ToolbarProps {
 	onSave: () => void;
 	hasErrors: boolean;
 	isEmpty: boolean;
-	importSuccess: number;
-	saveSuccess: number;
-	applySuccess: number;
 	applyStatus: ApplyStatus;
 	onOpenDocsDropdown: () => void;
 	onCloseDocsDropdown: () => void;
@@ -24,9 +21,6 @@ export function Toolbar({
 	onSave,
 	hasErrors,
 	isEmpty,
-	importSuccess,
-	saveSuccess,
-	applySuccess,
 	applyStatus,
 	onOpenDocsDropdown,
 	onCloseDocsDropdown,
@@ -35,9 +29,7 @@ export function Toolbar({
 	if (isEmpty) {
 		return (
 			<div class="toolbar">
-				<Button onClick={onImport} secondary>
-					{importSuccess > 0 ? "✓ Imported" : "Import from Variables"}
-				</Button>
+				<Button onClick={onImport} secondary>Import from Variables</Button>
 			</div>
 		);
 	}
@@ -45,9 +37,7 @@ export function Toolbar({
 	return (
 		<div class="toolbar toolbar--between">
 			<div class="layout-row">
-				<Button onClick={onImport} secondary>
-					{importSuccess > 0 ? "✓ Imported" : "Import from Variables"}
-				</Button>
+				<Button onClick={onImport} secondary>Import from Variables</Button>
 				<div class="position-relative">
 					<Button onClick={onOpenDocsDropdown} secondary>
 						<span style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-4)' }}>
@@ -64,11 +54,9 @@ export function Toolbar({
 				</div>
 			</div>
 			<div class="layout-row">
-				<Button onClick={onSave} disabled={hasErrors} secondary>
-					{saveSuccess > 0 ? "✓ Saved" : "Save"}
-				</Button>
+				<Button onClick={onSave} disabled={hasErrors} secondary>Save</Button>
 				<Button onClick={onApply} disabled={hasErrors || applyStatus === 'running'}>
-					{applySuccess > 0 ? "✓ Applied" : applyStatus === 'queued' ? 'Apply queued…' : applyStatus === 'running' ? 'Applying…' : "Apply to Variables"}
+					{applyStatus === 'queued' ? 'Apply queued…' : applyStatus === 'running' ? 'Applying…' : 'Apply to Variables'}
 				</Button>
 			</div>
 		</div>
