@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(for wf:*)",
+      "Bash(do echo:*)",
+      "Read(//c/Users/dudin/DevProjects/figma/figma-computed-variables/**)",
+      "Bash(done)",
+      "Bash(for rule:*)",
+      "Bash(wc -l .claude/commands/*.md)"
+    ],
+    "additionalDirectories": [
+      "C:\\Users\\dudin\\DevProjects\\figma\\figma-computed-variables\\.claude",
+      "C:\\Users\\dudin\\DevProjects\\figma\\figma-computed-variables\\.claude\\skills",
+      "c:\\Users\\dudin\\DevProjects\\figma\\figma-computed-variables\\.claude\\skills\\plan-tasks"
+    ]
+  }
+}
