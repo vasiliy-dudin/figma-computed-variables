@@ -10,14 +10,14 @@ interface ExampleConfigModalProps {
 }
 
 export function ExampleConfigModal({ open, onClose, onConfirm }: ExampleConfigModalProps) {
-	const [modeCount, setModeCount] = useState<'1' | '2'>('2');
+	const [modeCount, setModeCount] = useState<'1' | '2'>('1');
 	const [includeDescription, setIncludeDescription] = useState(false);
 	const [includeScope, setIncludeScope] = useState(false);
 
 	// Reset to defaults each time the modal opens
 	useEffect(() => {
 		if (open) {
-			setModeCount('2');
+			setModeCount('1');
 			setIncludeDescription(false);
 			setIncludeScope(false);
 		}
