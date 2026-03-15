@@ -6,7 +6,8 @@ import { ErrorDisplay } from "@ui/components/ErrorDisplay";
 import { Footer } from "@ui/components/Footer";
 import { EmptyState } from "@ui/components/EmptyState";
 import { ResizeHandle } from "@ui/components/ResizeHandle";
-import { EXAMPLE_TOKEN_JSON } from "@core/constants";
+import { generateExampleJSON } from "@core/constants";
+import type { ExampleOptions } from "@core/constants";
 import { countTokens } from "@core/tokenUtils";
 import { validate } from "@core/validator";
 import type { TokenJSON, ValidationError } from "@core/types";
@@ -146,8 +147,8 @@ function App() {
 		setIsDocsDropdownOpen(false);
 	}
 
-	function handleLoadExample(): void {
-		setJsonText(JSON.stringify(EXAMPLE_TOKEN_JSON, null, 2));
+	function handleLoadExample(options: ExampleOptions): void {
+		setJsonText(JSON.stringify(generateExampleJSON(options), null, 2));
 		setShowEmptyState(false);
 	}
 

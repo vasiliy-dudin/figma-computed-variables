@@ -58,6 +58,62 @@ export const EXAMPLE_TOKEN_JSON = {
 	}
 };
 
+export interface ExampleOptions {
+	modeCount: '1' | '2';
+	includeDescription: boolean;
+	includeScope: boolean;
+}
+
+/** Generates an example token JSON based on the given options. */
+export function generateExampleJSON(options: ExampleOptions): import('./types').TokenJSON {
+	const { modeCount, includeDescription, includeScope } = options;
+
+	// 1 mode → scalar value; 2 modes → { "Mode 1", "Mode 2" } record
+	function val<V extends string | number>(mode1: V, mode2: V): import('./types').TokenValue {
+		return modeCount === '2' ? { "Mode 1": mode1, "Mode 2": mode2 } : mode1;
+	}
+
+	function meta(description: string, scope: string | string[]): Record<string, unknown> {
+		return {
+			...(includeDescription ? { $description: description } : {}),
+			...(includeScope ? { $scope: scope } : {}),
+		};
+	}
+
+	return {
+		"foundation": {
+			"color": {
+				"primary": { $type: "color", $value: val("#0066FF", "#3388FF"), ...meta("Primary brand color", "ALL_FILLS") },
+				"accent": { $type: "color", $value: val("oklch(0.65 0.2 250)", "oklch(0.75 0.18 250)") },
+				"accentSubtle": { $type: "color", $value: val("oklch(0.65 0.2 250 / 0.15)", "oklch(0.75 0.18 250 / 0.2)"), ...meta("Accent with transparency", "ALL_FILLS") },
+				"surface": { $type: "color", $value: val("#FFFFFF", "#1A1A1A"), ...meta("Page and card background", ["FRAME_FILL", "SHAPE_FILL"]) },
+				"neutral": { $type: "color", $value: val("oklch(0.85 0.02 220)", "oklch(0.4 0.02 220)") },
+			},
+			"spacing": {
+				"base": { $type: "number", $value: val(8, 8), ...meta("Base spacing unit (8px grid)", "GAP") },
+			},
+		},
+		"semantic": {
+			"color": {
+				"background": { $type: "color", $value: val("{color.surface}", "{color.surface}") },
+				"interactive": { $type: "color", $value: val("{color.primary}", "{color.primary}") },
+				"interactiveHover": { $type: "color", $value: val("lighten({color.primary}, 12%)", "lighten({color.primary}, 8%)") },
+				"interactiveActive": { $type: "color", $value: val("darken({color.primary}, 15%)", "darken({color.primary}, 12%)") },
+				"interactiveMuted": { $type: "color", $value: val("alpha({color.primary}, 18%)", "alpha({color.primary}, 12%)") },
+				"textPrimary": { $type: "color", $value: val("{color.neutral}", "{color.neutral}") },
+				"textAccent": { $type: "color", $value: val("hueShift({color.accent}, 30deg)", "hueShift({color.accent}, -25deg)") },
+				"textMuted": { $type: "color", $value: val("desaturate({color.accent}, 35%)", "desaturate({color.accent}, 35%)") },
+				"statusSuccess": { $type: "color", $value: val("oklch(0.73 0.15 150)", "oklch(0.62 0.13 150)") },
+				"statusSuccessOverlay": { $type: "color", $value: val("alpha({color.statusSuccess}, 40%)", "alpha({color.statusSuccess}, 35%)") },
+			},
+			"spacing": {
+				"md": { $type: "number", $value: val("{spacing.base} * 2", "{spacing.base} * 2") },
+				"lg": { $type: "number", $value: val("{spacing.base} * 3", "{spacing.base} * 3") },
+			},
+		},
+	};
+}
+
 // Supported math operators for expressions
 export const MATH_OPERATORS = ['+', '-', '*', '/', '(', ')'];
 
