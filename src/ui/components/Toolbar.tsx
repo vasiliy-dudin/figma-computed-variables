@@ -34,7 +34,7 @@ export function Toolbar({
 }: ToolbarProps) {
 	if (isEmpty) {
 		return (
-			<div style={{ padding: '12px', borderTop: '1px solid var(--color-border)', display: 'flex', justifyContent: 'flex-start', alignItems: 'center' }}>
+			<div class="toolbar">
 				<Button onClick={onImport} secondary>
 					{importSuccess > 0 ? "✓ Imported" : "Import from Variables"}
 				</Button>
@@ -43,14 +43,14 @@ export function Toolbar({
 	}
 
 	return (
-		<div style={{ padding: '12px', borderTop: '1px solid var(--color-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-			<div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+		<div class="toolbar toolbar--between">
+			<div class="layout-row">
 				<Button onClick={onImport} secondary>
 					{importSuccess > 0 ? "✓ Imported" : "Import from Variables"}
 				</Button>
-				<div style={{ position: 'relative' }}>
+				<div class="position-relative">
 					<Button onClick={onOpenDocsDropdown} secondary>
-						<span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+						<span style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-4)' }}>
 							Examples and docs
 							<svg width="8" height="6" viewBox="0 0 8 6" fill="none">
 								<path d="M1 1L4 4L7 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
@@ -63,7 +63,7 @@ export function Toolbar({
 					/>
 				</div>
 			</div>
-			<div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+			<div class="layout-row">
 				<Button onClick={onSave} disabled={hasErrors} secondary>
 					{saveSuccess > 0 ? "✓ Saved" : "Save"}
 				</Button>

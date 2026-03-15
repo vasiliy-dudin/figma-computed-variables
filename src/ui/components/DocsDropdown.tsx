@@ -36,41 +36,14 @@ export function DocsDropdown({ isOpen, onClose }: DocsDropdownProps) {
 	if (!isOpen) return null;
 
 	return (
-		<div
-			ref={dropdownRef}
-			style={{
-				position: 'absolute',
-				bottom: '100%',
-				left: '0',
-				marginBottom: '4px',
-				backgroundColor: '#FFFFFF',
-				border: '1px solid var(--color-border)',
-				borderRadius: '6px',
-				boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-				zIndex: 100,
-				minWidth: '180px'
-			}}
-		>
-			<div style={{ padding: '4px' }}>
+		<div ref={dropdownRef} class="dropdown">
+			<div class="dropdown-inner">
 				{DOC_LINKS.map((link) => (
 					<a
 						href={link.url}
 						target="_blank"
 						rel="noopener noreferrer"
-						style={{
-							display: 'block',
-							padding: '8px 12px',
-							borderRadius: '4px',
-							fontSize: '13px',
-							color: 'var(--color-text)',
-							textDecoration: 'underline'
-						}}
-						onMouseEnter={(e) => {
-							e.currentTarget.style.backgroundColor = 'var(--color-bg-secondary)';
-						}}
-						onMouseLeave={(e) => {
-							e.currentTarget.style.backgroundColor = 'transparent';
-						}}
+						class="dropdown-link"
 					>
 						{link.label}
 					</a>

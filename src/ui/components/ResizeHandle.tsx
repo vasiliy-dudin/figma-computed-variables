@@ -34,26 +34,12 @@ export function ResizeHandle() {
 	}
 
 	return (
-		<div
-			onMouseDown={handleMouseDown}
-			style={{
-				position: 'absolute',
-				bottom: 0,
-				right: 0,
-				width: '24px',
-				height: '24px',
-				cursor: 'nwse-resize',
-				display: 'flex',
-				alignItems: 'center',
-				justifyContent: 'center',
-			}}
-		>
+		<div class="resize-handle" onMouseDown={handleMouseDown}>
 			<svg
 				width="16"
 				height="16"
 				viewBox="0 0 24 24"
-				style={{ pointerEvents: 'none' }}
-			>
+				>
 				<path d="M22.354 9.354l-.707-.707-13 13 .707.707zm0 7l-.707-.707-6 6 .707.707z"/>
 				<path fill="none" d="M0 0h24v24H0z"/>
 			</svg>

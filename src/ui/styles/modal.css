@@ -1,0 +1,66 @@
+.modal-body {
+	width: 280px;
+	padding: 0 var(--space-16) var(--space-16);
+}
+
+.modal-actions {
+	display: flex;
+	justify-content: flex-end;
+	gap: var(--space-8);
+	margin-top: var(--space-16);
+}
+
+.section-label {
+	font-weight: var(--font-weight-bold);
+	font-size: var(--font-size-12);
+	color: var(--figma-color-text);
+	margin-top: var(--space-16);
+	margin-bottom: var(--space-8);
+}
+
+.select-row {
+	display: flex;
+	align-items: center;
+	gap: var(--space-8);
+	height: 24px;
+	cursor: pointer;
+	-webkit-user-select: none;
+	user-select: none;
+}
+
+.select-row-label {
+	font-size: var(--font-size-12);
+	color: var(--figma-color-text);
+}
+
+.radio-dot {
+	width: 14px;
+	height: 14px;
+	border-radius: 50%;
+	border: 1px solid var(--figma-color-border-strong);
+	background-color: var(--figma-color-bg);
+	box-shadow: 0 0 0 2.5px var(--figma-color-bg) inset;
+	flex-shrink: 0;
+}
+
+.radio-dot--checked {
+	border-color: var(--figma-color-border-brand-strong);
+	background-color: var(--figma-color-bg-inverse);
+}
+
+.checkbox-box {
+	width: 16px;
+	height: 16px;
+	border-radius: var(--border-radius-4);
+	border: 1px solid var(--figma-color-border);
+	background-color: var(--figma-color-bg-secondary);
+	flex-shrink: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.checkbox-box--checked {
+	border-color: var(--figma-color-border-brand-strong);
+	background-color: var(--figma-color-bg-brand);
+}

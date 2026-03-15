@@ -1,0 +1,25 @@
+.layout-column {
+	display: flex;
+	flex-direction: column;
+	height: 100vh;
+	position: relative;
+}
+
+.layout-fill {
+	flex: 1;
+	overflow: hidden;
+}
+
+.flex-shrink-0 {
+	flex-shrink: 0;
+}
+
+.layout-row {
+	display: flex;
+	align-items: center;
+	gap: var(--space-8);
+}
+
+.position-relative {
+	position: relative;
+}

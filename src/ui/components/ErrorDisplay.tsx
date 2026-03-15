@@ -10,7 +10,7 @@ export function ErrorDisplay({ errors }: ErrorDisplayProps) {
 	if (errors.length === 0) return null;
 
 	return (
-		<div style={{ padding: '12px', borderTop: '1px solid var(--color-border)' }}>
+		<div class="error-display">
 			<Banner icon="⚠" variant="warning">
 				<strong>Validation Errors ({errors.length})</strong>
 				<ul style={{ margin: '8px 0 0 0', paddingLeft: '20px' }}>

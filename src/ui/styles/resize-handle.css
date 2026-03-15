@@ -1,0 +1,15 @@
+.resize-handle {
+	position: absolute;
+	bottom: 0;
+	right: 0;
+	width: 24px;
+	height: 24px;
+	cursor: nwse-resize;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.resize-handle svg {
+	pointer-events: none;
+}

@@ -191,7 +191,7 @@ function App() {
 
 	if (showEmptyState) {
 		return (
-			<div style={{ display: 'flex', flexDirection: 'column', height: '100vh', position: 'relative' }}>
+			<div class="layout-column">
 				<EmptyState
 					onLoadExample={handleLoadExample}
 					onStartFromScratch={handleStartFromScratch}
@@ -203,13 +203,13 @@ function App() {
 	}
 
 	return (
-		<div style={{ display: 'flex', flexDirection: 'column', height: '100vh', position: 'relative' }}>
-			<div style={{ flex: 1, overflow: 'hidden' }}>
+		<div class="layout-column">
+			<div class="layout-fill">
 				<JsonEditor value={jsonText} onChange={setJsonText} />
 			</div>
 
 			{errors.length > 0 && (
-				<div style={{ flexShrink: 0 }}>
+				<div class="flex-shrink-0">
 					<ErrorDisplay errors={errors} />
 				</div>
 			)}

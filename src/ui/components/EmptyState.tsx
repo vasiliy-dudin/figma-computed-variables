@@ -13,18 +13,9 @@ export function EmptyState({ onLoadExample, onStartFromScratch }: EmptyStateProp
 	const [isModalOpen, setIsModalOpen] = useState(false);
 
 	return (
-		<div style={{
-			display: 'flex',
-			flexDirection: 'column',
-			alignItems: 'center',
-			justifyContent: 'center',
-			height: '100%',
-			gap: '12px',
-			padding: '32px',
-			textAlign: 'center',
-		}}>
-			<p style={{ margin: 0, fontWeight: 600 }}>How would you like to start?</p>
-			<div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
+		<div class="empty-state">
+			<p class="empty-state-heading">How would you like to start?</p>
+			<div class="empty-state-actions">
 				<Button onClick={() => setIsModalOpen(true)} secondary>
 					Load example JSON
 				</Button>

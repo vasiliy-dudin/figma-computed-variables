@@ -1,0 +1,21 @@
+.empty-state {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	height: 100%;
+	gap: var(--space-12);
+	padding: var(--space-32);
+	text-align: center;
+}
+
+.empty-state-heading {
+	margin: 0;
+	font-weight: var(--font-weight-bold);
+}
+
+.empty-state-actions {
+	display: flex;
+	gap: var(--space-8);
+	margin-top: var(--space-8);
+}

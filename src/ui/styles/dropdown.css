@@ -1,0 +1,29 @@
+.dropdown {
+	position: absolute;
+	bottom: 100%;
+	left: 0;
+	margin-bottom: var(--space-4);
+	background-color: var(--figma-color-bg);
+	border: 1px solid var(--color-border);
+	border-radius: var(--border-radius-6);
+	box-shadow: var(--box-shadow-menu);
+	z-index: var(--z-index-1);
+	min-width: 180px;
+}
+
+.dropdown-inner {
+	padding: var(--space-4);
+}
+
+.dropdown-link {
+	display: block;
+	padding: var(--space-8) var(--space-12);
+	border-radius: var(--border-radius-4);
+	font-size: 13px;
+	color: var(--color-text);
+	text-decoration: underline;
+}
+
+.dropdown-link:hover {
+	background-color: var(--color-bg-secondary);
+}
