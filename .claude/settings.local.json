@@ -6,7 +6,8 @@
       "Read(//c/Users/dudin/DevProjects/figma/figma-computed-variables/**)",
       "Bash(done)",
       "Bash(for rule:*)",
-      "Bash(wc -l .claude/commands/*.md)"
+      "Bash(wc -l .claude/commands/*.md)",
+      "Bash(claude mcp:*)"
     ],
     "additionalDirectories": [
       "C:\\Users\\dudin\\DevProjects\\figma\\figma-computed-variables\\.claude",
