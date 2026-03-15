@@ -28,13 +28,13 @@ export const FIGMA_TYPE_MAP: Record<FigmaVariableType, string> = {
 export const EXAMPLE_TOKEN_JSON = {
 	"foundation": {
 		"color": {
-			"primary": { "$type": "color", "$value": { "light": "#0066FF", "dark": "#3388FF" } },
+			"primary": { "$type": "color", "$value": { "light": "#0066FF", "dark": "#3388FF" }, "$description": "Primary brand color", "$scope": "ALL_FILLS" },
 			"accent": { "$type": "color", "$value": { "light": "oklch(0.65 0.2 250)", "dark": "oklch(0.75 0.18 250)" } },
-			"surface": { "$type": "color", "$value": { "light": "#FFFFFF", "dark": "#1A1A1A" } },
+			"surface": { "$type": "color", "$value": { "light": "#FFFFFF", "dark": "#1A1A1A" }, "$description": "Page and card background", "$scope": ["FRAME_FILL", "SHAPE_FILL"] },
 			"neutral": { "$type": "color", "$value": { "light": "oklch(0.85 0.02 220)", "dark": "oklch(0.4 0.02 220)" } }
 		},
 		"spacing": {
-			"base": { "$type": "number", "$value": { "light": 8, "dark": 8 } }
+			"base": { "$type": "number", "$value": { "light": 8, "dark": 8 }, "$description": "Base spacing unit (8px grid)", "$scope": "GAP" }
 		}
 	},
 	"semantic": {

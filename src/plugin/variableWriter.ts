@@ -70,6 +70,14 @@ export async function applyToVariables(json: TokenJSON): Promise<ApplyResult> {
 					variable = figma.variables.createVariable(figmaVarName, collection, figmaType);
 				}
 
+				if (token.$description !== undefined) {
+					variable.description = token.$description;
+				}
+				if (token.$scope !== undefined) {
+					const scopes = Array.isArray(token.$scope) ? token.$scope : [token.$scope];
+					variable.scopes = scopes as VariableScope[];
+				}
+
 				// Set values for each mode — normalize shorthand scalar to per-mode record first
 				const modeNames = collection.modes.map(m => m.name);
 				const normalizedValue = normalizeModeValues(token.$value, modeNames);

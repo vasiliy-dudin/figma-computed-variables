@@ -19,20 +19,33 @@ export async function importVariablesToJSON(): Promise<TokenJSON> {
 		
 		for (const variable of variables) {
 			const modes: ModeValues = {};
-			
+
 			// Get values for each mode
 			for (const mode of collection.modes) {
 				const value = variable.valuesByMode[mode.modeId];
 				modes[mode.name] = formatValue(value, variable.resolvedType);
 			}
-			
+
 			const tokenType = FIGMA_TYPE_MAP[variable.resolvedType];
 			// Figma uses '/' for groups; convert to dot-path for plugin JSON
 			const dotPath = variable.name.replace(/\//g, '.');
-			flatTokens.set(dotPath, {
+
+			const tokenDef: Token = {
 				$type: (tokenType === 'color' || tokenType === 'number' || tokenType === 'string') ? tokenType : 'string',
-				$value: condenseModeValues(modes)
-			});
+				$value: condenseModeValues(modes),
+			};
+
+			if (variable.description) {
+				tokenDef.$description = variable.description;
+			}
+			// Omit $scope when the default ALL_SCOPES is set — keeps JSON clean
+			if (!variable.scopes.includes('ALL_SCOPES')) {
+				tokenDef.$scope = variable.scopes.length === 1
+					? variable.scopes[0]
+					: [...variable.scopes];
+			}
+
+			flatTokens.set(dotPath, tokenDef);
 		}
 		
 		// Convert flat map to nested structure

@@ -33,11 +33,24 @@ export const TokenValueSchema = z.union([
 
 export type TokenValue = z.infer<typeof TokenValueSchema>;
 
+// All valid Figma VariableScope values
+const VARIABLE_SCOPE_VALUES = [
+	'ALL_SCOPES', 'TEXT_CONTENT', 'CORNER_RADIUS', 'WIDTH_HEIGHT', 'GAP',
+	'ALL_FILLS', 'FRAME_FILL', 'SHAPE_FILL', 'TEXT_FILL', 'STROKE_COLOR',
+	'EFFECT_COLOR', 'OPACITY', 'STROKE_FLOAT', 'FONT_WEIGHT', 'FONT_SIZE',
+	'LINE_HEIGHT', 'LETTER_SPACING', 'PARAGRAPH_SPACING', 'PARAGRAPH_INDENT',
+	'FONT_FAMILY', 'FONT_STYLE',
+] as const;
+
+export const VariableScopeSchema = z.enum(VARIABLE_SCOPE_VALUES);
+export type VariableScopeValue = z.infer<typeof VariableScopeSchema>;
+
 // Token schema
 export const TokenSchema = z.object({
 	$type: TokenTypeSchema,
 	$value: TokenValueSchema,
 	$description: z.string().optional(),
+	$scope: z.union([VariableScopeSchema, z.array(VariableScopeSchema)]).optional(),
 });
 
 export type Token = z.infer<typeof TokenSchema>;
