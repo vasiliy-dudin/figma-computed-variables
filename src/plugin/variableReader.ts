@@ -39,10 +39,12 @@ export async function importVariablesToJSON(): Promise<TokenJSON> {
 				tokenDef.$description = variable.description;
 			}
 			// Omit $scope when the default ALL_SCOPES is set — keeps JSON clean
-			if (!variable.scopes.includes('ALL_SCOPES')) {
-				tokenDef.$scope = variable.scopes.length === 1
-					? variable.scopes[0]
-					: [...variable.scopes];
+			// Guard against undefined scopes on variables created before scopes API
+			const scopes: VariableScope[] = variable.scopes ?? [];
+			if (scopes.length > 0 && !scopes.includes('ALL_SCOPES')) {
+				tokenDef.$scope = scopes.length === 1
+					? scopes[0]
+					: [...scopes];
 			}
 
 			flatTokens.set(dotPath, tokenDef);

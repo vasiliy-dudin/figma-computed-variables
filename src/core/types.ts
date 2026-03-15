@@ -33,13 +33,13 @@ export const TokenValueSchema = z.union([
 
 export type TokenValue = z.infer<typeof TokenValueSchema>;
 
-// All valid Figma VariableScope values
+// All valid Figma VariableScope values — keep in sync with @figma/plugin-typings
 const VARIABLE_SCOPE_VALUES = [
 	'ALL_SCOPES', 'TEXT_CONTENT', 'CORNER_RADIUS', 'WIDTH_HEIGHT', 'GAP',
 	'ALL_FILLS', 'FRAME_FILL', 'SHAPE_FILL', 'TEXT_FILL', 'STROKE_COLOR',
-	'EFFECT_COLOR', 'OPACITY', 'STROKE_FLOAT', 'FONT_WEIGHT', 'FONT_SIZE',
+	'STROKE_FLOAT', 'EFFECT_FLOAT', 'EFFECT_COLOR', 'OPACITY',
+	'FONT_FAMILY', 'FONT_STYLE', 'FONT_WEIGHT', 'FONT_SIZE',
 	'LINE_HEIGHT', 'LETTER_SPACING', 'PARAGRAPH_SPACING', 'PARAGRAPH_INDENT',
-	'FONT_FAMILY', 'FONT_STYLE',
 ] as const;
 
 export const VariableScopeSchema = z.enum(VARIABLE_SCOPE_VALUES);

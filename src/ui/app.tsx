@@ -19,6 +19,7 @@ function App() {
 	const [tokenCount, setTokenCount] = useState(0);
 	const [collectionCount, setCollectionCount] = useState(0);
 	const [showEmptyState, setShowEmptyState] = useState(false);
+	const [importSuccess, setImportSuccess] = useState<number>(0);
 	const [saveSuccess, setSaveSuccess] = useState<number>(0);
 	const [applySuccess, setApplySuccess] = useState<number>(0);
 	const [isDocsDropdownOpen, setIsDocsDropdownOpen] = useState(false);
@@ -40,7 +41,7 @@ function App() {
 					setJsonText(JSON.stringify(msg.json, null, 2));
 					updateStats(msg.json);
 					setErrors([]);
-					console.log("Import successful");
+					setImportSuccess(Date.now());
 					break;
 
 				case 'IMPORT_ERROR':
@@ -94,6 +95,13 @@ function App() {
 			return () => clearTimeout(timer);
 		}
 	}, [applySuccess]);
+
+	useEffect(() => {
+		if (importSuccess > 0) {
+			const timer = setTimeout(() => setImportSuccess(0), 2000);
+			return () => clearTimeout(timer);
+		}
+	}, [importSuccess]);
 
 	// Validate JSON when it changes
 	useEffect(() => {
@@ -211,6 +219,7 @@ function App() {
 				onSave={handleSave}
 				hasErrors={errors.length > 0}
 				isEmpty={jsonText.trim() === ''}
+				importSuccess={importSuccess}
 				saveSuccess={saveSuccess}
 				applySuccess={applySuccess}
 				applyStatus={applyStatus}

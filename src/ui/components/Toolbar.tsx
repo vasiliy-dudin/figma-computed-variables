@@ -9,6 +9,7 @@ interface ToolbarProps {
 	onSave: () => void;
 	hasErrors: boolean;
 	isEmpty: boolean;
+	importSuccess: number;
 	saveSuccess: number;
 	applySuccess: number;
 	applyStatus: ApplyStatus;
@@ -17,13 +18,14 @@ interface ToolbarProps {
 	isDocsDropdownOpen: boolean;
 }
 
-export function Toolbar({ 
-	onImport, 
-	onApply, 
-	onSave, 
-	hasErrors, 
-	isEmpty, 
-	saveSuccess, 
+export function Toolbar({
+	onImport,
+	onApply,
+	onSave,
+	hasErrors,
+	isEmpty,
+	importSuccess,
+	saveSuccess,
 	applySuccess,
 	applyStatus,
 	onOpenDocsDropdown,
@@ -34,7 +36,7 @@ export function Toolbar({
 		return (
 			<div style={{ padding: '12px', borderTop: '1px solid var(--color-border)', display: 'flex', justifyContent: 'flex-start', alignItems: 'center' }}>
 				<Button onClick={onImport} secondary>
-					Import from Variables
+					{importSuccess > 0 ? "✓ Imported" : "Import from Variables"}
 				</Button>
 			</div>
 		);
@@ -44,7 +46,7 @@ export function Toolbar({
 		<div style={{ padding: '12px', borderTop: '1px solid var(--color-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
 			<div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
 				<Button onClick={onImport} secondary>
-					Import from Variables
+					{importSuccess > 0 ? "✓ Imported" : "Import from Variables"}
 				</Button>
 				<div style={{ position: 'relative' }}>
 					<Button onClick={onOpenDocsDropdown} secondary>
