@@ -13,9 +13,9 @@ export function ErrorDisplay({ errors }: ErrorDisplayProps) {
 		<div class="error-display">
 			<Banner icon="⚠" variant="warning">
 				<strong>Validation Errors ({errors.length})</strong>
-				<ul style={{ margin: '8px 0 0 0', paddingLeft: '20px' }}>
+				<ul class="error-list">
 					{errors.map((error, i) => (
-						<li key={i} style={{ marginBottom: '4px' }}>
+						<li key={i} class="error-list-item">
 							<strong>{error.collection}</strong>
 							{error.token && `, token "${error.token}"`}
 							{error.mode && ` (${error.mode})`}: {error.message}

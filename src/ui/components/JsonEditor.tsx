@@ -118,5 +118,5 @@ export function JsonEditor({ value, onChange }: JsonEditorProps) {
 		}
 	}, [value]);
 
-	return <div ref={editorRef} style={{ height: '100%', overflow: 'auto' }} />;
+	return <div ref={editorRef} class="editor-container" />;
 }

@@ -40,7 +40,7 @@ export function Toolbar({
 				<Button onClick={onImport} secondary>Import from Variables</Button>
 				<div class="position-relative">
 					<Button onClick={onOpenDocsDropdown} secondary>
-						<span style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-4)' }}>
+						<span class="toolbar-button-label">
 							Help
 							<svg width="8" height="6" viewBox="0 0 8 6" fill="none">
 								<path d="M1 1L4 4L7 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
