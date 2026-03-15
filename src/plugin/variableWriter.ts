@@ -60,38 +60,47 @@ export async function applyToVariables(json: TokenJSON): Promise<ApplyResult> {
 				continue;
 			}
 			
-			// Figma uses '/' for variable groups; dot-path maps to slash-path
-			const figmaVarName = tokenPath.replace(/\./g, '/');
-			
-			// Find or create variable
-			let variable = collectionVariables.find(v => v.name === figmaVarName);
-			if (!variable) {
-				variable = figma.variables.createVariable(figmaVarName, collection, figmaType);
-			}
-			
-			// Set values for each mode — normalize shorthand scalar to per-mode record first
-			const modeNames = collection.modes.map(m => m.name);
-			const normalizedValue = normalizeModeValues(token.$value, modeNames);
-			for (const mode of collection.modes) {
-				if (normalizedValue[mode.name] === undefined) continue;
-				
-				try {
-					const fullPath = `${collectionName}.${tokenPath}`;
-					const resolved = resolveToken(fullPath, mode.name, tokenMap);
-					
-					setVariableValue(variable, mode.modeId, resolved, figmaType);
-				} catch (err) {
-					collectionErrors.push({
-						collection: collectionName,
-						token: tokenPath,
-						mode: mode.name,
-						errorType: 'schema',
-						message: err instanceof Error ? err.message : String(err),
-					});
+			try {
+				// Figma uses '/' for variable groups; dot-path maps to slash-path
+				const figmaVarName = tokenPath.replace(/\./g, '/');
+
+				// Find or create variable
+				let variable = collectionVariables.find(v => v.name === figmaVarName);
+				if (!variable) {
+					variable = figma.variables.createVariable(figmaVarName, collection, figmaType);
 				}
+
+				// Set values for each mode — normalize shorthand scalar to per-mode record first
+				const modeNames = collection.modes.map(m => m.name);
+				const normalizedValue = normalizeModeValues(token.$value, modeNames);
+				for (const mode of collection.modes) {
+					if (normalizedValue[mode.name] === undefined) continue;
+
+					try {
+						const fullPath = `${collectionName}.${tokenPath}`;
+						const resolved = resolveToken(fullPath, mode.name, tokenMap);
+
+						setVariableValue(variable, mode.modeId, resolved, figmaType);
+					} catch (err) {
+						collectionErrors.push({
+							collection: collectionName,
+							token: tokenPath,
+							mode: mode.name,
+							errorType: 'schema',
+							message: err instanceof Error ? err.message : String(err),
+						});
+					}
+				}
+
+				totalVariables++;
+			} catch (err) {
+				collectionErrors.push({
+					collection: collectionName,
+					token: tokenPath,
+					errorType: 'schema',
+					message: err instanceof Error ? err.message : String(err),
+				});
 			}
-			
-			totalVariables++;
 		}
 	}
 	
@@ -119,7 +128,7 @@ function setVariableValue(
 				id: targetVariable.id
 			});
 		} else {
-			console.warn(`Alias target not found: ${resolved.targetPath}`);
+			throw new Error(`Alias target not found: "${resolved.targetPath}"`);
 		}
 	} else {
 		// Set computed value
