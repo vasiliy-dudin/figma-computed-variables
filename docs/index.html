@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Computed Variables — Figma Plugin</title>
+  <meta name="description" content="A Figma plugin for design systems that need expression-based tokens — math, color modifiers, and alias references evaluated and written to Figma Variables.">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="layout">
+
+  <!-- ════════════════════════════════════════════════════════════
+       SIDEBAR
+  ═══════════════════════════════════════════════════════════════ -->
+  <aside class="sidebar d-flex flex-column">
+
+    <div class="sidebar-logo-area d-flex align-items-center gap-3 px-3 py-3 border-bottom flex-shrink-0">
+      <!-- TODO: Replace with <img src="logo.svg" alt="" width="28" height="28"> when ready -->
+      <div class="logo-placeholder" aria-hidden="true"></div>
+      <div class="d-flex flex-column lh-sm overflow-hidden">
+        <a href="#overview" class="sidebar-logo fw-bold text-decoration-none text-truncate">Computed Variables</a>
+        <span class="text-secondary small">Figma Plugin</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav d-flex flex-column py-2 px-2" aria-label="Documentation">
+      <a href="#overview"    class="nav-link">Overview</a>
+      <a href="#expressions" class="nav-link">Expressions</a>
+      <a href="#examples"    class="nav-link">Examples</a>
+    </nav>
+
+    <div class="sidebar-footer mt-auto d-flex flex-column gap-1 p-3 border-top flex-shrink-0">
+      <!-- TODO: Replace # with actual Figma plugin URL -->
+      <a href="#" target="_blank" rel="noopener" class="sidebar-ext-link nav-link d-inline-flex align-items-center gap-2 px-2 py-1 small">
+        <svg viewBox="0 0 38 57" width="11" height="16" fill="currentColor" aria-hidden="true" style="flex-shrink:0">
+          <path d="M19 28.5a9.5 9.5 0 1 1 19 0 9.5 9.5 0 0 1-19 0z"/>
+          <path d="M0 47.5C0 42.253 4.253 38 9.5 38H19v9.5C19 52.747 14.747 57 9.5 57S0 52.747 0 47.5z"/>
+          <path d="M19 0v19h9.5C33.747 19 38 14.747 38 9.5S33.747 0 28.5 0H19z"/>
+          <path d="M0 9.5C0 14.747 4.253 19 9.5 19H19V0H9.5C4.253 0 0 4.253 0 9.5z"/>
+          <path d="M0 28.5C0 33.747 4.253 38 9.5 38H19V19H9.5C4.253 19 0 23.253 0 28.5z"/>
+        </svg>
+        <span>Install on Figma</span>
+      </a>
+      <!-- TODO: Replace # with actual GitHub repo URL -->
+      <a href="#" target="_blank" rel="noopener" class="sidebar-ext-link nav-link d-inline-flex align-items-center gap-2 px-2 py-1 small">
+        <svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor" aria-hidden="true" style="flex-shrink:0">
+          <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+        </svg>
+        <span>GitHub</span>
+      </a>
+    </div>
+
+  </aside>
+
+  <!-- ════════════════════════════════════════════════════════════
+       CONTENT
+  ═══════════════════════════════════════════════════════════════ -->
+  <main class="page-main">
+
+    <!-- ── Overview ─────────────────────────────────────────── -->
+    <section id="overview" class="doc-section">
+
+      <!-- Jumbotron -->
+      <div class="jumbotron px-5 py-5 border-bottom bg-body-secondary">
+        <h1 class="mb-3">Computed Variables</h1>
+        <p class="lead text-secondary mb-4">
+          A Figma plugin for design systems that need expression-based tokens.
+          Tokens are defined in JSON with math, color modifier functions, and alias references.
+          The plugin evaluates them and writes the computed values to Figma Variables.
+        </p>
+        <!-- TODO: Replace with <img src="screenshot.png" alt="Computed Variables plugin UI" class="w-100 rounded-3 mb-4"> -->
+        <div class="screenshot-placeholder rounded-3 border border-2 mb-4 d-flex align-items-center justify-content-center text-secondary small">Plugin screenshot</div>
+        <div class="d-flex gap-3 flex-wrap">
+          <!-- TODO: Replace # with actual Figma plugin URL -->
+          <a href="#" class="btn btn-primary d-inline-flex align-items-center gap-2">
+            <svg viewBox="0 0 38 57" width="13" height="19" fill="currentColor" aria-hidden="true" style="flex-shrink:0">
+              <path d="M19 28.5a9.5 9.5 0 1 1 19 0 9.5 9.5 0 0 1-19 0z"/>
+              <path d="M0 47.5C0 42.253 4.253 38 9.5 38H19v9.5C19 52.747 14.747 57 9.5 57S0 52.747 0 47.5z"/>
+              <path d="M19 0v19h9.5C33.747 19 38 14.747 38 9.5S33.747 0 28.5 0H19z"/>
+              <path d="M0 9.5C0 14.747 4.253 19 9.5 19H19V0H9.5C4.253 0 0 4.253 0 9.5z"/>
+              <path d="M0 28.5C0 33.747 4.253 38 9.5 38H19V19H9.5C4.253 19 0 23.253 0 28.5z"/>
+            </svg>
+            Install on Figma
+          </a>
+          <!-- TODO: Replace # with actual GitHub repo URL -->
+          <a href="#" class="btn btn-outline-secondary d-inline-flex align-items-center gap-2">
+            <svg viewBox="0 0 16 16" width="15" height="15" fill="currentColor" aria-hidden="true" style="flex-shrink:0">
+              <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+            </svg>
+            View on GitHub
+          </a>
+        </div>
+      </div>
+
+      <div class="doc-content">
+
+        <h2>The problem</h2>
+        <p>
+          Figma Variables support two things: a static value and an alias pointing to another variable.
+          They don't support computed values.
+        </p>
+        <p>
+          In a large design system, token relationships are the architecture. A hover color is the
+          primary color lightened by 12%. A ghost button background is the brand color at 18% opacity.
+          Button padding is always twice the base spacing unit. Semantic surface tokens alias foundation
+          colors that may themselves be defined in oklch.
+        </p>
+        <p>
+          Without expression support, every derived value must be calculated manually and hardcoded.
+          When a base token changes, dozens of variables need updating by hand. The relationship
+          between tokens exists only outside Figma.
+        </p>
+
+        <h2>How it works</h2>
+        <p>Define tokens in JSON. Use expressions where needed:</p>
+        <pre class="code-block"><code><span class="j-brace">{</span>
+  <span class="j-key">"semantic"</span><span class="j-brace">: {</span>
+    <span class="j-key">"button"</span><span class="j-brace">: {</span>
+      <span class="j-key">"bg"</span><span class="j-brace">: {</span>
+        <span class="j-key">"$type"</span><span class="j-brace">:</span>  <span class="j-string">"color"</span><span class="j-brace">,</span>
+        <span class="j-key">"$value"</span><span class="j-brace">:</span> <span class="j-string">"{foundation.color.primary}"</span>
+      <span class="j-brace">},</span>   <span class="j-comment">// → native Figma alias</span>
+      <span class="j-key">"bg-hover"</span><span class="j-brace">: {</span>
+        <span class="j-key">"$type"</span><span class="j-brace">:</span>  <span class="j-string">"color"</span><span class="j-brace">,</span>
+        <span class="j-key">"$value"</span><span class="j-brace">:</span> <span class="j-fn">lighten</span><span class="j-brace">(</span><span class="j-string">"{foundation.color.primary}"</span><span class="j-brace">,</span> <span class="j-number">12%</span><span class="j-brace">)</span>
+      <span class="j-brace">},</span> <span class="j-comment">// → computed static value</span>
+      <span class="j-key">"bg-ghost"</span><span class="j-brace">: {</span>
+        <span class="j-key">"$type"</span><span class="j-brace">:</span>  <span class="j-string">"color"</span><span class="j-brace">,</span>
+        <span class="j-key">"$value"</span><span class="j-brace">:</span> <span class="j-fn">alpha</span><span class="j-brace">(</span><span class="j-string">"{foundation.color.primary}"</span><span class="j-brace">,</span> <span class="j-number">18%</span><span class="j-brace">)</span>
+      <span class="j-brace">},</span> <span class="j-comment">// → computed static value</span>
+      <span class="j-key">"padding"</span><span class="j-brace">: {</span>
+        <span class="j-key">"$type"</span><span class="j-brace">:</span>  <span class="j-string">"number"</span><span class="j-brace">,</span>
+        <span class="j-key">"$value"</span><span class="j-brace">:</span> <span class="j-string">"{foundation.spacing.base} * 2"</span>
+      <span class="j-brace">}</span>      <span class="j-comment">// → computed static value</span>
+    <span class="j-brace">}</span>
+  <span class="j-brace">}</span>
+<span class="j-brace">}</span></code></pre>
+
+        <p>
+          Click <strong>Apply</strong>. The plugin evaluates each expression and writes the result
+          to the corresponding Figma Variable. A pure alias reference becomes a native Figma alias
+          and stays reactive. Expressions with math or color functions produce a computed static value —
+          written in oklch, which Figma Variables natively support.
+        </p>
+
+        <div class="alert alert-primary py-2 px-3 rounded-2">
+          <strong>Import from Figma.</strong> Already have Variables? Use <em>Import from Variables</em>
+          to convert them to JSON in one click, with all aliases preserved.
+        </div>
+
+
+      </div>
+    </section>
+
+    <!-- ── Expressions ──────────────────────────────────────── -->
+    <section id="expressions" class="doc-section">
+      <div class="doc-content">
+        <h2>Expressions</h2>
+
+        <figure>
+          <table class="table table-sm fn-table">
+            <thead>
+              <tr>
+                <th>Expression</th>
+                <th>Example</th>
+                <th>Result</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Alias</td>
+                <td><code>"{color.primary}"</code></td>
+                <td><span class="swatch me-1" style="background:#0066FF;"></span><code>#0066FF</code></td>
+              </tr>
+              <tr>
+                <td>Math</td>
+                <td><code>"{spacing.base} * 2"</code></td>
+                <td><code>16</code></td>
+              </tr>
+              <tr>
+                <td>Merge text</td>
+                <td><code>"{font.family}, sans-serif"</code></td>
+                <td><code>Inter, sans-serif</code></td>
+              </tr>
+              <tr>
+                <td>Opacity</td>
+                <td><code>alpha({color.primary}, 50%)</code></td>
+                <td><span class="swatch me-1" style="background:rgba(0,102,255,0.5);"></span><code>rgba(0, 102, 255, 0.5)</code></td>
+              </tr>
+              <tr>
+                <td>Darken</td>
+                <td><code>darken({color.primary}, 30%)</code></td>
+                <td><span class="swatch me-1" style="background:oklch(0.35 0.22 265);"></span><code>#003899</code></td>
+              </tr>
+              <tr>
+                <td>Lighten</td>
+                <td><code>lighten({color.primary}, 30%)</code></td>
+                <td><span class="swatch me-1" style="background:oklch(0.65 0.22 265);"></span><code>#66AAFF</code></td>
+              </tr>
+              <tr>
+                <td>Saturate</td>
+                <td><code>saturate({color.primary}, 50%)</code></td>
+                <td><span class="swatch me-1" style="background:oklch(0.5 0.33 265);"></span><code>#0044FF</code></td>
+              </tr>
+              <tr>
+                <td>Desaturate</td>
+                <td><code>desaturate({color.primary}, 65%)</code></td>
+                <td><span class="swatch me-1" style="background:oklch(0.5 0.077 265);"></span><code>#5577AA</code></td>
+              </tr>
+              <tr>
+                <td>Hue shift</td>
+                <td><code>hueShift({color.primary}, 30deg)</code></td>
+                <td><span class="swatch me-1" style="background:oklch(0.5 0.22 295);"></span><code>#5533FF</code></td>
+              </tr>
+              <tr>
+                <td>Plain color</td>
+                <td><code>"#0066FF"</code></td>
+                <td><span class="swatch me-1" style="background:#0066FF;"></span><code>#0066FF</code></td>
+              </tr>
+              <tr>
+                <td>Plain number</td>
+                <td><code>8</code></td>
+                <td><code>8</code></td>
+              </tr>
+              <tr>
+                <td>Plain text</td>
+                <td><code>"Inter"</code></td>
+                <td><code>Inter</code></td>
+              </tr>
+            </tbody>
+          </table>
+        </figure>
+
+        <h3>Accepted color formats</h3>
+
+        <figure>
+          <table class="table table-sm">
+            <thead>
+              <tr>
+                <th>Format</th>
+                <th>Example</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Hex</td>
+                <td><code>"#0066FF"</code></td>
+              </tr>
+              <tr>
+                <td>RGB</td>
+                <td><code>"rgb(0, 102, 255)"</code></td>
+              </tr>
+              <tr>
+                <td>RGBA</td>
+                <td><code>"rgba(0, 102, 255, 0.5)"</code></td>
+              </tr>
+              <tr>
+                <td>OKLch</td>
+                <td><code>"oklch(0.5 0.22 265)"</code></td>
+              </tr>
+              <tr>
+                <td>OKLch + alpha</td>
+                <td><code>"oklch(0.5 0.22 265 / 0.5)"</code></td>
+              </tr>
+            </tbody>
+          </table>
+        </figure>
+
+      </div>
+    </section>
+
+    <!-- ── Examples ─────────────────────────────────────────── -->
+    <section id="examples" class="doc-section">
+      <div class="doc-content">
+        <h2>Examples</h2>
+
+        <div class="d-flex gap-4 align-items-center mt-3 mb-2">
+          <div class="form-check form-switch mb-0">
+            <input class="form-check-input" type="checkbox" role="switch" id="toggle-modes">
+            <label class="form-check-label small" for="toggle-modes">Multi-mode</label>
+          </div>
+          <div class="form-check form-switch mb-0">
+            <input class="form-check-input" type="checkbox" role="switch" id="toggle-desc">
+            <label class="form-check-label small" for="toggle-desc">Description</label>
+          </div>
+          <div class="form-check form-switch mb-0">
+            <input class="form-check-input" type="checkbox" role="switch" id="toggle-scope">
+            <label class="form-check-label small" for="toggle-scope">Scope</label>
+          </div>
+        </div>
+
+        <div class="example-layout">
+          <div>
+            <div class="text-uppercase fw-bold text-secondary small mb-1" style="letter-spacing: 0.08em;">tokens.json</div>
+            <pre class="code-block mb-0"><code id="json-panel"></code></pre>
+          </div>
+          <div class="example-arrow" aria-hidden="true">→</div>
+          <div>
+            <div class="text-uppercase fw-bold text-secondary small mb-1" style="letter-spacing: 0.08em;">Figma Variables</div>
+            <div id="vars-panel"></div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  </div><!-- /.layout -->
+
+  <script src="script.js"></script>
+</body>
+</html>
