@@ -115,26 +115,25 @@
 				<h2>How it works</h2>
 				<p>Define tokens in JSON. Use expressions where needed:</p>
 				<pre class="code-block"><code><span class="j-brace">{</span>
-	<span class="j-key">"semantic"</span><span class="j-brace">: {</span>
-		<span class="j-key">"button"</span><span class="j-brace">: {</span>
-			<span class="j-key">"bg"</span><span class="j-brace">: {</span>
-				<span class="j-key">"$type"</span><span class="j-brace">:</span>  <span class="j-string">"color"</span><span class="j-brace">,</span>
-				<span class="j-key">"$value"</span><span class="j-brace">:</span> <span class="j-string">"{color.primary}"</span>
-			<span class="j-brace">},</span>   <span class="j-comment">// → native Figma alias</span>
-			<span class="j-key">"bg-hover"</span><span class="j-brace">: {</span>
-				<span class="j-key">"$type"</span><span class="j-brace">:</span>  <span class="j-string">"color"</span><span class="j-brace">,</span>
-				<span class="j-key">"$value"</span><span class="j-brace">:</span> <span class="j-fn">lighten</span><span class="j-brace">(</span><span class="j-string">"{color.primary}"</span><span class="j-brace">,</span> <span class="j-number">12%</span><span class="j-brace">)</span>
-			<span class="j-brace">},</span> <span class="j-comment">// → computed static value</span>
-			<span class="j-key">"bg-ghost"</span><span class="j-brace">: {</span>
-				<span class="j-key">"$type"</span><span class="j-brace">:</span>  <span class="j-string">"color"</span><span class="j-brace">,</span>
-				<span class="j-key">"$value"</span><span class="j-brace">:</span> <span class="j-fn">alpha</span><span class="j-brace">(</span><span class="j-string">"{color.primary}"</span><span class="j-brace">,</span> <span class="j-number">18%</span><span class="j-brace">)</span>
-			<span class="j-brace">},</span> <span class="j-comment">// → computed static value</span>
-			<span class="j-key">"padding"</span><span class="j-brace">: {</span>
-				<span class="j-key">"$type"</span><span class="j-brace">:</span>  <span class="j-string">"number"</span><span class="j-brace">,</span>
-				<span class="j-key">"$value"</span><span class="j-brace">:</span> <span class="j-string">"{spacing.base} * 2"</span>
-			<span class="j-brace">}</span>      <span class="j-comment">// → computed static value</span>
-		<span class="j-brace">}</span>
-	<span class="j-brace">}</span>
+  <span class="j-key">"foundation"</span><span class="j-brace">: {</span>
+    <span class="j-key">"color"</span><span class="j-brace">: {</span> <span class="j-key">"primary"</span><span class="j-brace">: {</span> <span class="j-key">"$type"</span><span class="j-brace">:</span> <span class="j-string">"color"</span><span class="j-brace">,</span> <span class="j-key">"$value"</span><span class="j-brace">:</span> <span class="j-string">"#0066FF"</span> <span class="j-brace">} }</span>
+  <span class="j-brace">},</span>
+  <span class="j-key">"semantic"</span><span class="j-brace">: {</span>
+    <span class="j-key">"color"</span><span class="j-brace">: {</span>
+      <span class="j-key">"hover"</span><span class="j-brace">: {</span>
+        <span class="j-key">"$type"</span><span class="j-brace">:</span>  <span class="j-string">"color"</span><span class="j-brace">,</span>
+        <span class="j-key">"$value"</span><span class="j-brace">:</span> <span class="j-fn">lighten</span><span class="j-brace">(</span><span class="j-string">"{color.primary}"</span><span class="j-brace">,</span> <span class="j-number">30%</span><span class="j-brace">)</span> <span class="j-comment">// → #66AAFF</span>
+      <span class="j-brace">},</span>
+      <span class="j-key">"muted"</span><span class="j-brace">: {</span>
+        <span class="j-key">"$type"</span><span class="j-brace">:</span>  <span class="j-string">"color"</span><span class="j-brace">,</span>
+        <span class="j-key">"$value"</span><span class="j-brace">:</span> <span class="j-fn">alpha</span><span class="j-brace">(</span><span class="j-string">"{color.primary}"</span><span class="j-brace">,</span> <span class="j-number">50%</span><span class="j-brace">)</span> <span class="j-comment">// → rgba(0, 102, 255, 0.5)</span>
+      <span class="j-brace">},</span>
+      <span class="j-key">"interactive"</span><span class="j-brace">: {</span>
+        <span class="j-key">"$type"</span><span class="j-brace">:</span>  <span class="j-string">"color"</span><span class="j-brace">,</span>
+        <span class="j-key">"$value"</span><span class="j-brace">:</span> <span class="j-string">"{color.primary}"</span> <span class="j-comment">// → Native Figma alias</span>
+      <span class="j-brace">}</span>
+    <span class="j-brace">}</span>
+  <span class="j-brace">}</span>
 <span class="j-brace">}</span></code></pre>
 
 				<p>
