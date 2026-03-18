@@ -310,5 +310,21 @@
 	</div><!-- /.layout -->
 
 	<script src="script.js"></script>
+	<script defer data-domain="vasiliy-dudin.github.io" src="https://analytics.dudin.design/js/script.js"></script>
+	<script>
+		window.plausible = window.plausible || function() { 
+			(window.plausible.q = window.plausible.q || []).push(arguments) 
+		};
+		window.addEventListener('load', function() {
+			plausible('pageview', {
+			props: {
+				screen_width: window.innerWidth,
+				screen_height: window.innerHeight,
+				screen_resolution: `${window.innerWidth}x${window.innerHeight}`,
+				device_pixel_ratio: window.devicePixelRatio
+			}
+			});
+		});
+	</script>
 </body>
 </html>
