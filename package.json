@@ -27,7 +27,7 @@
     "@codemirror/view": "^6.40.0",
     "@create-figma-plugin/ui": "^4.0.3",
     "@create-figma-plugin/utilities": "^4.0.3",
-    "@figma/plugin-typings": "^1.123.0",
+    "@figma/plugin-typings": "^1.124.0",
     "@types/node": "^25.5.0",
     "@types/postcss-url": "^10.0.4",
     "@vitejs/plugin-react": "^6.0.1",
@@ -39,12 +39,12 @@
     "postcss-url": "^10.1.3",
     "preact": "^10.29.0",
     "rimraf": "^6.1.3",
-    "typescript": "^5.9.3",
-    "vite": "^8.0.0",
+    "typescript": "^6.0.2",
+    "vite": "^8.0.3",
     "vite-plugin-generate-file": "^0.3.1",
     "vite-plugin-react-rich-svg": "^1.3.0",
     "vite-plugin-singlefile": "^2.3.2",
-    "vitest": "^4.1.0",
+    "vitest": "^4.1.2",
     "zod": "^4.3.6"
   }
 }
