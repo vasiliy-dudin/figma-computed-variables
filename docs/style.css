@@ -1,6 +1,6 @@
 /* ── Custom Properties ─────────────────────────────────────── */
 
-body { background: var(--bs-tertiary-bg); }
+body { background: linear-gradient(in oklch 90deg, #00298b 0.0%, #003266 100.0%) }
 
 :root {
 	--bs-body-font-size: 18px;
@@ -56,8 +56,8 @@ body { background: var(--bs-tertiary-bg); }
 	top: 1.5rem;
 	height: calc(100vh - 3rem);
 	overflow: auto;
-	border: 1px solid var(--bs-border-color);
 	border-radius: 12px;
+	background: var(--bs-body-bg);
 }
 .logo-placeholder {
 	width: 28px;
@@ -107,7 +107,6 @@ body { background: var(--bs-tertiary-bg); }
 
 .doc-section {
 	background: var(--bs-body-bg);
-	border: 1px solid var(--bs-border-color);
 	border-radius: 12px;
 }
 .doc-section > .hero {
@@ -238,9 +237,6 @@ body { background: var(--bs-tertiary-bg); }
 		position: sticky;
 		top: 0;
 		border-radius: 0;
-		border-left: none;
-		border-right: none;
-		border-top: none;
 		flex-direction: row;
 		overflow-x: auto;
 		overflow-y: visible;
