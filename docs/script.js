@@ -251,6 +251,11 @@
     var navLinks = document.querySelectorAll('.sidebar-nav a[href^="#"]');
     if (!navLinks.length) return;
 
+    navLinks[0].addEventListener('click', function (e) {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
     var sectionIds = Array.from(navLinks).map(function (a) {
       return a.getAttribute('href').slice(1);
     });
