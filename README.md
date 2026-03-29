@@ -9,7 +9,7 @@ Tokens are defined in JSON with math, color modifier functions, and alias refere
 - **Modifies colors with functions** — lighten, darken, shift hue, or change opacity right inside the token value
 - **Evaluates math expressions** — token values can reference other variables and use arithmetic: `{spacing.base} * 2`
 - **Concatenates text tokens** — combine a variable reference with a static string: `{font.family}, sans-serif`
-- **OKLCH support** — a perceptually uniform color space where lightness steps look consistent across all hues
+- **Adds OKLCH support** — a perceptually uniform color space where lightness steps look consistent across all hues
 - **Imports existing Variables** — read existing Figma Variables and convert them to JSON, with all aliases preserved
 
 ## How it works
