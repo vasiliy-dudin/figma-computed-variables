@@ -63,7 +63,7 @@
 				<!-- <div class="screenshot-placeholder rounded-3 border border-2 mb-4 d-flex align-items-center justify-content-center text-secondary small">Plugin screenshot</div> -->
 				<div class="d-flex gap-3 flex-wrap">
 					<!-- TODO: Replace # with actual Figma plugin URL -->
-					<a href="#" class="btn btn-primary btn-lg d-inline-flex align-items-center gap-2">
+					<a href="#" class="btn btn-dark btn-lg d-inline-flex align-items-center gap-2">
 						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 300" width="24" height="24" fill="currentColor" aria-hidden="true" class="flex-shrink-0">
 							<path d="M50 300c27.6 0 50-22.4 50-50v-50H50c-27.6 0-50 22.4-50 50s22.4 50 50 50z"/>
 							<path d="M0 150c0-27.6 22.4-50 50-50h50v100H50c-27.6 0-50-22.4-50-50z"/>
@@ -141,7 +141,7 @@
 							<div class="card-body">
 								<div class="text-secondary fw-bold small mb-2">Step 1</div>
 								<div class="fw-semibold mb-1">Get the JSON</div>
-								<div class="small">Start from scratch, or use <em>Import from Variables</em> to convert existing Figma Variables to JSON in one click</div>
+								<div class="small">Start from scratch, or hit <em>Import from Variables</em> to convert existing Figma Variables to JSON in one click</div>
 							</div>
 						</div>
 					</div>
@@ -150,7 +150,7 @@
 							<div class="card-body">
 								<div class="text-secondary fw-bold small mb-2">Step 2</div>
 								<div class="fw-semibold mb-1">Add expressions</div>
-								<div class="small">Replace static values with modifiers, math, or aliases — manually or with an AI agent</div>
+								<div class="small">Replace static values with expressions — manually or with an AI agent</div>
 							</div>
 						</div>
 					</div>
@@ -159,34 +159,11 @@
 							<div class="card-body">
 								<div class="text-secondary fw-bold small mb-2">Step 3</div>
 								<div class="fw-semibold mb-1">Apply</div>
-								<div class="small">The plugin evaluates all expressions and writes the computed values to Figma Variables</div>
+								<div class="small">The plugin will check all the expressions and save the computed values to Figma Variables</div>
 							</div>
 						</div>
 					</div>
 				</div>
-
-				<p class="text-secondary small mb-2">Example:</p>
-				<pre class="code-block"><code><span class="j-brace">{</span>
-  <span class="j-key">"foundation"</span><span class="j-brace">: {</span>
-    <span class="j-key">"color"</span><span class="j-brace">: {</span> <span class="j-key">"primary"</span><span class="j-brace">: {</span> <span class="j-key">"$type"</span><span class="j-brace">:</span> <span class="j-string">"color"</span><span class="j-brace">,</span> <span class="j-key">"$value"</span><span class="j-brace">:</span> <span class="j-string">"#0066FF"</span> <span class="j-brace">} }</span>
-  <span class="j-brace">},</span>
-  <span class="j-key">"semantic"</span><span class="j-brace">: {</span>
-    <span class="j-key">"color"</span><span class="j-brace">: {</span>
-      <span class="j-key">"hover"</span><span class="j-brace">: {</span>
-        <span class="j-key">"$type"</span><span class="j-brace">:</span>  <span class="j-string">"color"</span><span class="j-brace">,</span>
-        <span class="j-key">"$value"</span><span class="j-brace">:</span> <span class="j-fn">lighten</span><span class="j-brace">(</span><span class="j-string">"{color.primary}"</span><span class="j-brace">,</span> <span class="j-number">30%</span><span class="j-brace">)</span> <span class="j-comment">// → #66AAFF</span>
-      <span class="j-brace">},</span>
-      <span class="j-key">"muted"</span><span class="j-brace">: {</span>
-        <span class="j-key">"$type"</span><span class="j-brace">:</span>  <span class="j-string">"color"</span><span class="j-brace">,</span>
-        <span class="j-key">"$value"</span><span class="j-brace">:</span> <span class="j-fn">alpha</span><span class="j-brace">(</span><span class="j-string">"{color.primary}"</span><span class="j-brace">,</span> <span class="j-number">50%</span><span class="j-brace">)</span> <span class="j-comment">// → rgba(0, 102, 255, 0.5)</span>
-      <span class="j-brace">},</span>
-      <span class="j-key">"interactive"</span><span class="j-brace">: {</span>
-        <span class="j-key">"$type"</span><span class="j-brace">:</span>  <span class="j-string">"color"</span><span class="j-brace">,</span>
-        <span class="j-key">"$value"</span><span class="j-brace">:</span> <span class="j-string">"{color.primary}"</span> <span class="j-comment">// → Native Figma alias</span>
-      <span class="j-brace">}</span>
-    <span class="j-brace">}</span>
-  <span class="j-brace">}</span>
-<span class="j-brace">}</span></code></pre>
 
 				<div class="callout mt-4">
 					<div class="fw-semibold mb-1">Recommendation: treat JSON file as the single source of truth</div>
