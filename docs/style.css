@@ -64,20 +64,14 @@ body {
 	border-radius: 12px;
 	background: var(--bs-body-bg);
 }
-.logo-placeholder {
-	width: 28px;
-	height: 28px;
-	border-radius: 6px;
+.sidebar-logo-area {
+	gap: 12px;
+}
+.logo {
+	width: 64px;
+	height: 64px;
+	border-radius: 12px;
 	flex-shrink: 0;
-	background: rgba(var(--bs-primary-rgb), 0.12);
-	border: 1.5px dashed var(--bs-primary);
-}
-.sidebar-logo {
-	letter-spacing: -0.02em;
-	color: var(--bs-body-color);
-}
-.sidebar-logo:hover {
-	color: var(--bs-primary);
 }
 .page-main {
 	min-width: 0;
