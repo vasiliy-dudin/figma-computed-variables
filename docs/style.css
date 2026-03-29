@@ -144,6 +144,20 @@ body {
 
 /* ── Examples ──────────────────────────────────────────────── */
 
+.example-toggle {
+	padding-left: 0;
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	cursor: pointer;
+}
+.example-toggle .form-check-input {
+	float: none;
+	margin: 0;
+	flex-shrink: 0;
+	cursor: pointer;
+}
+
 .example-layout {
 	display: grid;
 	grid-template-columns: 1fr auto 1fr;
@@ -153,8 +167,11 @@ body {
 .example-layout > div:last-child { position: sticky; top: 1.5rem; }
 .example-arrow {
 	color: var(--bs-secondary-color);
-	padding: 0 1.25rem;
-	padding-top: 2rem;
+	padding: 2rem 1.25rem 0;
+	font-size: 1.75rem;
+	position: sticky;
+	top: 110px;
+	align-self: start;
 	-webkit-user-select: none;
 	user-select: none;
 }
