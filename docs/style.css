@@ -89,7 +89,7 @@ body {
 	gap: 24px;
 }
 .sidebar-nav .nav-link {
-	padding: 0.28rem 0.6rem;
+	padding: 0.8rem 0.6rem;
 	border-radius: 5px;
 }
 .sidebar .sidebar-nav .nav-link:hover {
@@ -97,7 +97,7 @@ body {
 }
 .sidebar-nav .nav-link.active {
 	color: var(--bs-primary);
-	background: rgba(var(--bs-primary-rgb), 0.09);
+	background: var(--bs-primary-bg-subtle) !important;
 	font-weight: 500;
 }
 
