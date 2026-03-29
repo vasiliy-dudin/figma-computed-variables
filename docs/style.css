@@ -204,7 +204,7 @@ body {
 	text-align: left;
 	padding: 0.4rem 0.7rem;
 	font-weight: 700;
-	background: color-mix(in srgb, var(--code-border) 40%, var(--code-bg));f
+	background: color-mix(in srgb, var(--code-border) 40%, var(--code-bg));
 	color: var(--j-brace);
 	border-bottom: 1px solid var(--code-border);
 }
