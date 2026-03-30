@@ -44,9 +44,9 @@ export async function applyToVariables(json: TokenJSON): Promise<ApplyResult> {
 		const tokenMap = createTokenMap(json);
 		
 		// 4. Create or update variables
-		const collectionVariables = collection.variableIds
-			.map(id => figma.variables.getVariableById(id))
-			.filter(Boolean) as Variable[];
+		const collectionVariables = (await Promise.all(
+			collection.variableIds.map(id => figma.variables.getVariableByIdAsync(id))
+		)).filter(Boolean) as Variable[];
 		
 		for (const [tokenPath, token] of flatTokens) {
 			const figmaType = TYPE_MAP[token.$type];
@@ -88,7 +88,7 @@ export async function applyToVariables(json: TokenJSON): Promise<ApplyResult> {
 						const fullPath = `${collectionName}.${tokenPath}`;
 						const resolved = resolveToken(fullPath, mode.name, tokenMap);
 
-						setVariableValue(variable, mode.modeId, resolved, figmaType);
+						await setVariableValue(variable, mode.modeId, resolved, figmaType);
 					} catch (err) {
 						collectionErrors.push({
 							collection: collectionName,
@@ -121,15 +121,15 @@ export async function applyToVariables(json: TokenJSON): Promise<ApplyResult> {
 /**
  * Set a variable value (handles both aliases and computed values)
  */
-function setVariableValue(
+async function setVariableValue(
 	variable: Variable,
 	modeId: string,
 	resolved: ResolvedValue,
 	figmaType: VariableResolvedDataType
-): void {
+): Promise<void> {
 	if (resolved.isAlias) {
 		// Set as native Figma alias
-		const targetVariable = findVariableByPath(resolved.targetPath);
+		const targetVariable = await findVariableByPath(resolved.targetPath);
 		if (targetVariable) {
 			variable.setValueForMode(modeId, {
 				type: 'VARIABLE_ALIAS',
@@ -148,8 +148,8 @@ function setVariableValue(
 /**
  * Find a variable by its token path (bare "tokenName" or full "collection.tokenName")
  */
-function findVariableByPath(path: string): Variable | null {
-	const collections = figma.variables.getLocalVariableCollections();
+async function findVariableByPath(path: string): Promise<Variable | null> {
+	const collections = await figma.variables.getLocalVariableCollectionsAsync();
 	const collectionNames = new Set(collections.map(c => c.name));
 
 	// Determine whether the path has a collection prefix by checking if
@@ -168,7 +168,7 @@ function findVariableByPath(path: string): Variable | null {
 	for (const collection of collections) {
 		if (collectionName !== null && collection.name !== collectionName) continue;
 		for (const varId of collection.variableIds) {
-			const variable = figma.variables.getVariableById(varId);
+			const variable = await figma.variables.getVariableByIdAsync(varId);
 			if (variable && variable.name === figmaVarName) {
 				return variable;
 			}

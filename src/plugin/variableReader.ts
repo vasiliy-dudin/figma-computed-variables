@@ -12,7 +12,9 @@ export async function importVariablesToJSON(): Promise<TokenJSON> {
 	
 	for (const collection of collections) {
 		// Get all variables in this collection
-		const variables = collection.variableIds.map(id => figma.variables.getVariableById(id)!).filter(Boolean);
+		const variables = (await Promise.all(
+			collection.variableIds.map(id => figma.variables.getVariableByIdAsync(id))
+		)).filter(Boolean) as Variable[];
 		
 		// Build flat map: dot-path → Token
 		const flatTokens = new Map<string, Token>();
@@ -23,7 +25,7 @@ export async function importVariablesToJSON(): Promise<TokenJSON> {
 			// Get values for each mode
 			for (const mode of collection.modes) {
 				const value = variable.valuesByMode[mode.modeId];
-				modes[mode.name] = formatValue(value, variable.resolvedType);
+				modes[mode.name] = await formatValue(value, variable.resolvedType);
 			}
 
 			const tokenType = FIGMA_TYPE_MAP[variable.resolvedType];
@@ -60,9 +62,9 @@ export async function importVariablesToJSON(): Promise<TokenJSON> {
 /**
  * Format a Figma variable value to token format
  */
-function formatValue(value: VariableValue, type: VariableResolvedDataType): string | number {
+async function formatValue(value: VariableValue, type: VariableResolvedDataType): Promise<string | number> {
 	if (value !== null && typeof value === 'object' && 'type' in value && value.type === 'VARIABLE_ALIAS') {
-		const target = figma.variables.getVariableById(value.id);
+		const target = await figma.variables.getVariableByIdAsync(value.id);
 		if (!target) return '';
 
 		// Convert Figma slash-path to dot-path for plugin alias syntax
