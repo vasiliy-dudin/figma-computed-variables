@@ -9,7 +9,7 @@
     "skipLibCheck": true,
 
     /* Bundler mode */
-    "moduleResolution": "Node",
+    "moduleResolution": "Bundler",
     "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
@@ -21,7 +21,8 @@
       "@common/*": ["./src/common/*"],
       "@ui/*": ["./src/ui/*"],
       "@plugin/*": ["./src/plugin/*"],
-      "@core/*": ["./src/core/*"]
+      "@core/*": ["./src/core/*"],
+      "monorepo-networker": ["./node_modules/monorepo-networker/dist/index.d.ts"]
     }
   },
   "include": [

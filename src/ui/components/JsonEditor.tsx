@@ -4,7 +4,7 @@ import { EditorView, basicSetup } from 'codemirror';
 import { keymap } from '@codemirror/view';
 import { json } from '@codemirror/lang-json';
 import { oneDark } from '@codemirror/theme-one-dark';
-import { EditorState } from '@codemirror/state';
+import { EditorState, Transaction } from '@codemirror/state';
 
 interface JsonEditorProps {
 	value: string;
@@ -87,7 +87,7 @@ export function JsonEditor({ value, onChange }: JsonEditorProps) {
 					},
 				]),
 				EditorView.updateListener.of((update) => {
-					if (update.docChanged) {
+					if (update.docChanged && !update.transactions.some(tr => tr.annotation(Transaction.remote))) {
 						onChange(update.state.doc.toString());
 					}
 				}),
@@ -114,6 +114,7 @@ export function JsonEditor({ value, onChange }: JsonEditorProps) {
 					to: viewRef.current.state.doc.length,
 					insert: value,
 				},
+				annotations: Transaction.remote.of(true),
 			});
 		}
 	}, [value]);
