@@ -7,8 +7,8 @@ interface DocLink {
 }
 
 const DOC_LINKS: DocLink[] = [
-	{ label: 'Token Modifications', url: 'https://github.com/vasiliy-dudin/figma-computed-variables' },
-	{ label: 'JSON Examples', url: 'https://github.com/vasiliy-dudin/figma-computed-variables' },
+	{ label: 'Token Expressions', url: 'https://vasiliy-dudin.github.io/figma-computed-variables/#expressions' },
+	{ label: 'JSON Examples', url: 'https://vasiliy-dudin.github.io/figma-computed-variables/#examples' },
 	{ label: 'About the plugin', url: 'https://github.com/vasiliy-dudin/figma-computed-variables' },
 ];
 
