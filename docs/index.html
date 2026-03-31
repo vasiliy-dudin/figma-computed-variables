@@ -21,15 +21,15 @@
 			</div>
 		</div>
 		<nav class="sidebar-nav d-flex flex-column py-3 px-2" aria-label="Documentation">
-			<a href="#overview"     class="nav-link">Overview</a>
-			<a href="#the-problem"  class="nav-link">What it does</a>
-			<a href="#how-it-works" class="nav-link">How it works</a>
-			<a href="#expressions"  class="nav-link">Expressions</a>
-			<a href="#examples"     class="nav-link">Examples</a>
+			<a href="#overview"     class="nav-link" onclick="plausible('Nav link', { props: { section: 'Overview' } })">Overview</a>
+			<a href="#the-problem"  class="nav-link" onclick="plausible('Nav link', { props: { section: 'What it does' } })">What it does</a>
+			<a href="#how-it-works" class="nav-link" onclick="plausible('Nav link', { props: { section: 'How it works' } })">How it works</a>
+			<a href="#expressions"  class="nav-link" onclick="plausible('Nav link', { props: { section: 'Expressions' } })">Expressions</a>
+			<a href="#examples"     class="nav-link" onclick="plausible('Nav link', { props: { section: 'Examples' } })">Examples</a>
 		</nav>
 
 		<div class="sidebar-footer mt-auto d-flex flex-column gap-1 p-3 border-top flex-shrink-0">
-			<a href="https://www.figma.com/community/plugin/1620466456228016831/computed-variables" target="_blank" rel="noopener" class="sidebar-ext-link nav-link d-inline-flex align-items-center gap-2 px-2 py-1 small">
+			<a href="https://www.figma.com/community/plugin/1620466456228016831/computed-variables" target="_blank" rel="noopener" class="sidebar-ext-link nav-link d-inline-flex align-items-center gap-2 px-2 py-1 small" onclick="plausible('Install link', { props: { location: 'sidebar' } })">
 				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 300" width="24" height="24" aria-hidden="true" class="flex-shrink-0">
 					<path fill="#0acf83" d="M50 300c27.6 0 50-22.4 50-50v-50H50c-27.6 0-50 22.4-50 50s22.4 50 50 50z"/>
 					<path fill="#a259ff" d="M0 150c0-27.6 22.4-50 50-50h50v100H50c-27.6 0-50-22.4-50-50z"/>
@@ -39,7 +39,7 @@
 				</svg>
 				<span>Install on Figma</span>
 			</a>
-			<a href="https://github.com/vasiliy-dudin/figma-computed-variables" target="_blank" rel="noopener" class="sidebar-ext-link nav-link d-inline-flex align-items-center gap-2 px-2 py-1 small">
+			<a href="https://github.com/vasiliy-dudin/figma-computed-variables" target="_blank" rel="noopener" class="sidebar-ext-link nav-link d-inline-flex align-items-center gap-2 px-2 py-1 small" onclick="plausible('GitHub link', { props: { location: 'sidebar' } })">
 				<svg viewBox="0 0 16 16" width="24" height="24" fill="currentColor" aria-hidden="true" class="flex-shrink-0">
 					<path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
 				</svg>
@@ -60,7 +60,7 @@
 				<!-- TODO: Replace with <img src="screenshot.png" alt="Computed Variables plugin UI" class="w-100 rounded-3 mb-4"> -->
 				<!-- <div class="screenshot-placeholder rounded-3 border border-2 mb-4 d-flex align-items-center justify-content-center text-secondary small">Plugin screenshot</div> -->
 				<div class="d-flex gap-3 flex-wrap">
-					<a href="https://www.figma.com/community/plugin/1620466456228016831/computed-variables" class="btn btn-dark btn-lg d-inline-flex align-items-center gap-2">
+					<a href="https://www.figma.com/community/plugin/1620466456228016831/computed-variables" class="btn btn-dark btn-lg d-inline-flex align-items-center gap-2" onclick="plausible('Install link', { props: { location: 'overview' } })">
 						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 300" width="24" height="24" fill="currentColor" aria-hidden="true" class="flex-shrink-0">
 							<path d="M50 300c27.6 0 50-22.4 50-50v-50H50c-27.6 0-50 22.4-50 50s22.4 50 50 50z"/>
 							<path d="M0 150c0-27.6 22.4-50 50-50h50v100H50c-27.6 0-50-22.4-50-50z"/>
@@ -70,7 +70,7 @@
 						</svg>
 						Install on Figma
 					</a>
-					<a href="https://github.com/vasiliy-dudin/figma-computed-variables" target="_blank" rel="noopener" class="btn btn-secondary btn-lg d-inline-flex align-items-center gap-2">
+					<a href="https://github.com/vasiliy-dudin/figma-computed-variables" target="_blank" rel="noopener" class="btn btn-secondary btn-lg d-inline-flex align-items-center gap-2" onclick="plausible('GitHub link', { props: { location: 'overview' } })">
 						<svg viewBox="0 0 16 16" width="24" height="24" fill="currentColor" aria-hidden="true" class="flex-shrink-0">
 							<path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
 						</svg>
@@ -291,15 +291,15 @@
 
 				<div class="d-flex gap-4 align-items-center mt-3 mb-2">
 					<label class="form-check form-switch mb-0 example-toggle">
-						<input class="form-check-input" type="checkbox" role="switch" id="toggle-modes">
+						<input class="form-check-input" type="checkbox" role="switch" id="toggle-modes" onchange="plausible('Example toggle', { props: { toggle: 'Multi-mode', state: this.checked ? 'on' : 'off' } })">
 						<span class="small">Multi-mode</span>
 					</label>
 					<label class="form-check form-switch mb-0 example-toggle">
-						<input class="form-check-input" type="checkbox" role="switch" id="toggle-desc">
+						<input class="form-check-input" type="checkbox" role="switch" id="toggle-desc" onchange="plausible('Example toggle', { props: { toggle: 'Description', state: this.checked ? 'on' : 'off' } })">
 						<span class="small">Description</span>
 					</label>
 					<label class="form-check form-switch mb-0 example-toggle">
-						<input class="form-check-input" type="checkbox" role="switch" id="toggle-scope">
+						<input class="form-check-input" type="checkbox" role="switch" id="toggle-scope" onchange="plausible('Example toggle', { props: { toggle: 'Scope', state: this.checked ? 'on' : 'off' } })">
 						<span class="small">Scope</span>
 					</label>
 				</div>
