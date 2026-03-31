@@ -101,12 +101,14 @@ body {
 
 /* ── Content ───────────────────────────────────────────────── */
 
-.doc-section {
+section {
+	padding: 48px 48px;
 	background: var(--bs-body-bg);
 	border-radius: 12px;
 }
-.doc-content {
-	padding: 3.5rem 4.5rem 3rem;
+
+.card {
+	--bs-card-border-radius: 16px;
 }
 
 /* ── Code block ────────────────────────────────────────────── */
