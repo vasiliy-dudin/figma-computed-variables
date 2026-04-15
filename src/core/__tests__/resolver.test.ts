@@ -338,3 +338,93 @@ describe('resolveToken — error cases', () => {
 		expect(() => resolveToken('tokens.a', 'light', map)).toThrow(CircularDependencyError);
 	});
 });
+
+describe('resolveToken — chained aliases', () => {
+	it('applies alpha() when the target is a 2-hop alias chain', () => {
+		// schemes.on-info → schemes.on-secondary → literal color
+		const json: TokenJSON = {
+			foundation: {
+				color: { base: { $type: 'color', $value: BASE_HEX } },
+			},
+			schemes: {
+				'on-secondary': { $type: 'color', $value: '{foundation.color.base}' },
+				'on-info': { $type: 'color', $value: '{schemes.on-secondary}' },
+			},
+			components: {
+				overlay: { $type: 'color', $value: 'alpha({schemes.on-info}, 8%)' },
+			},
+		};
+		const result = resolveToken('components.overlay', 'light', makeMap(json));
+		expect(result.isAlias).toBe(false);
+		if (!result.isAlias) {
+			const rgba = result.value as RGBA;
+			expect(rgba.r).toBeCloseTo(0x34 / 255, 5);
+			expect(rgba.g).toBeCloseTo(0x78 / 255, 5);
+			expect(rgba.b).toBeCloseTo(0xf6 / 255, 5);
+			expect(rgba.a).toBeCloseTo(0.08, 5);
+		}
+	});
+
+	it('evaluates math when the operand is a 2-hop alias chain', () => {
+		// computed.gap → foundation.spacing.alias → foundation.spacing.base (= 4)
+		const json: TokenJSON = {
+			foundation: {
+				spacing: {
+					base: { $type: 'number', $value: 4 },
+					alias: { $type: 'number', $value: '{foundation.spacing.base}' },
+				},
+			},
+			computed: {
+				gap: { $type: 'number', $value: '{foundation.spacing.alias} * 3' },
+			},
+		};
+		const result = resolveToken('computed.gap', 'light', makeMap(json));
+		expect(result).toEqual({ isAlias: false, value: 12 });
+	});
+
+	it('applies colorModify when the target is a 2-hop alias chain', () => {
+		const json: TokenJSON = {
+			foundation: {
+				color: { base: { $type: 'color', $value: BASE_HEX } },
+			},
+			schemes: {
+				primary: { $type: 'color', $value: '{foundation.color.base}' },
+				'primary-alias': { $type: 'color', $value: '{schemes.primary}' },
+			},
+			computed: {
+				dark: { $type: 'color', $value: 'darken({schemes.primary-alias}, 20%)' },
+			},
+		};
+		const result = resolveToken('computed.dark', 'light', makeMap(json));
+		expect(result.isAlias).toBe(false);
+		if (!result.isAlias) {
+			const originalOklch = rgbaToOklch(hexToRgba(BASE_HEX))!;
+			const resultOklch = rgbaToOklch(result.value as RGBA)!;
+			expect(resultOklch.l).toBeLessThan(originalOklch.l!);
+		}
+	});
+
+	it('throws CircularDependencyError when a chained alias forms a cycle (pure alias chain)', () => {
+		const json: TokenJSON = {
+			tokens: {
+				a: { $type: 'color', $value: '{tokens.b}' },
+				b: { $type: 'color', $value: '{tokens.a}' },
+				computed: { $type: 'color', $value: 'alpha({tokens.a}, 20%)' },
+			},
+		};
+		const map = makeMap(json);
+		expect(() => resolveToken('tokens.computed', 'light', map)).toThrow(CircularDependencyError);
+	});
+
+	it('throws CircularDependencyError when a computed token aliases back to itself', () => {
+		// computed → a → computed (the topology introduced by resolveToConcreteValue)
+		const json: TokenJSON = {
+			tokens: {
+				computed: { $type: 'color', $value: 'alpha({tokens.a}, 20%)' },
+				a: { $type: 'color', $value: '{tokens.computed}' },
+			},
+		};
+		const map = makeMap(json);
+		expect(() => resolveToken('tokens.computed', 'light', map)).toThrow(CircularDependencyError);
+	});
+});

@@ -300,25 +300,7 @@ function validateModifierReference(ctx: ModifierReferenceContext): ValidationErr
 		errors.push(createSyntaxError(collectionName, tokenPath, mode, `${fn}() can reference only color tokens (found "${refPath}" of type "${referencedToken.$type}").`));
 	}
 
-	if (tokenIsAlias(referencedToken, mode)) {
-		errors.push(createSyntaxError(collectionName, tokenPath, mode, `${fn}() cannot target alias token "${refPath}". Reference the resolved color token instead.`));
-	}
-
 	return errors;
-}
-
-function tokenIsAlias(token: Token, mode?: string): boolean {
-	const rawValue = token.$value;
-	if (typeof rawValue === 'string') {
-		return PATTERNS.bareAlias.test(rawValue);
-	}
-	if (typeof rawValue === 'number') {
-		return false;
-	}
-	if (mode && rawValue[mode] !== undefined) {
-		return typeof rawValue[mode] === 'string' && PATTERNS.bareAlias.test(String(rawValue[mode]));
-	}
-	return Object.values(rawValue).some(value => typeof value === 'string' && PATTERNS.bareAlias.test(value));
 }
 
 function createSyntaxError(collection: string, token: string, mode: string | undefined, message: string): ValidationError {

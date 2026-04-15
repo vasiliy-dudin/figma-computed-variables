@@ -167,7 +167,7 @@ describe('validate — syntax errors', () => {
 		}
 	});
 
-	it('reports error when modifier targets an alias token', () => {
+	it('accepts modifier that targets an alias color token (chained aliases are resolved)', () => {
 		const json: TokenJSON = {
 			foundation: {
 				color: {
@@ -177,16 +177,13 @@ describe('validate — syntax errors', () => {
 			},
 			semantic: {
 				button: {
-					// darken() targets an alias — this should be an error
+					// darken() targets an alias — now valid; resolver follows the chain
 					bg: { $type: 'color', $value: 'darken({foundation.color.alias}, 10%)' },
 				},
 			},
 		};
 		const result = validate(json);
-		expect(result.valid).toBe(false);
-		if (!result.valid) {
-			expect(result.errors.some(e => e.errorType === 'syntax')).toBe(true);
-		}
+		expect(result.valid).toBe(true);
 	});
 
 	it('reports error when modifier targets a non-color token', () => {

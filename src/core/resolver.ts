@@ -82,21 +82,14 @@ export function resolveToken(
 			return { isAlias: true, targetPath: expr.path };
 		
 		case 'alpha': {
-			// Computed value (alpha multiplication)
-			const baseColor = resolveToken(expr.tokenPath, mode, tokenMap, new Set(visited));
-			if (baseColor.isAlias) {
-				throw new Error(`Cannot apply alpha() to alias: ${expr.tokenPath}`);
-			}
-			// Type narrowing: if not alias, then it has value property
+			// Computed value (alpha multiplication) — follow alias chains to reach a concrete color
+			const baseColor = resolveToConcreteValue(expr.tokenPath, mode, tokenMap, new Set(visited));
 			return { isAlias: false, value: applyAlpha(baseColor.value, expr.alpha) };
 		}
 
 		case 'colorModify': {
-			// Computed value (perceptual color modification)
-			const baseColor = resolveToken(expr.tokenPath, mode, tokenMap, new Set(visited));
-			if (baseColor.isAlias) {
-				throw new Error(`Cannot apply ${expr.fn}() to alias: ${expr.tokenPath}`);
-			}
+			// Computed value (perceptual color modification) — follow alias chains to reach a concrete color
+			const baseColor = resolveToConcreteValue(expr.tokenPath, mode, tokenMap, new Set(visited));
 			return { isAlias: false, value: applyColorModify(baseColor.value, expr.fn, expr.amount) };
 		}
 		
@@ -112,6 +105,26 @@ export function resolveToken(
 			return { isAlias: false, value: result };
 		}
 	}
+}
+
+/**
+ * Resolve a token to a concrete (non-alias) value by following alias chains.
+ * Used when a computed expression (alpha, colorModify, math, concat) needs the
+ * actual value of a token that may itself be a pure alias pointing to another alias.
+ * `visited` is mutated in place across the chain — do NOT copy it in the recursive
+ * call here; copying happens at the call sites inside resolveToken's switch cases.
+ */
+function resolveToConcreteValue(
+	tokenPath: string,
+	mode: string,
+	tokenMap: TokenMap,
+	visited: Set<string>
+): Exclude<ResolvedValue, { isAlias: true }> {
+	const result = resolveToken(tokenPath, mode, tokenMap, visited);
+	if (!result.isAlias) {
+		return result;
+	}
+	return resolveToConcreteValue(result.targetPath, mode, tokenMap, visited);
 }
 
 /**
@@ -220,12 +233,8 @@ function evaluateMath(
 	
 	while ((match = tokenRegex.exec(expression)) !== null) {
 		const tokenPath = match[1];
-		const tokenValue = resolveToken(tokenPath, mode, tokenMap, new Set(visited));
-		
-		if (tokenValue.isAlias) {
-			throw new Error(`Cannot use alias in math expression: ${tokenPath}`);
-		}
-		
+		const tokenValue = resolveToConcreteValue(tokenPath, mode, tokenMap, new Set(visited));
+
 		if (typeof tokenValue.value !== 'number') {
 			throw new Error(`Token ${tokenPath} is not a number (found: ${typeof tokenValue.value})`);
 		}
@@ -262,12 +271,8 @@ function evaluateConcat(
 			return part;
 		}
 		
-		const tokenValue = resolveToken(part.path, mode, tokenMap, new Set(visited));
-		
-		if (tokenValue.isAlias) {
-			throw new Error(`Cannot use alias in string concatenation: ${part.path}`);
-		}
-		
+		const tokenValue = resolveToConcreteValue(part.path, mode, tokenMap, new Set(visited));
+
 		return String(tokenValue.value);
 	}).join('');
 }
