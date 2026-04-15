@@ -30,6 +30,9 @@ body {
 .j-string {
 	color: var(--j-string);
 }
+.j-ref {
+	color: var(--j-string);
+}
 .j-fn {
 	color: var(--j-fn);
 	font-weight: 600;

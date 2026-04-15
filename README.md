@@ -87,15 +87,15 @@ Tokens are defined in JSON with math, color modifier functions, and alias refere
       },
       "interactiveHover": {
         "$type":  "color",
-        "$value": lighten("{color.primary}", 12%)
+        "$value": lighten({color.primary}, 12%)
       },
       "interactiveActive": {
         "$type":  "color",
-        "$value": darken("{color.primary}", 15%)
+        "$value": darken({color.primary}, 15%)
       },
       "interactiveMuted": {
         "$type":  "color",
-        "$value": alpha("{color.primary}", 18%)
+        "$value": alpha({color.primary}, 18%)
       }
     },
     "spacing": {
@@ -160,36 +160,36 @@ Tokens are defined in JSON with math, color modifier functions, and alias refere
       "background": {
         "$type":  "color",
         "$value": {
-          "Mode 1": "{color.surface}",
+          "Mode 1": "{color.surface},
           "Mode 2": "{color.surface}"
         }
       },
       "interactive": {
         "$type":  "color",
         "$value": {
-          "Mode 1": "{color.primary}",
+          "Mode 1": "{color.primary},
           "Mode 2": "{color.primary}"
         }
       },
       "interactiveHover": {
         "$type":  "color",
         "$value": {
-          "Mode 1": lighten("{color.primary}", 12%),
-          "Mode 2": lighten("{color.primary}", 8%)
+          "Mode 1": lighten({color.primary}, 12%),
+          "Mode 2": lighten({color.primary}, 8%)
         }
       },
       "interactiveActive": {
         "$type":  "color",
         "$value": {
-          "Mode 1": darken("{color.primary}", 15%),
-          "Mode 2": darken("{color.primary}", 12%)
+          "Mode 1": darken({color.primary}, 15%),
+          "Mode 2": darken({color.primary}, 12%)
         }
       },
       "interactiveMuted": {
         "$type":  "color",
         "$value": {
-          "Mode 1": alpha("{color.primary}", 18%),
-          "Mode 2": alpha("{color.primary}", 12%)
+          "Mode 1": alpha({color.primary}, 18%),
+          "Mode 2": alpha({color.primary}, 12%)
         }
       }
     },

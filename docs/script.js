@@ -13,8 +13,12 @@
     return '<span class="j-string">"{' + path + '}"</span>';
   }
 
+  function jRefArg(path) {
+    return '<span class="j-ref">{' + path + '}</span>';
+  }
+
   function jFnCall(name, ref, amount) {
-    return jFn(name) + jBr('(') + jRef(ref) + jBr(',') + ' ' + jNum(amount) + jBr(')');
+    return jFn(name) + jBr('(') + jRefArg(ref) + jBr(',') + ' ' + jNum(amount) + jBr(')');
   }
 
   // ── Indentation helper ────────────────────────────────────
