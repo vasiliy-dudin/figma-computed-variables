@@ -78,8 +78,10 @@ async function formatValue(value: VariableValue, type: VariableResolvedDataType)
 			}
 			return '#000000';
 			
-		case 'FLOAT':
-			return typeof value === 'number' ? value : 0;
+		case 'FLOAT': {
+			if (typeof value !== 'number' || !isFinite(value)) return 0;
+			return parseFloat(value.toFixed(4));
+		}
 			
 		case 'STRING':
 			return typeof value === 'string' ? value : '';
