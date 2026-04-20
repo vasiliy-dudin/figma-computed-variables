@@ -1,5 +1,5 @@
 import { TokenJSONSchema, TokenJSON, ValidationError, TokenMap, Token } from './types';
-import { createTokenMap, detectAmbiguousAliases, extractTokenReferences, flattenTokenGroup } from './tokenUtils';
+import { createTokenMap, detectAmbiguousAliases, extractTokenReferences, flattenTokenGroup, isExcluded } from './tokenUtils';
 import { PATTERNS } from './constants';
 import { ZodIssue } from 'zod';
 
@@ -32,6 +32,7 @@ export function detectCircularDependencies(json: TokenJSON, tokenMap: TokenMap =
 	const errors: ValidationError[] = [];
 	
 	for (const [collectionName, group] of Object.entries(json)) {
+		if (isExcluded(collectionName)) continue;
 		for (const [tokenPath, token] of flattenTokenGroup(group)) {
 			const fullPath = `${collectionName}.${tokenPath}`;
 			const modeEntries: Array<[string, string | number]> =
@@ -113,6 +114,7 @@ export function validateReferences(json: TokenJSON, tokenMap: TokenMap = createT
 	const errors: ValidationError[] = [];
 
 	for (const [collectionName, group] of Object.entries(json)) {
+		if (isExcluded(collectionName)) continue;
 		for (const [tokenPath, token] of flattenTokenGroup(group)) {
 			const modeEntries: Array<[string, string | number]> =
 				typeof token.$value === 'string' || typeof token.$value === 'number'
@@ -189,6 +191,7 @@ function validateModifierSyntax(json: TokenJSON, tokenMap: TokenMap): Validation
 	const errors: ValidationError[] = [];
 
 	for (const [collectionName, group] of Object.entries(json)) {
+		if (isExcluded(collectionName)) continue;
 		for (const [tokenPath, token] of flattenTokenGroup(group)) {
 			const values: Array<[string, string | number]> =
 				typeof token.$value === 'string' || typeof token.$value === 'number'

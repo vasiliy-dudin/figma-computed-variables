@@ -25,6 +25,7 @@
 			<a href="#the-problem"  class="nav-link" onclick="plausible('Nav link', { props: { section: 'What it does' } })">What it does</a>
 			<a href="#how-it-works" class="nav-link" onclick="plausible('Nav link', { props: { section: 'How it works' } })">How it works</a>
 			<a href="#expressions"  class="nav-link" onclick="plausible('Nav link', { props: { section: 'Expressions' } })">Expressions</a>
+			<a href="#excluding"    class="nav-link" onclick="plausible('Nav link', { props: { section: 'Excluding tokens' } })">Excluding tokens</a>
 			<a href="#examples"     class="nav-link" onclick="plausible('Nav link', { props: { section: 'Examples' } })">Examples</a>
 		</nav>
 
@@ -286,7 +287,23 @@
 
 		</section>
 
-		<section id="examples" class="doc-content">
+		<section id="excluding" class="doc-content">
+			<h2>Excluding tokens</h2>
+			<p>Prefix any key with <code>_</code> to exclude it from being applied to Figma Variables. Works at any nesting level: collection, group, or individual token.</p>
+			<pre class="code-block"><code>{
+  "spacing": {
+    "_base": { "$type": "number", "$value": 8 },
+    "xs":    { "$type": "number", "$value": "{spacing._base} * 1" },
+    "sm":    { "$type": "number", "$value": "{spacing._base} * 1.5" },
+    "md":    { "$type": "number", "$value": "{spacing._base} * 2" },
+    "lg":    { "$type": "number", "$value": "{spacing._base} * 3" },
+    "xl":    { "$type": "number", "$value": "{spacing._base} * 4" }
+  }
+}</code></pre>
+			<p class="small text-secondary mt-2"><code>_base</code> is a helper — it is not created as a Figma Variable. <code>xs</code>–<code>xl</code> are applied with their computed values.</p>
+	</section>
+
+	<section id="examples" class="doc-content">
 				<h2>Examples</h2>
 
 				<div class="d-flex gap-4 align-items-center mt-3 mb-2">

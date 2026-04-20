@@ -48,6 +48,25 @@ Tokens are defined in JSON with math, color modifier functions, and alias refere
 | OKLCH + alpha | `"oklch(0.5 0.22 265 / 0.5)"` |
 
 
+## Excluding tokens
+
+Prefix any key with `_` to exclude it from being applied to Figma Variables. Works at any nesting level: collection, group, or individual token.
+
+```json
+{
+  "spacing": {
+    "_base": { "$type": "number", "$value": 8 },
+    "xs":    { "$type": "number", "$value": "{spacing._base} * 1" },
+    "sm":    { "$type": "number", "$value": "{spacing._base} * 1.5" },
+    "md":    { "$type": "number", "$value": "{spacing._base} * 2" },
+    "lg":    { "$type": "number", "$value": "{spacing._base} * 3" },
+    "xl":    { "$type": "number", "$value": "{spacing._base} * 4" }
+  }
+}
+```
+
+`_base` is a helper — it is not created as a Figma Variable. `xs`–`xl` are applied with their computed values.
+
 ## Examples
 
 ### Simple example with one mode

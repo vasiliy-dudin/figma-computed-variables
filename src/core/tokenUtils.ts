@@ -7,6 +7,11 @@ export function isToken(value: Token | TokenGroup): value is Token {
 	return '$type' in value;
 }
 
+/** Returns true if a JSON key should be excluded from Figma output (starts with '_') */
+export function isExcluded(name: string): boolean {
+	return name.startsWith('_');
+}
+
 /**
  * Recursively flatten a TokenGroup into a map of dot-separated paths → Token.
  * e.g. { color: { primary: { $type, $value } } } → Map { "color.primary" → Token }
@@ -18,7 +23,7 @@ export function flattenTokenGroup(group: TokenGroup, prefix: string = ''): Map<s
 			result.set(currentPath, node.$self);
 		}
 		for (const [key, value] of Object.entries(node)) {
-			if (key === '$self' || value === undefined) continue;
+			if (key === '$self' || value === undefined || isExcluded(key)) continue;
 			const nextPath = currentPath ? `${currentPath}.${key}` : key;
 			if (isToken(value)) {
 				result.set(nextPath, value);
@@ -100,6 +105,7 @@ export function condenseModeValues(value: ModeValues): TokenValue {
 function buildBarePathCollectionsMap(json: TokenJSON): Map<string, string[]> {
 	const result = new Map<string, string[]>();
 	for (const [collectionName, group] of Object.entries(json)) {
+		if (isExcluded(collectionName)) continue;
 		for (const tokenPath of flattenTokenGroup(group).keys()) {
 			const existing = result.get(tokenPath);
 			if (existing) {
@@ -200,6 +206,7 @@ export function detectAmbiguousAliases(json: TokenJSON): ValidationError[] {
 	const seen = new Set<string>();
 
 	for (const [collectionName, group] of Object.entries(json)) {
+		if (isExcluded(collectionName)) continue;
 		for (const [tokenPath, token] of flattenTokenGroup(group)) {
 			const rawValues =
 				typeof token.$value === 'string' || typeof token.$value === 'number'

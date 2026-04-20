@@ -1,6 +1,6 @@
 import { TokenJSON, ResolvedValue, RGBA, ValidationError, ApplyResult } from '@core/types';
 import { TYPE_MAP } from '@core/constants';
-import { createTokenMap, flattenTokenGroup, normalizeModeValues } from '@core/tokenUtils';
+import { createTokenMap, flattenTokenGroup, isExcluded, normalizeModeValues } from '@core/tokenUtils';
 import { resolveToken, hexToRgba } from '@core/resolver';
 
 /**
@@ -13,6 +13,7 @@ export async function applyToVariables(json: TokenJSON): Promise<ApplyResult> {
 	const collections = await figma.variables.getLocalVariableCollectionsAsync();
 	
 	for (const [collectionName, tokens] of Object.entries(json)) {
+		if (isExcluded(collectionName)) continue;
 		// 1. Find or create collection
 		let collection = collections.find(c => c.name === collectionName);
 		if (!collection) {
@@ -113,7 +114,7 @@ export async function applyToVariables(json: TokenJSON): Promise<ApplyResult> {
 	}
 	
 	return {
-		message: `Applied ${totalVariables} variables across ${Object.keys(json).length} collections`,
+		message: `Applied ${totalVariables} variables across ${Object.keys(json).filter(k => !isExcluded(k)).length} collections`,
 		errors: collectionErrors,
 	};
 }
