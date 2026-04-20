@@ -23,7 +23,7 @@ export function flattenTokenGroup(group: TokenGroup, prefix: string = ''): Map<s
 			result.set(currentPath, node.$self);
 		}
 		for (const [key, value] of Object.entries(node)) {
-			if (key === '$self' || value === undefined || isExcluded(key)) continue;
+			if (key === '$self' || value === undefined) continue;
 			const nextPath = currentPath ? `${currentPath}.${key}` : key;
 			if (isToken(value)) {
 				result.set(nextPath, value);

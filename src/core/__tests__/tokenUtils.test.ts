@@ -35,25 +35,25 @@ describe('isExcluded', () => {
 });
 
 describe('nestifyFlatPaths / flattenTokenGroup', () => {
-	it('skips top-level group keys starting with underscore', () => {
+	it('includes underscore-prefixed keys so they remain referenceable', () => {
 		const visible: Token = { $type: 'number', $value: 1 };
 		const hidden: Token = { $type: 'number', $value: 99 };
 		const group: TokenGroup = { _hidden: hidden, visible };
 		const result = flattenTokenGroup(group);
-		expect(result.has('_hidden')).toBe(false);
+		expect(result.get('_hidden')).toBe(hidden);
 		expect(result.get('visible')).toBe(visible);
 	});
 
-	it('skips token keys starting with underscore inside a nested group', () => {
+	it('includes underscore-prefixed nested tokens so they remain referenceable', () => {
 		const ripple: Token = { $type: 'number', $value: 0.25 };
 		const activated: Token = { $type: 'number', $value: 0.12 };
 		const group: TokenGroup = { TMP: { _activated: activated, ripple } };
 		const result = flattenTokenGroup(group);
-		expect(result.has('TMP._activated')).toBe(false);
+		expect(result.get('TMP._activated')).toBe(activated);
 		expect(result.get('TMP.ripple')).toBe(ripple);
 	});
 
-	it('skips an underscore-prefixed group that contains a $self token', () => {
+	it('includes an underscore-prefixed group with a $self token', () => {
 		const selfToken: Token = { $type: 'number', $value: 5 };
 		const child: Token = { $type: 'number', $value: 10 };
 		const group: TokenGroup = {
@@ -61,8 +61,8 @@ describe('nestifyFlatPaths / flattenTokenGroup', () => {
 			visible: { $type: 'number', $value: 1 },
 		};
 		const result = flattenTokenGroup(group);
-		expect(result.has('_hidden')).toBe(false);
-		expect(result.has('_hidden.child')).toBe(false);
+		expect(result.get('_hidden')).toBe(selfToken);
+		expect(result.get('_hidden.child')).toBe(child);
 		expect(result.has('visible')).toBe(true);
 	});
 

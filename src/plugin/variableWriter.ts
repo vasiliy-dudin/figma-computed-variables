@@ -50,6 +50,7 @@ export async function applyToVariables(json: TokenJSON): Promise<ApplyResult> {
 		)).filter(Boolean) as Variable[];
 		
 		for (const [tokenPath, token] of flatTokens) {
+			if (tokenPath.split('.').some(isExcluded)) continue;
 			const figmaType = TYPE_MAP[token.$type];
 			if (!figmaType) {
 				collectionErrors.push({
