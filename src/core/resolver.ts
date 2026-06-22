@@ -14,12 +14,15 @@ const MIN_HUE_SHIFT = -360;
 const MAX_HUE_SHIFT = 360;
 const DECIMAL_TO_PERCENT_SCALE = 100;
 
-// Matches a resolved amount-token value written as a percentage, e.g. "15%"
-const PERCENT_VALUE = /^(-?\d*\.?\d+)%$/;
-// Matches a resolved amount-token value written in degrees, e.g. "30deg"
+// Matches a resolved amount-token value written as a percentage, e.g. "15%".
+// No sign allowed — mirrors the literal alpha()/darken()/lighten()/saturate()/desaturate() syntax.
+const PERCENT_VALUE = /^(\d*\.?\d+)%$/;
+// Matches a resolved amount-token value written in degrees, e.g. "30deg" or "-30deg"
 const DEGREES_VALUE = /^(-?\d*\.?\d+)deg$/;
-// Matches a resolved amount-token value with no unit suffix, e.g. "0.05"
-const PLAIN_NUMBER = /^-?\d*\.?\d+$/;
+// Matches an unsigned plain number with no unit suffix, e.g. "0.05"
+const PLAIN_NUMBER = /^\d*\.?\d+$/;
+// Matches a signed plain number with no unit suffix, e.g. "-30" or "30"
+const SIGNED_PLAIN_NUMBER = /^-?\d*\.?\d+$/;
 
 const clamp = (value: number, min: number, max: number): number => Math.min(max, Math.max(min, value));
 const clamp01 = (value: number): number => clamp(value, 0, 1);
@@ -174,7 +177,7 @@ function resolveAmount(
 	if (degreesMatch) {
 		return parseFloat(degreesMatch[1]);
 	}
-	if (PLAIN_NUMBER.test(raw)) {
+	if (SIGNED_PLAIN_NUMBER.test(raw)) {
 		return parseFloat(raw);
 	}
 	throw new Error(`Invalid amount from token reference {${amount.tokenPath}}: expected degrees (e.g. 30deg) or a plain number, found "${raw}".`);
@@ -206,7 +209,8 @@ function applyAlpha(value: string | number | RGBA, alpha: number): RGBA {
 
 /**
  * Apply a perceptual colour modification using oklch space
- * @param amount - Numeric amount based on function type:
+ * @param amount - Numeric amount, already resolved to its native scale by
+ *   resolveAmount (never a raw percent/degree string):
  *   - darken/lighten/saturate/desaturate: 0-100 (percentage, 20 = 20% change relative to current value)
  *   - hueShift: -360 to 360 (degrees, 30 = subtle shift, -30 = opposite direction, 180 = complementary)
  */

@@ -1,4 +1,4 @@
-import { TokenJSONSchema, TokenJSON, ValidationError, TokenMap, Token } from './types';
+import { TokenJSONSchema, TokenJSON, ValidationError, TokenMap, Token, ColorModifyFn } from './types';
 import { createTokenMap, detectAmbiguousAliases, extractTokenReferences, flattenTokenGroup, isExcluded } from './tokenUtils';
 import { PATTERNS } from './constants';
 import { ZodIssue } from 'zod';
@@ -227,92 +227,58 @@ interface ModifierValidationContext {
 function collectModifierSyntaxErrors(ctx: ModifierValidationContext): ValidationError[] {
 	const { value, collectionName, tokenPath, mode, tokenMap } = ctx;
 	const trimmed = value.trim();
-	const errors: ValidationError[] = [];
+	const refCtx = { collectionName, tokenPath, mode, tokenMap };
 
-	const alphaMatch = trimmed.match(PATTERNS.alphaFunction);
-	const alphaRefMatch = trimmed.match(PATTERNS.alphaFunctionRef);
-	if (alphaMatch || alphaRefMatch) {
-		const refPath = (alphaMatch ?? alphaRefMatch)![1];
-		errors.push(
-			...validateModifierReference({
-				fn: 'alpha',
-				refPath,
-				collectionName,
-				tokenPath,
-				mode,
-				tokenMap,
-			})
-		);
-		if (alphaRefMatch) {
-			errors.push(
-				...validateAmountReference({
-					fn: 'alpha',
-					amountPath: alphaRefMatch[2],
-					collectionName,
-					tokenPath,
-					mode,
-					tokenMap,
-				})
-			);
-		}
-	} else if (PATTERNS.alphaFunctionPrefix.test(trimmed)) {
-		errors.push(createSyntaxError(collectionName, tokenPath, mode, 'alpha() requires a percentage amount (alpha({token}, 15%)) or a token reference (alpha({token}, {opacityToken})).'));
+	const alphaErrors = matchAndValidateModifier(trimmed, PATTERNS.alphaFunction, PATTERNS.alphaFunctionRef, () => 'alpha', 1, 2, refCtx);
+	if (alphaErrors) return alphaErrors;
+	if (PATTERNS.alphaFunctionPrefix.test(trimmed)) {
+		return [createSyntaxError(collectionName, tokenPath, mode, 'alpha() requires a percentage amount (alpha({token}, 15%)) or a token reference (alpha({token}, {opacityToken})).')];
 	}
 
-	const percentMatch = trimmed.match(PATTERNS.colorPercentFunction);
-	const percentRefMatch = trimmed.match(PATTERNS.colorPercentFunctionRef);
-	if (percentMatch || percentRefMatch) {
-		const fn = (percentMatch ?? percentRefMatch)![1] as 'darken' | 'lighten' | 'saturate' | 'desaturate';
-		const refPath = (percentMatch ?? percentRefMatch)![2];
-		errors.push(
-			...validateModifierReference({ fn, refPath, collectionName, tokenPath, mode, tokenMap })
-		);
-		if (percentRefMatch) {
-			errors.push(
-				...validateAmountReference({
-					fn,
-					amountPath: percentRefMatch[3],
-					collectionName,
-					tokenPath,
-					mode,
-					tokenMap,
-				})
-			);
-		}
-		return errors;
-	}
+	const percentErrors = matchAndValidateModifier(trimmed, PATTERNS.colorPercentFunction, PATTERNS.colorPercentFunctionRef, m => m[1] as ColorModifyFn, 2, 3, refCtx);
+	if (percentErrors) return percentErrors;
 
-	const hueMatch = trimmed.match(PATTERNS.hueShiftFunction);
-	const hueRefMatch = trimmed.match(PATTERNS.hueShiftFunctionRef);
-	if (hueMatch || hueRefMatch) {
-		const refPath = (hueMatch ?? hueRefMatch)![1];
-		errors.push(
-			...validateModifierReference({ fn: 'hueShift', refPath, collectionName, tokenPath, mode, tokenMap })
-		);
-		if (hueRefMatch) {
-			errors.push(
-				...validateAmountReference({
-					fn: 'hueShift',
-					amountPath: hueRefMatch[2],
-					collectionName,
-					tokenPath,
-					mode,
-					tokenMap,
-				})
-			);
-		}
-		return errors;
-	}
+	const hueErrors = matchAndValidateModifier(trimmed, PATTERNS.hueShiftFunction, PATTERNS.hueShiftFunctionRef, () => 'hueShift', 1, 2, refCtx);
+	if (hueErrors) return hueErrors;
 
 	if (PATTERNS.colorFunctionPrefix.test(trimmed)) {
-		errors.push(createSyntaxError(collectionName, tokenPath, mode, 'Color modifiers require percentages (10%) or degrees (30deg) depending on the function, or a token reference such as darken({token}, {amountToken}).'));
+		return [createSyntaxError(collectionName, tokenPath, mode, 'Color modifiers require percentages (10%) or degrees (30deg) depending on the function, or a token reference such as darken({token}, {amountToken}).')];
 	}
 
+	return [];
+}
+
+/**
+ * Try a literal-amount pattern and its token-reference counterpart for one
+ * modifier function. Returns null when neither pattern matches (so the caller
+ * can fall through to try the next function), or the validation errors for the
+ * base color reference and — when matched via the reference pattern — the
+ * amount reference, when one of them does match.
+ */
+function matchAndValidateModifier(
+	trimmed: string,
+	literalPattern: RegExp,
+	refPattern: RegExp,
+	getFn: (match: RegExpMatchArray) => 'alpha' | ColorModifyFn,
+	refPathGroup: number,
+	amountGroup: number,
+	ctx: Omit<ModifierReferenceContext, 'fn' | 'refPath'>
+): ValidationError[] | null {
+	const literalMatch = trimmed.match(literalPattern);
+	const refMatch = trimmed.match(refPattern);
+	const match = literalMatch ?? refMatch;
+	if (!match) return null;
+
+	const fn = getFn(match);
+	const errors = validateModifierReference({ fn, refPath: match[refPathGroup], ...ctx });
+	if (refMatch) {
+		errors.push(...validateAmountReference({ fn, amountPath: refMatch[amountGroup], ...ctx }));
+	}
 	return errors;
 }
 
 interface ModifierReferenceContext {
-	fn: 'alpha' | 'darken' | 'lighten' | 'saturate' | 'desaturate' | 'hueShift';
+	fn: 'alpha' | ColorModifyFn;
 	refPath: string;
 	collectionName: string;
 	tokenPath: string;
@@ -336,7 +302,7 @@ function validateModifierReference(ctx: ModifierReferenceContext): ValidationErr
 }
 
 interface AmountReferenceContext {
-	fn: 'alpha' | 'darken' | 'lighten' | 'saturate' | 'desaturate' | 'hueShift';
+	fn: 'alpha' | ColorModifyFn;
 	amountPath: string;
 	collectionName: string;
 	tokenPath: string;
@@ -346,8 +312,10 @@ interface AmountReferenceContext {
 
 /**
  * Validate that an amount reference (the second argument of alpha()/colorModify()
- * when written as a token reference) does not point at a color token — its actual
- * resolved value (percentage, decimal, or degrees) is validated at apply-time.
+ * when written as a token reference) does not point at a color token. It does not
+ * check that the referenced value actually parses as a percentage/decimal/degrees —
+ * that is validated at apply-time in resolver.ts's resolveAmount, since it may
+ * require following an alias chain.
  */
 function validateAmountReference(ctx: AmountReferenceContext): ValidationError[] {
 	const { fn, amountPath, collectionName, tokenPath, mode, tokenMap } = ctx;

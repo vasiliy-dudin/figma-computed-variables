@@ -91,6 +91,11 @@ export function parseExpression(input: string | number, type: TokenType): Expres
 			if (containsMathOrTokens(valueStr)) {
 				return { type: 'math', expression: valueStr };
 			}
+			// Preserve a trailing "%" as a string literal — parseFloat would silently drop it
+			// (e.g. "50%" -> 50), losing the percentage meaning for amount-reference resolution.
+			if (typeof input === 'string' && valueStr.endsWith('%')) {
+				return { type: 'literal', value: valueStr };
+			}
 			return { type: 'literal', value: typeof input === 'number' ? input : parseFloat(valueStr) };
 			
 		case 'string':

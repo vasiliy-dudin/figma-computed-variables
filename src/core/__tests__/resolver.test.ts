@@ -160,6 +160,43 @@ describe('resolveToken — alpha() with reference amount', () => {
 		};
 		expect(() => resolveToken('computed.overlay', 'light', makeMap(json))).toThrow(/Invalid amount/);
 	});
+
+	it('resolves a percentage string correctly even when the amount token is $type "number" (mixed-format per mode)', () => {
+		// Regression: a $type "number" token whose value is the string "50%" used to get
+		// silently coerced to the bare number 50 by parseExpression's number-literal parsing,
+		// which made resolveAmount treat it as a 5000% decimal-equivalent instead of 50%.
+		const json: TokenJSON = {
+			...singleColorJson,
+			vuetify: {
+				'hover-opacity': { $type: 'number', $value: { light: '50%', dark: 0.4 } },
+			},
+			computed: {
+				overlay: { $type: 'color', $value: 'alpha({foundation.color.primary}, {vuetify.hover-opacity})' },
+			},
+		};
+		const map = makeMap(json);
+
+		const lightResult = resolveToken('computed.overlay', 'light', map);
+		expect(lightResult.isAlias).toBe(false);
+		if (!lightResult.isAlias) {
+			expect((lightResult.value as RGBA).a).toBeCloseTo(0.5, 5);
+		}
+
+		const darkResult = resolveToken('computed.overlay', 'dark', map);
+		expect(darkResult.isAlias).toBe(false);
+		if (!darkResult.isAlias) {
+			expect((darkResult.value as RGBA).a).toBeCloseTo(0.4, 5);
+		}
+	});
+
+	it('rejects a negative percentage/decimal amount reference (matches literal alpha() syntax, which has no sign)', () => {
+		const json: TokenJSON = {
+			...singleColorJson,
+			amounts: { negative: { $type: 'string', $value: '-5%' } },
+			computed: { overlay: { $type: 'color', $value: 'alpha({foundation.color.primary}, {amounts.negative})' } },
+		};
+		expect(() => resolveToken('computed.overlay', 'light', makeMap(json))).toThrow(/Invalid amount/);
+	});
 });
 
 describe('resolveToken — darken() / lighten()', () => {
@@ -281,6 +318,28 @@ describe('resolveToken — hueShift()', () => {
 			const resultOklch = rgbaToOklch(result.value as RGBA)!;
 			const expectedHue = ((originalOklch.h! + shiftDeg) % 360 + 360) % 360;
 			expect(resultOklch.h).toBeCloseTo(expectedHue, 1);
+		}
+	});
+
+	it('shifts hue by a negative-degree amount given via a token reference', () => {
+		const originalOklch = rgbaToOklch(hexToRgba(BASE_OKLCH))!;
+		const shiftDeg = -30;
+
+		const json: TokenJSON = {
+			...singleColorJson,
+			amounts: { shift: { $type: 'number', $value: shiftDeg } },
+			computed: { refShifted: { $type: 'color', $value: 'hueShift({foundation.color.accent}, {amounts.shift})' } },
+		};
+		const result = resolveToken('computed.refShifted', 'light', makeMap(json));
+		expect(result.isAlias).toBe(false);
+		if (!result.isAlias) {
+			const resultOklch = rgbaToOklch(result.value as RGBA)!;
+			const expectedHue = ((originalOklch.h! + shiftDeg) % 360 + 360) % 360;
+			const diff = Math.min(
+				Math.abs(resultOklch.h! - expectedHue),
+				360 - Math.abs(resultOklch.h! - expectedHue),
+			);
+			expect(diff).toBeLessThan(20);
 		}
 	});
 
