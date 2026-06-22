@@ -129,6 +129,39 @@ describe('resolveToken — alpha()', () => {
 	});
 });
 
+describe('resolveToken — alpha() with reference amount', () => {
+	it('resolves a decimal reference amount to the same alpha as an equivalent percentage', () => {
+		const decimalJson: TokenJSON = {
+			...singleColorJson,
+			vuetify: { 'border-opacity': { $type: 'number', $value: 0.05 } },
+			computed: { overlay: { $type: 'color', $value: 'alpha({foundation.color.primary}, {vuetify.border-opacity})' } },
+		};
+		const percentJson: TokenJSON = {
+			...singleColorJson,
+			vuetify: { 'border-opacity': { $type: 'string', $value: '5%' } },
+			computed: { overlay: { $type: 'color', $value: 'alpha({foundation.color.primary}, {vuetify.border-opacity})' } },
+		};
+
+		const decimalResult = resolveToken('computed.overlay', 'light', makeMap(decimalJson));
+		const percentResult = resolveToken('computed.overlay', 'light', makeMap(percentJson));
+		expect(decimalResult.isAlias).toBe(false);
+		expect(percentResult.isAlias).toBe(false);
+		if (!decimalResult.isAlias && !percentResult.isAlias) {
+			expect((decimalResult.value as RGBA).a).toBeCloseTo(0.05, 5);
+			expect((decimalResult.value as RGBA).a).toBeCloseTo((percentResult.value as RGBA).a, 5);
+		}
+	});
+
+	it('throws a clear error when the referenced amount token is not numeric', () => {
+		const json: TokenJSON = {
+			...singleColorJson,
+			vuetify: { 'border-opacity': { $type: 'string', $value: 'not-a-number' } },
+			computed: { overlay: { $type: 'color', $value: 'alpha({foundation.color.primary}, {vuetify.border-opacity})' } },
+		};
+		expect(() => resolveToken('computed.overlay', 'light', makeMap(json))).toThrow(/Invalid amount/);
+	});
+});
+
 describe('resolveToken — darken() / lighten()', () => {
 	it('darken makes the color darker (lower OKLch lightness)', () => {
 		const originalOklch = rgbaToOklch(hexToRgba(BASE_HEX))!;
@@ -157,6 +190,31 @@ describe('resolveToken — darken() / lighten()', () => {
 		if (!result.isAlias) {
 			const resultOklch = rgbaToOklch(result.value as RGBA)!;
 			expect(resultOklch.l).toBeGreaterThan(originalOklch.l!);
+		}
+	});
+
+	it('darken with a decimal reference amount matches the equivalent percentage', () => {
+		const json: TokenJSON = {
+			...singleColorJson,
+			amounts: { subtle: { $type: 'number', $value: 0.2 } },
+			computed: { dark: { $type: 'color', $value: 'darken({foundation.color.primary}, {amounts.subtle})' } },
+		};
+		const referenceOklch = rgbaToOklch(hexToRgba(BASE_HEX))!;
+		const result = resolveToken('computed.dark', 'light', makeMap(json));
+		expect(result.isAlias).toBe(false);
+		if (!result.isAlias) {
+			const resultOklch = rgbaToOklch(result.value as RGBA)!;
+			expect(resultOklch.l).toBeLessThan(referenceOklch.l!);
+
+			const percentJson: TokenJSON = {
+				...singleColorJson,
+				computed: { dark: { $type: 'color', $value: 'darken({foundation.color.primary}, 20%)' } },
+			};
+			const percentResult = resolveToken('computed.dark', 'light', makeMap(percentJson));
+			if (!percentResult.isAlias) {
+				const percentOklch = rgbaToOklch(percentResult.value as RGBA)!;
+				expect(resultOklch.l).toBeCloseTo(percentOklch.l!, 5);
+			}
 		}
 	});
 

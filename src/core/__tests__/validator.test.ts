@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { validate } from '../validator.ts';
+import { EXAMPLE_TOKEN_JSON, generateExampleJSON } from '../constants.ts';
 import type { TokenJSON } from '../types';
 
 // --- Valid fixtures ---
@@ -53,6 +54,23 @@ describe('validate — valid inputs', () => {
 	it('returns valid for well-formed single-mode JSON', () => {
 		const result = validate(validSingleMode);
 		expect(result.valid).toBe(true);
+	});
+
+	it('returns valid for the built-in EXAMPLE_TOKEN_JSON shown on first run', () => {
+		const result = validate(EXAMPLE_TOKEN_JSON);
+		expect(result.valid).toBe(true);
+	});
+
+	it('returns valid for generateExampleJSON output (all option combinations)', () => {
+		for (const modeCount of ['1', '2'] as const) {
+			for (const includeDescription of [false, true]) {
+				for (const includeScope of [false, true]) {
+					const json = generateExampleJSON({ modeCount, includeDescription, includeScope });
+					const result = validate(json);
+					expect(result.valid).toBe(true);
+				}
+			}
+		}
 	});
 
 	it('returns valid for well-formed multi-mode JSON', () => {
@@ -184,6 +202,63 @@ describe('validate — syntax errors', () => {
 		};
 		const result = validate(json);
 		expect(result.valid).toBe(true);
+	});
+
+	it('accepts alpha() with a token-reference amount (e.g. a decimal opacity token)', () => {
+		const json: TokenJSON = {
+			vuetify: {
+				'border-color': { $type: 'color', $value: '#3478F6' },
+				'border-opacity': { $type: 'number', $value: 0.05 },
+			},
+			semantic: {
+				table: {
+					stripe: { $type: 'color', $value: 'alpha({vuetify.border-color}, {vuetify.border-opacity})' },
+				},
+			},
+		};
+		const result = validate(json);
+		expect(result.valid).toBe(true);
+	});
+
+	it('accepts darken()/hueShift() with a token-reference amount', () => {
+		const json: TokenJSON = {
+			foundation: {
+				color: { primary: { $type: 'color', $value: '#3478F6' } },
+			},
+			amounts: {
+				subtle: { $type: 'number', $value: 0.2 },
+				shift: { $type: 'number', $value: 30 },
+			},
+			semantic: {
+				button: {
+					dark: { $type: 'color', $value: 'darken({foundation.color.primary}, {amounts.subtle})' },
+					shifted: { $type: 'color', $value: 'hueShift({foundation.color.primary}, {amounts.shift})' },
+				},
+			},
+		};
+		const result = validate(json);
+		expect(result.valid).toBe(true);
+	});
+
+	it('reports error when an alpha() amount reference points at a color token', () => {
+		const json: TokenJSON = {
+			foundation: {
+				color: {
+					primary: { $type: 'color', $value: '#3478F6' },
+					accent: { $type: 'color', $value: '#FF0000' },
+				},
+			},
+			semantic: {
+				badge: {
+					bad: { $type: 'color', $value: 'alpha({foundation.color.primary}, {foundation.color.accent})' },
+				},
+			},
+		};
+		const result = validate(json);
+		expect(result.valid).toBe(false);
+		if (!result.valid) {
+			expect(result.errors.some(e => e.errorType === 'syntax' && e.message.includes('amount reference'))).toBe(true);
+		}
 	});
 
 	it('reports error when modifier targets a non-color token', () => {

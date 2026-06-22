@@ -14,27 +14,46 @@ export function parseExpression(input: string | number, type: TokenType): Expres
 		return { type: 'alias', path: aliasMatch[1] };
 	}
 	
-	// 2. Detect alpha() function: alpha({token}, 15%)
+	// 2. Detect alpha() function: alpha({token}, 15%) or alpha({token}, {amountToken})
 	const alphaMatch = valueStr.match(PATTERNS.alphaFunction);
 	if (alphaMatch) {
 		return {
 			type: 'alpha',
 			tokenPath: alphaMatch[1],
-			alpha: parseFloat(alphaMatch[2]) / 100
+			amount: { kind: 'literal', amount: parseFloat(alphaMatch[2]) }
+		};
+	}
+	const alphaRefMatch = valueStr.match(PATTERNS.alphaFunctionRef);
+	if (alphaRefMatch) {
+		return {
+			type: 'alpha',
+			tokenPath: alphaRefMatch[1],
+			amount: { kind: 'reference', tokenPath: alphaRefMatch[2] }
 		};
 	}
 	if (PATTERNS.alphaFunctionPrefix.test(valueStr)) {
-		throw new Error('Invalid alpha() syntax: use percentages such as alpha({token}, 15%).');
+		throw new Error('Invalid alpha() syntax: use a percentage (alpha({token}, 15%)) or a token reference (alpha({token}, {opacityToken})).');
 	}
 
-	// 3. Detect color modifier functions: darken({token}, 20%), lighten(...), hueShift({token}, 50deg)
+	// 3. Detect color modifier functions: darken({token}, 20%), lighten(...), hueShift({token}, 50deg),
+	// or a token-reference amount: darken({token}, {amountToken}), hueShift({token}, {amountToken})
 	const colorPercentMatch = valueStr.match(PATTERNS.colorPercentFunction);
 	if (colorPercentMatch) {
 		return {
 			type: 'colorModify',
 			fn: colorPercentMatch[1] as ColorModifyFn,
 			tokenPath: colorPercentMatch[2],
-			amount: parseFloat(colorPercentMatch[3])
+			amount: { kind: 'literal', amount: parseFloat(colorPercentMatch[3]) }
+		};
+	}
+
+	const colorPercentRefMatch = valueStr.match(PATTERNS.colorPercentFunctionRef);
+	if (colorPercentRefMatch) {
+		return {
+			type: 'colorModify',
+			fn: colorPercentRefMatch[1] as ColorModifyFn,
+			tokenPath: colorPercentRefMatch[2],
+			amount: { kind: 'reference', tokenPath: colorPercentRefMatch[3] }
 		};
 	}
 
@@ -44,12 +63,22 @@ export function parseExpression(input: string | number, type: TokenType): Expres
 			type: 'colorModify',
 			fn: 'hueShift',
 			tokenPath: hueShiftMatch[1],
-			amount: parseFloat(hueShiftMatch[2])
+			amount: { kind: 'literal', amount: parseFloat(hueShiftMatch[2]) }
+		};
+	}
+
+	const hueShiftRefMatch = valueStr.match(PATTERNS.hueShiftFunctionRef);
+	if (hueShiftRefMatch) {
+		return {
+			type: 'colorModify',
+			fn: 'hueShift',
+			tokenPath: hueShiftRefMatch[1],
+			amount: { kind: 'reference', tokenPath: hueShiftRefMatch[2] }
 		};
 	}
 
 	if (PATTERNS.colorFunctionPrefix.test(valueStr)) {
-		throw new Error('Invalid color modifier syntax: use percentages for darken/lighten/saturate/desaturate and degrees for hueShift.');
+		throw new Error('Invalid color modifier syntax: use percentages (10%) / degrees (30deg) depending on the function, or a token reference such as darken({token}, {amountToken}).');
 	}
 
 	// 4. Type-specific parsing

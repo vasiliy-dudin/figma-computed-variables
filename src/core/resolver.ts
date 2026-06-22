@@ -1,5 +1,5 @@
 import { formatHex, formatRgb, parse as parseColor, converter } from 'culori';
-import { ResolvedValue, TokenMap, RGBA, ColorModifyFn } from './types';
+import { ResolvedValue, TokenMap, RGBA, ColorModifyFn, AmountValue } from './types';
 import { parseExpression } from './parser';
 import { CircularDependencyError } from './validator';
 import { PATTERNS } from './constants';
@@ -12,6 +12,14 @@ const MIN_PERCENT = 0;
 const MAX_PERCENT = 100;
 const MIN_HUE_SHIFT = -360;
 const MAX_HUE_SHIFT = 360;
+const DECIMAL_TO_PERCENT_SCALE = 100;
+
+// Matches a resolved amount-token value written as a percentage, e.g. "15%"
+const PERCENT_VALUE = /^(-?\d*\.?\d+)%$/;
+// Matches a resolved amount-token value written in degrees, e.g. "30deg"
+const DEGREES_VALUE = /^(-?\d*\.?\d+)deg$/;
+// Matches a resolved amount-token value with no unit suffix, e.g. "0.05"
+const PLAIN_NUMBER = /^-?\d*\.?\d+$/;
 
 const clamp = (value: number, min: number, max: number): number => Math.min(max, Math.max(min, value));
 const clamp01 = (value: number): number => clamp(value, 0, 1);
@@ -84,13 +92,16 @@ export function resolveToken(
 		case 'alpha': {
 			// Computed value (alpha multiplication) — follow alias chains to reach a concrete color
 			const baseColor = resolveToConcreteValue(expr.tokenPath, mode, tokenMap, new Set(visited));
-			return { isAlias: false, value: applyAlpha(baseColor.value, expr.alpha) };
+			const percentAmount = resolveAmount(expr.amount, mode, tokenMap, new Set(visited), 'percent');
+			return { isAlias: false, value: applyAlpha(baseColor.value, percentAmount / 100) };
 		}
 
 		case 'colorModify': {
 			// Computed value (perceptual color modification) — follow alias chains to reach a concrete color
 			const baseColor = resolveToConcreteValue(expr.tokenPath, mode, tokenMap, new Set(visited));
-			return { isAlias: false, value: applyColorModify(baseColor.value, expr.fn, expr.amount) };
+			const unit = expr.fn === 'hueShift' ? 'degrees' : 'percent';
+			const amount = resolveAmount(expr.amount, mode, tokenMap, new Set(visited), unit);
+			return { isAlias: false, value: applyColorModify(baseColor.value, expr.fn, amount) };
 		}
 		
 		case 'math': {
@@ -125,6 +136,48 @@ function resolveToConcreteValue(
 		return result;
 	}
 	return resolveToConcreteValue(result.targetPath, mode, tokenMap, visited);
+}
+
+/**
+ * Resolve an alpha()/colorModify() amount to its native scale — raw percent (0-100)
+ * for percent-based functions, raw degrees for hueShift — whether it was written as
+ * a literal or as a reference to another token. A bare decimal with no unit suffix
+ * is treated as a fraction equivalent to a percentage (e.g. "0.05" ≡ "5%"); for
+ * degrees a bare number is used as-is, since hueShift has no percentage convention.
+ */
+function resolveAmount(
+	amount: AmountValue,
+	mode: string,
+	tokenMap: TokenMap,
+	visited: Set<string>,
+	unit: 'percent' | 'degrees'
+): number {
+	if (amount.kind === 'literal') {
+		return amount.amount;
+	}
+
+	const resolved = resolveToConcreteValue(amount.tokenPath, mode, tokenMap, visited);
+	const raw = String(resolved.value).trim();
+
+	if (unit === 'percent') {
+		const percentMatch = raw.match(PERCENT_VALUE);
+		if (percentMatch) {
+			return parseFloat(percentMatch[1]);
+		}
+		if (PLAIN_NUMBER.test(raw)) {
+			return parseFloat(raw) * DECIMAL_TO_PERCENT_SCALE;
+		}
+		throw new Error(`Invalid amount from token reference {${amount.tokenPath}}: expected a percentage (e.g. 15%) or a decimal (e.g. 0.15), found "${raw}".`);
+	}
+
+	const degreesMatch = raw.match(DEGREES_VALUE);
+	if (degreesMatch) {
+		return parseFloat(degreesMatch[1]);
+	}
+	if (PLAIN_NUMBER.test(raw)) {
+		return parseFloat(raw);
+	}
+	throw new Error(`Invalid amount from token reference {${amount.tokenPath}}: expected degrees (e.g. 30deg) or a plain number, found "${raw}".`);
 }
 
 /**

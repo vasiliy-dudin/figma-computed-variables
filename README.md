@@ -28,6 +28,7 @@ Tokens are defined in JSON with math, color modifier functions, and alias refere
 | Math | `"{spacing.base} * 2"` | `16` |
 | Merge text | `"{font.family}, sans-serif"` | `Inter, sans-serif` |
 | Opacity | `alpha({color.primary}, 50%)` | `rgba(0, 102, 255, 0.5)` |
+| Opacity (token reference) | `alpha({color.primary}, {opacity.subtle})` — `opacity.subtle = 0.05` | `rgba(0, 102, 255, 0.05)` |
 | Darken | `darken({color.primary}, 30%)` | `#003899` |
 | Lighten | `lighten({color.primary}, 30%)` | `#66AAFF` |
 | Saturate | `saturate({color.primary}, 50%)` | `#0044FF` |
@@ -36,6 +37,8 @@ Tokens are defined in JSON with math, color modifier functions, and alias refere
 | Plain color | `"#0066FF"` | `#0066FF` |
 | Plain number | `8` | `8` |
 | Plain text | `"Inter"` | `Inter` |
+
+> Amounts can also reference another token, e.g. `alpha({color.primary}, {opacity.subtle})`. That token can hold a percentage (`5%`) or a decimal (`0.05`) — for `hueShift()`, just degrees.
 
 ### Accepted color formats
 

@@ -22,22 +22,30 @@ describe('parseExpression — alpha()', () => {
 		expect(parseExpression('alpha({foundation.color.primary}, 15%)', 'color')).toEqual({
 			type: 'alpha',
 			tokenPath: 'foundation.color.primary',
-			alpha: 0.15,
+			amount: { kind: 'literal', amount: 15 },
 		});
 	});
 
 	it('parses alpha() with 100%', () => {
 		const result = parseExpression('alpha({token}, 100%)', 'color');
-		expect(result).toMatchObject({ type: 'alpha', alpha: 1 });
+		expect(result).toMatchObject({ type: 'alpha', amount: { kind: 'literal', amount: 100 } });
 	});
 
 	it('parses alpha() with 0%', () => {
 		const result = parseExpression('alpha({token}, 0%)', 'color');
-		expect(result).toMatchObject({ type: 'alpha', alpha: 0 });
+		expect(result).toMatchObject({ type: 'alpha', amount: { kind: 'literal', amount: 0 } });
 	});
 
 	it('throws on decimal (non-percent) alpha syntax', () => {
 		expect(() => parseExpression('alpha({token}, 0.5)', 'color')).toThrow();
+	});
+
+	it('parses alpha() with a token-reference amount', () => {
+		expect(parseExpression('alpha({foundation.color.primary}, {foundation.opacity.subtle})', 'color')).toEqual({
+			type: 'alpha',
+			tokenPath: 'foundation.color.primary',
+			amount: { kind: 'reference', tokenPath: 'foundation.opacity.subtle' },
+		});
 	});
 });
 
@@ -47,7 +55,7 @@ describe('parseExpression — color modifiers', () => {
 			type: 'colorModify',
 			fn: 'darken',
 			tokenPath: 'foundation.color.primary',
-			amount: 20,
+			amount: { kind: 'literal', amount: 20 },
 		});
 	});
 
@@ -56,7 +64,7 @@ describe('parseExpression — color modifiers', () => {
 			type: 'colorModify',
 			fn: 'lighten',
 			tokenPath: 'foundation.color.primary',
-			amount: 10,
+			amount: { kind: 'literal', amount: 10 },
 		});
 	});
 
@@ -65,7 +73,7 @@ describe('parseExpression — color modifiers', () => {
 			type: 'colorModify',
 			fn: 'saturate',
 			tokenPath: 'foundation.color.accent',
-			amount: 30,
+			amount: { kind: 'literal', amount: 30 },
 		});
 	});
 
@@ -74,7 +82,7 @@ describe('parseExpression — color modifiers', () => {
 			type: 'colorModify',
 			fn: 'desaturate',
 			tokenPath: 'foundation.color.accent',
-			amount: 25,
+			amount: { kind: 'literal', amount: 25 },
 		});
 	});
 
@@ -83,7 +91,7 @@ describe('parseExpression — color modifiers', () => {
 			type: 'colorModify',
 			fn: 'hueShift',
 			tokenPath: 'foundation.color.accent',
-			amount: 45,
+			amount: { kind: 'literal', amount: 45 },
 		});
 	});
 
@@ -92,7 +100,25 @@ describe('parseExpression — color modifiers', () => {
 			type: 'colorModify',
 			fn: 'hueShift',
 			tokenPath: 'foundation.color.accent',
-			amount: -30,
+			amount: { kind: 'literal', amount: -30 },
+		});
+	});
+
+	it('parses darken() with a token-reference amount', () => {
+		expect(parseExpression('darken({foundation.color.primary}, {foundation.amount.subtle})', 'color')).toEqual({
+			type: 'colorModify',
+			fn: 'darken',
+			tokenPath: 'foundation.color.primary',
+			amount: { kind: 'reference', tokenPath: 'foundation.amount.subtle' },
+		});
+	});
+
+	it('parses hueShift() with a token-reference amount', () => {
+		expect(parseExpression('hueShift({foundation.color.accent}, {foundation.amount.shift})', 'color')).toEqual({
+			type: 'colorModify',
+			fn: 'hueShift',
+			tokenPath: 'foundation.color.accent',
+			amount: { kind: 'reference', tokenPath: 'foundation.amount.shift' },
 		});
 	});
 

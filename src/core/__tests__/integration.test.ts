@@ -225,6 +225,44 @@ describe('integration: overlapping $self', () => {
 	});
 });
 
+describe('integration: alpha() amount as a token reference', () => {
+	// Reproduces the originally reported bug: alpha()'s second argument is itself
+	// a token reference (e.g. an imported Figma variable), and that referenced
+	// token's value is a bare decimal rather than a percentage.
+	const vuetifySample: TokenJSON = {
+		'vuetify-variables': {
+			'border-color': { $type: 'color', $value: '#3478F6' },
+			'border-opacity': { $type: 'number', $value: 0.05 },
+		},
+		components: {
+			colors: {
+				'table.bg-striped': {
+					$type: 'color',
+					$value: "alpha({vuetify-variables.border-color}, {vuetify-variables.border-opacity})",
+				},
+			},
+		},
+	};
+
+	it('passes validation with no errors', () => {
+		const result = validate(vuetifySample);
+		expect(result.valid).toBe(true);
+	});
+
+	it('resolves to the base color with alpha equal to the referenced decimal', () => {
+		const result = validate(vuetifySample);
+		expect(result.valid).toBe(true);
+		if (!result.valid) return;
+
+		const map = createTokenMap(result.data);
+		const resolved = resolveToken('components.colors.table.bg-striped', 'light', map);
+		expect(resolved.isAlias).toBe(false);
+		if (!resolved.isAlias) {
+			expect((resolved.value as RGBA).a).toBeCloseTo(0.05, 5);
+		}
+	});
+});
+
 describe('integration: invalid sample', () => {
 	it('fails validation with a syntax error', () => {
 		const result = validate(invalidSample);

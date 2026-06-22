@@ -35,6 +35,9 @@ export const EXAMPLE_TOKEN_JSON = {
 		},
 		"spacing": {
 			"base": { "$type": "number", "$value": { "light": 8, "dark": 8 }, "$description": "Base spacing unit (8px grid)", "$scope": "GAP" }
+		},
+		"opacity": {
+			"subtle": { "$type": "number", "$value": { "light": 0.12, "dark": 0.12 }, "$description": "Subtle overlay opacity, written as a decimal (0.12 = 12%)" }
 		}
 	},
 	"semantic": {
@@ -43,6 +46,7 @@ export const EXAMPLE_TOKEN_JSON = {
 			"backgroundHover": { "$type": "color", "$value": { "light": "lighten({foundation.color.primary}, 12%)", "dark": "lighten({foundation.color.primary}, 8%)" } },
 			"backgroundActive": { "$type": "color", "$value": { "light": "darken({foundation.color.primary}, 15%)", "dark": "darken({foundation.color.primary}, 12%)" } },
 			"backgroundGhost": { "$type": "color", "$value": { "light": "alpha({foundation.color.primary}, 18%)", "dark": "alpha({foundation.color.primary}, 12%)" } },
+			"backgroundSubtle": { "$type": "color", "$value": { "light": "alpha({foundation.color.primary}, {foundation.opacity.subtle})", "dark": "alpha({foundation.color.primary}, {foundation.opacity.subtle})" } },
 			"padding": { "$type": "number", "$value": { "light": "{foundation.spacing.base} * 2", "dark": "{foundation.spacing.base} * 2" } }
 		},
 		"text": {
@@ -92,6 +96,9 @@ export function generateExampleJSON(options: ExampleOptions): import('./types').
 			"spacing": {
 				"base": { $type: "number", $value: val(8, 8), ...meta("Base spacing unit (8px grid)", "GAP") },
 			},
+			"opacity": {
+				"subtle": { $type: "number", $value: val(0.12, 0.12), ...meta("Subtle overlay opacity, written as a decimal (0.12 = 12%)", "ALL_SCOPES") },
+			},
 		},
 		"semantic": {
 			"color": {
@@ -100,6 +107,7 @@ export function generateExampleJSON(options: ExampleOptions): import('./types').
 				"interactiveHover": { $type: "color", $value: val("lighten({color.primary}, 12%)", "lighten({color.primary}, 8%)") },
 				"interactiveActive": { $type: "color", $value: val("darken({color.primary}, 15%)", "darken({color.primary}, 12%)") },
 				"interactiveMuted": { $type: "color", $value: val("alpha({color.primary}, 18%)", "alpha({color.primary}, 12%)") },
+				"interactiveSubtle": { $type: "color", $value: val("alpha({color.primary}, {opacity.subtle})", "alpha({color.primary}, {opacity.subtle})") },
 				"textPrimary": { $type: "color", $value: val("{color.neutral}", "{color.neutral}") },
 				"textAccent": { $type: "color", $value: val("hueShift({color.accent}, 30deg)", "hueShift({color.accent}, -25deg)") },
 				"textMuted": { $type: "color", $value: val("desaturate({color.accent}, 35%)", "desaturate({color.accent}, 35%)") },
@@ -121,8 +129,11 @@ export const MATH_OPERATORS = ['+', '-', '*', '/', '(', ')'];
 export const PATTERNS = {
 	bareAlias: /^\{([^}]+)\}$/,
 	alphaFunction: /^alpha\(\{([^}]+)\},\s*(\d*\.?\d+)%\)$/,
+	alphaFunctionRef: /^alpha\(\{([^}]+)\},\s*\{([^}]+)\}\)$/,
 	colorPercentFunction: /^(darken|lighten|saturate|desaturate)\(\{([^}]+)\},\s*(\d*\.?\d+)%\)$/,
+	colorPercentFunctionRef: /^(darken|lighten|saturate|desaturate)\(\{([^}]+)\},\s*\{([^}]+)\}\)$/,
 	hueShiftFunction: /^hueShift\(\{([^}]+)\},\s*([-+]?\d*\.?\d+)deg\)$/,
+	hueShiftFunctionRef: /^hueShift\(\{([^}]+)\},\s*\{([^}]+)\}\)$/,
 	alphaFunctionPrefix: /^alpha\(/,
 	colorFunctionPrefix: /^(darken|lighten|saturate|desaturate|hueShift)\(/,
 	tokenReference: /\{([^}]+)\}/g,

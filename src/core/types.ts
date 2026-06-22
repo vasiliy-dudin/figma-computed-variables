@@ -77,12 +77,19 @@ export type TokenJSON = z.infer<typeof TokenJSONSchema>;
 // Supported color modifier function names
 export type ColorModifyFn = 'darken' | 'lighten' | 'saturate' | 'desaturate' | 'hueShift';
 
+// Amount argument for alpha()/colorModify() functions — either a literal number
+// (already in the function's native scale, e.g. raw percent) or a reference to
+// another token whose resolved value supplies the amount.
+export type AmountValue =
+	| { kind: 'literal'; amount: number }
+	| { kind: 'reference'; tokenPath: string };
+
 // Expression AST types
 export type Expression =
 	| { type: 'literal'; value: string | number }
 	| { type: 'alias'; path: string }
-	| { type: 'alpha'; tokenPath: string; alpha: number }
-	| { type: 'colorModify'; fn: ColorModifyFn; tokenPath: string; amount: number }
+	| { type: 'alpha'; tokenPath: string; amount: AmountValue }
+	| { type: 'colorModify'; fn: ColorModifyFn; tokenPath: string; amount: AmountValue }
 	| { type: 'math'; expression: string }
 	| { type: 'concat'; parts: Array<string | { type: 'token'; path: string }> };
 
