@@ -126,7 +126,6 @@ export interface ValidationError {
 
 // Result type for applyToVariables
 export interface ApplyResult {
-	message: string;
 	errors: ValidationError[];
 	// How many mode values were left untouched because they already hold a
 	// Figma-native Composed Color matching the token. Counts mode values, not

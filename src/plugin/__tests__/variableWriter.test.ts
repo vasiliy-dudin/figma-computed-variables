@@ -132,6 +132,34 @@ describe('applyToVariables — Composed Color preservation', () => {
 		expect(overlay.valuesByMode[MODE_ID]).toEqual({ r: 1, g: 0, b: 0, a: 1 });
 	});
 
+	// resolveAmount turns a decimal token into a percentage by multiplying by 100, which
+	// drifts in float64: 0.07 * 100 === 7.000000000000001. A strict comparison against the
+	// whole number Figma stores would miss the match and destroy the reference.
+	it.each([[0.07, 7], [0.29, 29], [0.57, 57]])('preserves when the amount comes from the decimal token %s', async (decimal, storedPercent) => {
+		const stored = composeColor(BASE_ID, storedPercent);
+		const overlay = createVariable(OVERLAY_ID, 'overlay', stored);
+		activateFigmaMock([createVariable(BASE_ID, 'base', { r: 0, g: 0, b: 1, a: 1 }), overlay]);
+
+		await applyToVariables({
+			[COLLECTION_NAME]: {
+				base: { $type: 'color', $value: '#0000FF' },
+				faint: { $type: 'number', $value: decimal },
+				overlay: { $type: 'color', $value: 'alpha({base}, {faint})' },
+			},
+		});
+
+		expect(overlay.valuesByMode[MODE_ID]).toBe(stored);
+	});
+
+	it('still overwrites when the percentage differs by a real amount', async () => {
+		const overlay = createVariable(OVERLAY_ID, 'overlay', composeColor(BASE_ID, 7));
+		activateFigmaMock([createVariable(BASE_ID, 'base', { r: 0, g: 0, b: 1, a: 1 }), overlay]);
+
+		await applyToVariables(json('alpha({base}, 7.5%)'));
+
+		expect(overlay.valuesByMode[MODE_ID]).toEqual({ r: 0, g: 0, b: 1, a: 0.075 });
+	});
+
 	it('counts each preserved mode value', async () => {
 		const overlay = createVariable(OVERLAY_ID, 'overlay', composeColor(BASE_ID, 50));
 		activateFigmaMock([createVariable(BASE_ID, 'base', { r: 0, g: 0, b: 1, a: 1 }), overlay]);

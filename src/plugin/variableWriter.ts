@@ -4,12 +4,18 @@ import { createTokenMap, flattenTokenGroup, isExcluded, normalizeModeValues } fr
 import { resolveToken, resolveAlphaIntent, hexToRgba } from '@core/resolver';
 import { isComposeColorValue, readComposeColor } from '@plugin/composeColor';
 
+// Tolerance for comparing opacity percentages. resolveAmount derives a percentage from
+// a decimal token by multiplying by 100, which drifts in float64 — 0.07 becomes
+// 7.000000000000001, 0.29 becomes 28.999999999999996. Comparing those strictly against
+// the whole number Figma stores would miss the match and destroy the reference. Far
+// smaller than any percentage difference a user could intend.
+const PERCENT_MATCH_EPSILON = 1e-9;
+
 /**
  * Apply token JSON to Figma Variables
  * Updates existing collections/variables, creates missing ones, merges modes
  */
 export async function applyToVariables(json: TokenJSON): Promise<ApplyResult> {
-	let totalVariables = 0;
 	let preservedComposedColors = 0;
 	const collectionErrors: ValidationError[] = [];
 	const collections = await figma.variables.getLocalVariableCollectionsAsync();
@@ -108,8 +114,6 @@ export async function applyToVariables(json: TokenJSON): Promise<ApplyResult> {
 						});
 					}
 				}
-
-				totalVariables++;
 			} catch (err) {
 				collectionErrors.push({
 					collection: collectionName,
@@ -122,7 +126,6 @@ export async function applyToVariables(json: TokenJSON): Promise<ApplyResult> {
 	}
 	
 	return {
-		message: `Applied ${totalVariables} variables across ${Object.keys(json).filter(k => !isExcluded(k)).length} collections`,
 		errors: collectionErrors,
 		preservedComposedColors,
 	};
@@ -150,7 +153,7 @@ async function isComposedColorUnchanged(
 	if (!intent) return false;
 
 	const stored = readComposeColor(current);
-	if (stored.percent !== intent.percent) return false;
+	if (Math.abs(stored.percent - intent.percent) > PERCENT_MATCH_EPSILON) return false;
 
 	return targetMatchesPath(stored.targetId, intent.targetPath);
 }
@@ -159,8 +162,11 @@ async function isComposedColorUnchanged(
  * Resolve a stored alias target back to a token path and compare it with the one the
  * expression names. Works in reverse — id to path — because the forward direction
  * costs a full scan of every variable in the file (see findVariableByPath).
- * Accepts both the bare path and the collection-prefixed form, mirroring the
- * resolution rules that findVariableByPath applies going the other way.
+ *
+ * Accepts both the bare path and the collection-prefixed form. Note this is not an
+ * exact mirror of findVariableByPath: that function splits on the *first* dot to guess
+ * a collection prefix, so it fails to resolve a collection whose own name contains a
+ * dot. Comparing whole strings here handles that case correctly instead.
  */
 async function targetMatchesPath(targetId: string, path: string): Promise<boolean> {
 	const target = await figma.variables.getVariableByIdAsync(targetId);

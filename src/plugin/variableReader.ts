@@ -108,6 +108,12 @@ async function formatValue(value: VariableValue, type: VariableResolvedDataType)
  * result of Figma's "Set opacity" on a referenced color variable) as the plugin's
  * own alpha() syntax. The plugin cannot recreate this native shape on Apply — see
  * PLANNING.md — so this is purely a faithful, round-trippable *reading* of it.
+ *
+ * The target is emitted as a bare path without its collection, matching how plain
+ * aliases are imported above. That inherits their ambiguity when the same path exists
+ * in two collections, which validation reports on Apply; the alternative — qualifying
+ * only composed colours — would make the two kinds of reference behave differently in
+ * the same file, which is harder to explain than the ambiguity itself.
  */
 async function formatComposeColor(value: ComposeColorValue): Promise<string> {
 	const { targetId, percent } = readComposeColor(value);

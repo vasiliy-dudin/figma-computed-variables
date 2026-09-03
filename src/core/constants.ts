@@ -14,12 +14,16 @@ export const TYPE_MAP: Record<string, FigmaVariableType> = {
 	// 'lineHeight': 'FLOAT',
 };
 
-// Reverse mapping: Figma type → Token type
-export const FIGMA_TYPE_MAP: Record<FigmaVariableType, string> = {
+// Reverse mapping: Figma type → Token type. Keyed by the full VariableResolvedDataType
+// (not the narrower FigmaVariableType above), since a variable can resolve to any of
+// Figma's types even though the plugin can only create the ones in TYPE_MAP.
+export const FIGMA_TYPE_MAP: Record<VariableResolvedDataType, string> = {
 	'COLOR': 'color',
 	'FLOAT': 'number',
 	'STRING': 'string',
 	'BOOLEAN': 'string', // Map to string for now
+	'EASING': 'string', // Map to string for now
+	'TIMING': 'string', // Map to string for now
 };
 
 // Example token JSON shown when user picks "Load example" on first run.
