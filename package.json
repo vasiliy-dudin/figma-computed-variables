@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "run-p watch:*",
+    "dev": "run-p _watch:*",
     "prebuild": "tsc && tsc -P tsconfig.node.json && rimraf dist",
     "build": "run-s _build:ui _build:plugin",
     "test": "vitest run",
