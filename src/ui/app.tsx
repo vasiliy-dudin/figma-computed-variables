@@ -15,6 +15,20 @@ import type { TokenJSON, ValidationError } from "@core/types";
 import { sendToPlugin, onPluginMessage } from "@ui/messaging";
 import type { ApplyStatus } from "@core/messages";
 
+const APPLIED_MESSAGE = 'Applied to Variables';
+
+/**
+ * Success text for Apply. When Figma-native opacity references were left in place,
+ * say so and why — the plugin skipped them deliberately, and staying silent would
+ * read as if those values had been written.
+ */
+function applySuccessMessage(preservedComposedColors: number): string {
+	if (preservedComposedColors === 0) return APPLIED_MESSAGE;
+
+	const plural = preservedComposedColors === 1 ? 'value' : 'values';
+	return `${APPLIED_MESSAGE} · kept ${preservedComposedColors} opacity-reference ${plural} (Figma's API can't write them)`;
+}
+
 function App() {
 	const [jsonText, setJsonText] = useState<string>("");
 	const [errors, setErrors] = useState<ValidationError[]>([]);
@@ -54,7 +68,7 @@ function App() {
 
 				case 'APPLY_SUCCESS':
 					setErrors([]);
-					showToast('Applied to Variables');
+					showToast(applySuccessMessage(msg.preservedComposedColors));
 					break;
 
 				case 'APPLY_ERROR':

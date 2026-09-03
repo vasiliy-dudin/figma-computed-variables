@@ -1,5 +1,5 @@
 import { formatHex, formatRgb, parse as parseColor, converter } from 'culori';
-import { ResolvedValue, TokenMap, RGBA, ColorModifyFn, AmountValue } from './types';
+import { ResolvedValue, TokenMap, RGBA, ColorModifyFn, AmountValue, AlphaIntent } from './types';
 import { parseExpression } from './parser';
 import { CircularDependencyError } from './validator';
 import { PATTERNS } from './constants';
@@ -118,6 +118,44 @@ export function resolveToken(
 			const result = evaluateConcat(expr.parts, mode, tokenMap, new Set(visited));
 			return { isAlias: false, value: result };
 		}
+	}
+}
+
+/**
+ * Report what an alpha() token asks for — its target path and opacity percentage —
+ * without computing the resulting colour. Returns null when the token is not an
+ * alpha() expression, or when its target or amount cannot be determined.
+ *
+ * Failures resolve to null rather than throwing on purpose: the caller falls through
+ * to the normal resolveToken path, where the same failure surfaces once, attributed
+ * to the right collection, token and mode.
+ *
+ * The percentage is deliberately not clamped. resolveAmount returns it raw, so
+ * alpha({x}, 150%) yields 150 — a value Figma cannot store, which simply fails to
+ * match and lets the variable be overwritten. That is the safe direction.
+ */
+export function resolveAlphaIntent(
+	tokenPath: string,
+	mode: string,
+	tokenMap: TokenMap
+): AlphaIntent | null {
+	const token = tokenMap.get(tokenPath);
+	if (!token) return null;
+
+	const value =
+		typeof token.$value === 'string' || typeof token.$value === 'number'
+			? token.$value
+			: token.$value[mode];
+	if (value === undefined) return null;
+
+	try {
+		const expr = parseExpression(value, token.$type);
+		if (expr.type !== 'alpha') return null;
+
+		const percent = resolveAmount(expr.amount, mode, tokenMap, new Set([tokenPath]), 'percent');
+		return { targetPath: expr.tokenPath, percent };
+	} catch {
+		return null;
 	}
 }
 

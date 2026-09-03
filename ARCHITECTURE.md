@@ -318,3 +318,150 @@ Two separate TypeScript projects:
 2. **Mode Consistency Not Enforced** — tokens can have different modes across collections
 5. **No Type Coercion** — `{number-token}px` won't convert number to string automatically
 6. **Manual Sync Required** — plugin doesn't watch for external changes to Figma Variables
+7. **Cannot Create Composed Colors** — the plugin can read Figma's native "reference + opacity" colour variables but cannot write them; the Plugin API refuses. See [Composed Color Variables](#composed-color-variables-figma-alias--opacity) for the full investigation.
+
+## Composed Color Variables (Figma alias + opacity)
+
+**Status as of 2026-09, checked against `@figma/plugin-typings@1.137.0` and Figma desktop.**
+
+This section is a research record. The conclusion below is a hard "no" *today*, but the
+restriction looks deliberate and temporary, so this documents everything needed to
+re-test it cheaply later rather than re-deriving it from scratch.
+
+### What the feature is
+
+Figma's UI lets a colour variable reference another colour variable **and** carry its own
+opacity — shown in the Variables panel as the alias plus an opacity percentage. This is
+the long-requested "alias with alpha", and it is what `alpha({token}, X%)` would ideally
+produce, so that changing the base colour keeps every derived token live.
+
+### How Figma stores it
+
+Read from `variable.valuesByMode[modeId]` on a variable created by hand in the UI:
+
+```json
+{
+  "type": "VARIABLE_EXPRESSION",
+  "expressionFunction": "COMPOSE_COLOR",
+  "expressionArguments": [
+    { "type": "VARIABLE_ALIAS", "id": "VariableID:1:3" },
+    50
+  ]
+}
+```
+
+- Opacity is the **second** element of `expressionArguments`, a percentage on a **0-100**
+  scale — the same scale `resolveAmount()` already returns for `alpha()`, so no conversion
+  is needed in either direction.
+- Neither `VARIABLE_EXPRESSION` (in the `VariableValue` union) nor `COMPOSE_COLOR` (in
+  `ExpressionFunction`) exists in the published typings. The `Expression` interface that
+  *is* in the typings belongs to the prototyping/conditionals system and has a different
+  shape — no `type` field, and `expressionArguments: VariableData[]` wrappers. Do not be
+  misled by it, as the first attempt here was.
+
+### Why writing is impossible
+
+`Variable.setValueForMode()` is the only method that sets a variable value — confirmed by
+reading the whole `Variable` interface, which otherwise exposes only `resolveForConsumer`,
+a readonly `valuesByMode`, `remove()` and `scopes`. It rejects composed colours:
+
+```
+in setValueForMode: Composed color variable values are not supported
+```
+
+Seven candidate payloads were tried. The failures split into two distinct groups, and
+that split is the actual evidence:
+
+| # | Payload | Result |
+|---|---------|--------|
+| A | `type` + raw args `[alias, 50]` | **Feature gate** — `Composed color variable values are not supported` |
+| B | No `type`, raw args | Schema error |
+| C | `type` + `VariableData`-wrapped args | Schema error |
+| D | No `type`, wrapped args | Schema error |
+| E | `type` + raw args, opacity as `0.5` | **Feature gate** |
+| F | `VariableData` envelope around the expression | Schema error |
+| G | **Verbatim echo** of a value read from a real variable | **Feature gate** |
+
+The schema errors (B, C, D, F) are the useful ones: Figma's validator spelled out the
+schema it expects, confirming shape A is exactly right —
+
+```
+Invalid literal value, expected "VARIABLE_EXPRESSION" at .type
+Invalid literal value, expected "COMPOSE_COLOR" at .expressionFunction
+Required value missing at .expressionArguments[0].id
+Invalid literal value, expected "VARIABLE_ALIAS" at .expressionArguments[1].type
+Expected number, received object at .expressionArguments[1]
+```
+
+So the value form is well-formed and recognised by the runtime; a **separate, later guard**
+rejects it on principle. Case G is decisive: Figma refused to accept back a value it had
+produced and stored itself, unmodified.
+
+Additional findings:
+
+- `enableProposedApi: true` does **not** lift the restriction. It would be useless anyway —
+  plugins with that flag cannot be published, not even privately to an organisation.
+- Chained opacity is impossible even in the UI: a variable referencing a variable that
+  already carries opacity is stored as a plain `VARIABLE_ALIAS` with no opacity of its own,
+  and Figma will not let you set one.
+
+### What the plugin does instead
+
+Since it can read but not write, the plugin's job is to avoid destroying these values:
+
+| Concern | Behaviour | Implementation |
+|---------|-----------|----------------|
+| Import used to return `#000000` for them | Emits `alpha({path}, X%)` | `formatComposeColor()` in `plugin/variableReader.ts` |
+| Unresolvable alias target (library variable, deleted variable) | Emits a deliberately invalid path so the existing reference validator reports it at Apply time, instead of silently emptying the value | `UNRESOLVED_COMPOSE_COLOR_TARGET_PREFIX` in `plugin/variableReader.ts` |
+| Apply used to flatten them into static colours | Skips the write when the stored value already matches the token's intent | `isComposedColorUnchanged()` in `plugin/variableWriter.ts` |
+| Recognising the shape | Type guard, rejects any other `VARIABLE_EXPRESSION` function | `plugin/composeColor.ts` |
+| Telling the user | `ApplyResult.preservedComposedColors`, surfaced in the Apply toast | `plugin/variableWriter.ts`, `ui/app.tsx` |
+
+Note that the equivalence check compares **id → path**, not path → id: resolving a path to
+a variable means `findVariableByPath()`, which rescans every variable in the file. Going
+backwards costs two lookups by id instead.
+
+### How to re-test when revisiting
+
+1. In a Figma file, create a colour variable `base` with a solid colour, then a second
+   variable `overlay` set in the UI to reference `base` with, say, 50% opacity.
+2. In plugin code, read `overlay`'s `valuesByMode` and confirm the shape above still holds
+   — if Figma changed the representation, everything below is void.
+3. Attempt `setValueForMode` with that exact value on a throwaway variable.
+   - Still `Composed color variable values are not supported` → nothing has changed, stop.
+   - Accepted → the gate is lifted; continue.
+4. Also re-check whether a *fractional* percentage (e.g. `12.5`) is accepted, and whether
+   the target may itself be a plain alias variable. Both were untestable while the gate
+   was closed, and both affect the design below.
+
+### Design worked out for when it opens up
+
+Kept because the non-obvious parts cost real effort to work out:
+
+- **Only a bare `alpha({token}, amount)` qualifies.** Anything else — `darken(alpha(...))`,
+  a chain of `alpha` over `alpha` — must keep producing a computed colour, since Figma
+  cannot express it.
+- **Only when the base colour is fully opaque.** Today `alpha()` *multiplies* alpha down
+  the chain (`0.5 × 0.5 = 0.25`). Restricting to an opaque base sidesteps every case where
+  Figma's composition semantics might differ from that, keeping results identical to today.
+- **The opacity check must resolve with the feature flag OFF.** Otherwise the resolver
+  returns the reference variant, follows `targetPath` onward, and sees the *base* colour's
+  `a = 1.0` instead of the intermediate token's real opacity — silently qualifying a token
+  that should have been excluded.
+- **Clamp the percentage to 0-100 before writing.** `resolveAmount()` returns it raw, so
+  `alpha({x}, 150%)` yields `150`; today that clamps downstream in `applyAlpha()` to
+  `a = 1.0`, and writing `150` would diverge.
+- **Verify the write by reading it back** rather than trusting it to throw. On the machine
+  where the feature is unavailable the failure mode is unknown, so read
+  `valuesByMode[modeId]` after writing, fall back to the computed colour on mismatch, and
+  cache the outcome for the session. This also avoids a capability probe, which would have
+  to create and delete a temporary collection — mutating the user's document, dirtying the
+  file, polluting undo history and syncing to collaborators.
+- **Two prerequisites become load-bearing** (both are pre-existing defects, harmless today
+  because so few tokens take the alias path):
+  - `findVariableByPath()` rescans every variable per alias. Once every `alpha()` token
+    needs a target lookup, this needs to become a `Map` built once per apply.
+  - `applyToVariables()` creates variables and resolves alias targets in the same pass, so
+    a first Apply fails for aliases pointing at a collection defined later in the JSON.
+    Splitting it into create-then-populate fixes this and makes results independent of key
+    order.

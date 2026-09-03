@@ -127,7 +127,11 @@ async function processApplyQueue(): Promise<void> {
 		if (result.errors.length > 0) {
 			sendToUI({ type: 'APPLY_ERROR', errors: result.errors });
 		} else {
-			sendToUI({ type: 'APPLY_SUCCESS', message: result.message });
+			sendToUI({
+				type: 'APPLY_SUCCESS',
+				message: result.message,
+				preservedComposedColors: result.preservedComposedColors,
+			});
 		}
 	} catch (err) {
 		console.error('Error applying variables:', err);

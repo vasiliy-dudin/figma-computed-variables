@@ -2,6 +2,14 @@ import { TokenJSON, Token, ModeValues } from '@core/types';
 import { condenseModeValues, nestifyFlatPaths } from '@core/tokenUtils';
 import { FIGMA_TYPE_MAP } from '@core/constants';
 import { rgbaToHex } from '@core/resolver';
+import { isComposeColorValue, readComposeColor, ComposeColorValue } from '@plugin/composeColor';
+
+// Prefix for a placeholder alias path when a Composed Color's target variable
+// cannot be resolved locally (e.g. it lives in a library not available to this
+// plugin). Guaranteed not to collide with a real dot-path, so the existing
+// reference validator reports it as a clear "token not found" error at Apply
+// time instead of the color silently vanishing.
+const UNRESOLVED_COMPOSE_COLOR_TARGET_PREFIX = 'unresolved-variable:';
 
 /**
  * Import all Figma Variables and convert to TokenJSON format
@@ -63,6 +71,10 @@ export async function importVariablesToJSON(): Promise<TokenJSON> {
  * Format a Figma variable value to token format
  */
 async function formatValue(value: VariableValue, type: VariableResolvedDataType): Promise<string | number> {
+	if (isComposeColorValue(value)) {
+		return formatComposeColor(value);
+	}
+
 	if (value !== null && typeof value === 'object' && 'type' in value && value.type === 'VARIABLE_ALIAS') {
 		const target = await figma.variables.getVariableByIdAsync(value.id);
 		if (!target) return '';
@@ -85,8 +97,24 @@ async function formatValue(value: VariableValue, type: VariableResolvedDataType)
 			
 		case 'STRING':
 			return typeof value === 'string' ? value : '';
-			
+
 		default:
 			return String(value);
 	}
+}
+
+/**
+ * Format a Composed Color (a native Figma alias carrying its own opacity, e.g. the
+ * result of Figma's "Set opacity" on a referenced color variable) as the plugin's
+ * own alpha() syntax. The plugin cannot recreate this native shape on Apply — see
+ * PLANNING.md — so this is purely a faithful, round-trippable *reading* of it.
+ */
+async function formatComposeColor(value: ComposeColorValue): Promise<string> {
+	const { targetId, percent } = readComposeColor(value);
+	const target = await figma.variables.getVariableByIdAsync(targetId);
+	const path = target
+		? target.name.replace(/\//g, '.')
+		: `${UNRESOLVED_COMPOSE_COLOR_TARGET_PREFIX}${targetId}`;
+
+	return `alpha({${path}}, ${percent}%)`;
 }

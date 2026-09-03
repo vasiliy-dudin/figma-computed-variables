@@ -1,7 +1,8 @@
-import { TokenJSON, ResolvedValue, RGBA, ValidationError, ApplyResult } from '@core/types';
+import { TokenJSON, ResolvedValue, RGBA, TokenMap, ValidationError, ApplyResult } from '@core/types';
 import { TYPE_MAP } from '@core/constants';
 import { createTokenMap, flattenTokenGroup, isExcluded, normalizeModeValues } from '@core/tokenUtils';
-import { resolveToken, hexToRgba } from '@core/resolver';
+import { resolveToken, resolveAlphaIntent, hexToRgba } from '@core/resolver';
+import { isComposeColorValue, readComposeColor } from '@plugin/composeColor';
 
 /**
  * Apply token JSON to Figma Variables
@@ -9,6 +10,7 @@ import { resolveToken, hexToRgba } from '@core/resolver';
  */
 export async function applyToVariables(json: TokenJSON): Promise<ApplyResult> {
 	let totalVariables = 0;
+	let preservedComposedColors = 0;
 	const collectionErrors: ValidationError[] = [];
 	const collections = await figma.variables.getLocalVariableCollectionsAsync();
 	
@@ -88,6 +90,11 @@ export async function applyToVariables(json: TokenJSON): Promise<ApplyResult> {
 
 					try {
 						const fullPath = `${collectionName}.${tokenPath}`;
+						if (await isComposedColorUnchanged(variable, mode.modeId, fullPath, mode.name, tokenMap)) {
+							preservedComposedColors++;
+							continue;
+						}
+
 						const resolved = resolveToken(fullPath, mode.name, tokenMap);
 
 						await setVariableValue(variable, mode.modeId, resolved, figmaType);
@@ -117,7 +124,54 @@ export async function applyToVariables(json: TokenJSON): Promise<ApplyResult> {
 	return {
 		message: `Applied ${totalVariables} variables across ${Object.keys(json).filter(k => !isExcluded(k)).length} collections`,
 		errors: collectionErrors,
+		preservedComposedColors,
 	};
+}
+
+/**
+ * True when the mode already holds a Figma-native Composed Color expressing exactly
+ * what this token asks for, so Apply should leave it alone.
+ *
+ * The plugin cannot create or restore a Composed Color — the API rejects the write
+ * (see PLANNING.md) — so overwriting one with the equivalent flat colour would
+ * silently destroy a reference the user cannot get back through this plugin.
+ */
+async function isComposedColorUnchanged(
+	variable: Variable,
+	modeId: string,
+	tokenFullPath: string,
+	modeName: string,
+	tokenMap: TokenMap
+): Promise<boolean> {
+	const current = variable.valuesByMode[modeId];
+	if (!isComposeColorValue(current)) return false;
+
+	const intent = resolveAlphaIntent(tokenFullPath, modeName, tokenMap);
+	if (!intent) return false;
+
+	const stored = readComposeColor(current);
+	if (stored.percent !== intent.percent) return false;
+
+	return targetMatchesPath(stored.targetId, intent.targetPath);
+}
+
+/**
+ * Resolve a stored alias target back to a token path and compare it with the one the
+ * expression names. Works in reverse — id to path — because the forward direction
+ * costs a full scan of every variable in the file (see findVariableByPath).
+ * Accepts both the bare path and the collection-prefixed form, mirroring the
+ * resolution rules that findVariableByPath applies going the other way.
+ */
+async function targetMatchesPath(targetId: string, path: string): Promise<boolean> {
+	const target = await figma.variables.getVariableByIdAsync(targetId);
+	if (!target) return false;
+
+	// Figma uses '/' for variable groups; the plugin's token paths use '.'
+	const barePath = target.name.replace(/\//g, '.');
+	if (path === barePath) return true;
+
+	const collection = await figma.variables.getVariableCollectionByIdAsync(target.variableCollectionId);
+	return collection !== null && path === `${collection.name}.${barePath}`;
 }
 
 /**

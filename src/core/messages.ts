@@ -13,7 +13,7 @@ export type UIToPluginMessage =
 export type PluginToUIMessage =
 	| { type: 'IMPORT_SUCCESS'; json: TokenJSON }
 	| { type: 'IMPORT_ERROR'; error: string }
-	| { type: 'APPLY_SUCCESS'; message: string }
+	| { type: 'APPLY_SUCCESS'; message: string; preservedComposedColors: number }
 	| { type: 'APPLY_ERROR'; errors: ValidationError[] }
 	| { type: 'SAVE_SUCCESS' }
 	| { type: 'SAVE_ERROR'; error: string }

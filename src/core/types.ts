@@ -98,6 +98,15 @@ export type ResolvedValue =
 	| { isAlias: false; value: string | number | RGBA }
 	| { isAlias: true; targetPath: string; value?: never };
 
+// What an alpha() expression asks for, independent of how it gets written to Figma.
+// Used to recognise a Figma-native Composed Color that already expresses the same
+// intent, so Apply can leave it untouched instead of flattening it.
+export interface AlphaIntent {
+	targetPath: string;
+	// Percentage on a 0-100 scale, matching both alpha() syntax and Figma's storage.
+	percent: number;
+}
+
 // Figma color type
 export interface RGBA {
 	r: number;
@@ -119,6 +128,10 @@ export interface ValidationError {
 export interface ApplyResult {
 	message: string;
 	errors: ValidationError[];
+	// How many mode values were left untouched because they already hold a
+	// Figma-native Composed Color matching the token. Counts mode values, not
+	// variables: a two-mode token preserved in both modes counts twice.
+	preservedComposedColors: number;
 }
 
 // Token map for quick lookups
