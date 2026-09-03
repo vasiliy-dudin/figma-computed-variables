@@ -309,7 +309,7 @@ Two separate TypeScript projects:
 1. **No External Network Calls** — plugin runs fully offline
 2. **Input Sanitization** — Zod validates all JSON before processing
 3. **Expression Safety** — no `eval()`, all expressions parsed and validated
-4. **Storage Isolation** — `clientStorage` is plugin-scoped
+4. **Storage Isolation** — `clientStorage` is plugin-scoped, not file-scoped, so `storage.ts` namespaces each entry with a per-file id persisted via `pluginData` on `figma.root`
 5. **Message Validation** — all cross-context messages are typed
 
 ## Limitations
