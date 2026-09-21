@@ -251,6 +251,15 @@
 					<p class="text-muted small">Amounts can also reference another token, e.g. <code>alpha({color.primary}, {opacity.subtle})</code>. That token can hold a percentage (<code>5%</code>) or a decimal (<code>0.05</code>) — for <code>hueShift()</code>, just degrees.</p>
 				</figure>
 
+				<div class="callout mt-4">
+					<div class="fw-semibold mb-1"><code>alpha()</code> stays linked in Figma</div>
+					<ul class="small mb-0 mt-1">
+						<li><code>alpha({color.primary}, 50%)</code> becomes a Figma variable that references <code>color/primary</code> with 50% opacity — change the base colour in Figma and every <code>alpha()</code> colour follows.</li>
+						<li>When the opacity comes from a token, the variable references that token's variable too. In Figma, opacity variables hold a percentage: <code>60</code> means 60%. Give such tokens the <code>"$scope": "COLOR_OPACITY"</code> so the plugin reads <code>60</code> the same way.</li>
+						<li>Over a colour that is already transparent, <code>alpha()</code> writes a fixed colour, as before: Figma would replace the colour's transparency, while <code>alpha()</code> multiplies it.</li>
+					</ul>
+				</div>
+
 				<h4>Accepted color formats</h4>
 
 				<figure>
