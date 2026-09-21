@@ -33,11 +33,13 @@ export const TokenValueSchema = z.union([
 
 export type TokenValue = z.infer<typeof TokenValueSchema>;
 
-// All valid Figma VariableScope values — keep in sync with @figma/plugin-typings
+// All valid Figma VariableScope values — keep in sync with @figma/plugin-typings.
+// COLOR_OPACITY comes from Plugin API update 139 and is ahead of the typings (1.138.0 lacks it);
+// without it, importing a file that uses the scope would fail validation.
 const VARIABLE_SCOPE_VALUES = [
 	'ALL_SCOPES', 'TEXT_CONTENT', 'CORNER_RADIUS', 'WIDTH_HEIGHT', 'GAP',
 	'ALL_FILLS', 'FRAME_FILL', 'SHAPE_FILL', 'TEXT_FILL', 'STROKE_COLOR',
-	'STROKE_FLOAT', 'EFFECT_FLOAT', 'EFFECT_COLOR', 'OPACITY',
+	'STROKE_FLOAT', 'EFFECT_FLOAT', 'EFFECT_COLOR', 'OPACITY', 'COLOR_OPACITY',
 	'FONT_FAMILY', 'FONT_STYLE', 'FONT_WEIGHT', 'FONT_SIZE',
 	'LINE_HEIGHT', 'LETTER_SPACING', 'PARAGRAPH_SPACING', 'PARAGRAPH_INDENT',
 ] as const;
@@ -103,8 +105,14 @@ export type ResolvedValue =
 // intent, so Apply can leave it untouched instead of flattening it.
 export interface AlphaIntent {
 	targetPath: string;
-	// Percentage on a 0-100 scale, matching both alpha() syntax and Figma's storage.
+	// Percentage on a 0-100 scale, matching both alpha() syntax and Figma's storage. Unclamped.
 	percent: number;
+	// The amount token, when referencing it paints the same colour: its own Figma number equals
+	// `percent`. Null means the percentage is written as a number instead.
+	opacityTokenPath: string | null;
+	// Whether a native composed colour paints exactly what alpha() computes. Figma replaces the
+	// base's alpha while alpha() multiplies it, so only a fully opaque base qualifies.
+	eligible: boolean;
 }
 
 // Figma color type
@@ -127,9 +135,9 @@ export interface ValidationError {
 // Result type for applyToVariables
 export interface ApplyResult {
 	errors: ValidationError[];
-	// How many mode values were left untouched because they already hold a
-	// Figma-native Composed Color matching the token. Counts mode values, not
-	// variables: a two-mode token preserved in both modes counts twice.
+	// How many mode values were left untouched because they already hold a composed colour
+	// matching the token over a translucent base, which Apply cannot rewrite without changing
+	// its colour. Counts mode values, not variables: a two-mode token counts twice.
 	preservedComposedColors: number;
 }
 

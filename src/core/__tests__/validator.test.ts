@@ -304,3 +304,25 @@ describe('validate — collision errors', () => {
 		}
 	});
 });
+
+describe('validate — $scope', () => {
+	function withScope(scope: unknown): unknown {
+		return {
+			foundation: {
+				opacity: { primary: { $type: 'number', $value: 60, $scope: scope } },
+			},
+		};
+	}
+
+	// COLOR_OPACITY arrived with Plugin API update 139, ahead of @figma/plugin-typings.
+	// Figma recommends it for opacity variables used by composed colours, so an imported
+	// file can carry it.
+	it('accepts COLOR_OPACITY', () => {
+		expect(validate(withScope('COLOR_OPACITY')).valid).toBe(true);
+		expect(validate(withScope(['COLOR_OPACITY', 'OPACITY'])).valid).toBe(true);
+	});
+
+	it('still rejects an unknown scope', () => {
+		expect(validate(withScope('NOT_A_SCOPE')).valid).toBe(false);
+	});
+});

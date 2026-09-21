@@ -33,4 +33,12 @@ export default defineConfig(({ mode }) => ({
 			"@core": path.resolve("src/core"),
 		},
 	},
+	define: {
+		// Figma's plugin sandbox has no BigInt, although Figma's docs say it does. zod >= 4.6
+		// calls BigInt() while loading (its JSON-schema range table), so the plugin crashed
+		// before starting. Every BigInt reference in the bundle falls back to Number when the
+		// real one is missing; `typeof` never throws, even for an undeclared name. The plugin
+		// itself never uses bigints, so the fallback only ever fills that unused table.
+		BigInt: '(typeof BigInt === "function" ? BigInt : Number)',
+	},
 }));

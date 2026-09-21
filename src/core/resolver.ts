@@ -1,5 +1,5 @@
 import { formatHex, formatRgb, parse as parseColor, converter } from 'culori';
-import { ResolvedValue, TokenMap, RGBA, ColorModifyFn, AmountValue, AlphaIntent } from './types';
+import { ResolvedValue, TokenMap, RGBA, ColorModifyFn, AmountValue, AlphaIntent, Token } from './types';
 import { parseExpression } from './parser';
 import { CircularDependencyError } from './validator';
 import { PATTERNS } from './constants';
@@ -13,6 +13,9 @@ const MAX_PERCENT = 100;
 const MIN_HUE_SHIFT = -360;
 const MAX_HUE_SHIFT = 360;
 const DECIMAL_TO_PERCENT_SCALE = 100;
+// Figma's opacity variables for composed colours hold a percentage (60 means 60 %), and Figma
+// marks them with this scope. A plain number in a token with it is a percentage, not a fraction.
+const PERCENT_SCALED_SCOPE = 'COLOR_OPACITY';
 
 // Matches a resolved amount-token value written as a percentage, e.g. "15%".
 // No sign allowed — mirrors the literal alpha()/darken()/lighten()/saturate()/desaturate() syntax.
@@ -152,11 +155,48 @@ export function resolveAlphaIntent(
 		const expr = parseExpression(value, token.$type);
 		if (expr.type !== 'alpha') return null;
 
-		const percent = resolveAmount(expr.amount, mode, tokenMap, new Set([tokenPath]), 'percent');
-		return { targetPath: expr.tokenPath, percent };
+		const visited = new Set([tokenPath]);
+		const percent = resolveAmount(expr.amount, mode, tokenMap, new Set(visited), 'percent');
+		return {
+			targetPath: expr.tokenPath,
+			percent,
+			opacityTokenPath: referenceablePercentToken(expr.amount, percent, mode, tokenMap, new Set(visited)),
+			eligible: isOpaqueBase(expr.tokenPath, mode, tokenMap, new Set(visited)),
+		};
 	} catch {
 		return null;
 	}
+}
+
+/**
+ * True when the base resolves to a fully opaque colour. Resolved the normal way, as a computed
+ * value, so a base that is itself an alpha() token counts with its real, reduced alpha rather
+ * than the alpha of the colour it points at.
+ */
+function isOpaqueBase(basePath: string, mode: string, tokenMap: TokenMap, visited: Set<string>): boolean {
+	const base = resolveToConcreteValue(basePath, mode, tokenMap, visited).value;
+	if (typeof base === 'number') return false;
+	const color = typeof base === 'object' ? base : hexToRgba(base);
+	return color.a === 1;
+}
+
+/**
+ * The amount token's path when a composed colour may reference it and still paint the same
+ * colour: its own value, as the plugin writes it to Figma, must equal the percentage. A decimal
+ * token such as 0.12 means 12 % to alpha() but 0.12 % to Figma, so it is not referenced.
+ */
+function referenceablePercentToken(
+	amount: AmountValue,
+	percent: number,
+	mode: string,
+	tokenMap: TokenMap,
+	visited: Set<string>
+): string | null {
+	if (amount.kind !== 'reference') return null;
+
+	const value = resolveToConcreteValue(amount.tokenPath, mode, tokenMap, visited).value;
+	const figmaNumber = typeof value === 'number' ? value : parseFloat(String(value));
+	return figmaNumber === percent ? amount.tokenPath : null;
 }
 
 /**
@@ -206,7 +246,9 @@ function resolveAmount(
 			return parseFloat(percentMatch[1]);
 		}
 		if (PLAIN_NUMBER.test(raw)) {
-			return parseFloat(raw) * DECIMAL_TO_PERCENT_SCALE;
+			return isPercentScaled(tokenMap.get(amount.tokenPath))
+				? parseFloat(raw)
+				: parseFloat(raw) * DECIMAL_TO_PERCENT_SCALE;
 		}
 		throw new Error(`Invalid amount from token reference {${amount.tokenPath}}: expected a percentage (e.g. 15%) or a decimal (e.g. 0.15), found "${raw}".`);
 	}
@@ -219,6 +261,17 @@ function resolveAmount(
 		return parseFloat(raw);
 	}
 	throw new Error(`Invalid amount from token reference {${amount.tokenPath}}: expected degrees (e.g. 30deg) or a plain number, found "${raw}".`);
+}
+
+/**
+ * True when a plain number in this token is a percentage rather than a fraction. Only the
+ * token named in the expression is checked, not the end of an alias chain behind it: the scope
+ * says how that token's own number is meant, so it is what the expression refers to.
+ */
+function isPercentScaled(token: Token | undefined): boolean {
+	const scope = token?.$scope;
+	if (scope === undefined) return false;
+	return (Array.isArray(scope) ? scope : [scope]).includes(PERCENT_SCALED_SCOPE);
 }
 
 /**

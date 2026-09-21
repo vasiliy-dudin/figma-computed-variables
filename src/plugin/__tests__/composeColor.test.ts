@@ -1,68 +1,73 @@
 import { describe, expect, it } from 'vitest';
-import { isComposeColorValue, readComposeColor, ComposeColorValue } from '../composeColor';
+import { readComposedColor } from '../composeColor';
 
-// Captured verbatim from TMP-overlay @ 1:0 in the task-1 spike.
-const REAL_COMPOSE_COLOR: ComposeColorValue = {
-	type: 'VARIABLE_EXPRESSION',
-	expressionFunction: 'COMPOSE_COLOR',
-	expressionArguments: [{ type: 'VARIABLE_ALIAS', id: 'VariableID:1:3' }, 50],
-};
+const BASE_ALIAS = { type: 'VARIABLE_ALIAS', id: 'VariableID:9:80' };
+const OPACITY_ALIAS = { type: 'VARIABLE_ALIAS', id: 'VariableID:9:82' };
 
-describe('isComposeColorValue', () => {
-	it('accepts the real payload captured from Figma', () => {
-		expect(isComposeColorValue(REAL_COMPOSE_COLOR)).toBe(true);
-	});
-
-	it('rejects a plain VARIABLE_ALIAS', () => {
-		expect(isComposeColorValue({ type: 'VARIABLE_ALIAS', id: 'VariableID:1:3' })).toBe(false);
-	});
-
-	it('rejects a flat RGBA color', () => {
-		expect(isComposeColorValue({ r: 0, g: 0, b: 1, a: 1 })).toBe(false);
-	});
-
-	it('rejects a plain number or string value', () => {
-		expect(isComposeColorValue(42)).toBe(false);
-		expect(isComposeColorValue('#0000ff')).toBe(false);
-	});
-
-	it('rejects a VARIABLE_EXPRESSION with a different function', () => {
-		expect(isComposeColorValue({
-			type: 'VARIABLE_EXPRESSION',
-			expressionFunction: 'ADDITION',
-			expressionArguments: [1, 2],
-		})).toBe(false);
-	});
-
-	it('rejects malformed expressionArguments', () => {
-		expect(isComposeColorValue({
-			type: 'VARIABLE_EXPRESSION',
-			expressionFunction: 'COMPOSE_COLOR',
-			expressionArguments: [{ type: 'VARIABLE_ALIAS', id: 'x' }],
-		})).toBe(false);
-
-		expect(isComposeColorValue({
-			type: 'VARIABLE_EXPRESSION',
-			expressionFunction: 'COMPOSE_COLOR',
-			expressionArguments: [{ type: 'VARIABLE_ALIAS', id: 'x' }, '50'],
-		})).toBe(false);
-	});
-});
-
-describe('readComposeColor', () => {
-	it('extracts the target id and percentage', () => {
-		expect(readComposeColor(REAL_COMPOSE_COLOR)).toEqual({
-			targetId: 'VariableID:1:3',
-			percent: 50,
+describe('readComposedColor', () => {
+	// Captured verbatim from real Figma on 2026-09-21: opacity set to 42 by hand in the UI.
+	it('reads a value set by hand in the Figma UI', () => {
+		expect(readComposedColor({ color: BASE_ALIAS, opacity: 42 })).toEqual({
+			color: { kind: 'alias', id: 'VariableID:9:80' },
+			opacity: { kind: 'percent', value: 42 },
 		});
 	});
 
-	it('extracts a fractional percentage unchanged', () => {
-		const value: ComposeColorValue = {
+	it('reads a referenced colour with a literal percentage', () => {
+		expect(readComposedColor({ color: BASE_ALIAS, opacity: 50 })).toEqual({
+			color: { kind: 'alias', id: 'VariableID:9:80' },
+			opacity: { kind: 'percent', value: 50 },
+		});
+	});
+
+	it('reads a referenced colour with a referenced opacity', () => {
+		expect(readComposedColor({ color: BASE_ALIAS, opacity: OPACITY_ALIAS })).toEqual({
+			color: { kind: 'alias', id: 'VariableID:9:80' },
+			opacity: { kind: 'alias', id: 'VariableID:9:82' },
+		});
+	});
+
+	it('reads a literal colour with a referenced opacity', () => {
+		expect(readComposedColor({ color: { r: 1, g: 0, b: 0 }, opacity: OPACITY_ALIAS })).toEqual({
+			color: { kind: 'rgb', value: { r: 1, g: 0, b: 0 } },
+			opacity: { kind: 'alias', id: 'VariableID:9:82' },
+		});
+	});
+
+	it('keeps a fractional percentage unchanged', () => {
+		expect(readComposedColor({ color: BASE_ALIAS, opacity: 12.5 })?.opacity).toEqual({ kind: 'percent', value: 12.5 });
+	});
+
+	// Figma returned this shape before update 139. It no longer does, even for values set by
+	// hand in the UI (checked 2026-09-21), so it is deliberately not supported.
+	it('does not read the pre-139 VARIABLE_EXPRESSION shape', () => {
+		expect(readComposedColor({
 			type: 'VARIABLE_EXPRESSION',
 			expressionFunction: 'COMPOSE_COLOR',
-			expressionArguments: [{ type: 'VARIABLE_ALIAS', id: 'VariableID:1:4' }, 12.5],
-		};
-		expect(readComposeColor(value)).toEqual({ targetId: 'VariableID:1:4', percent: 12.5 });
+			expressionArguments: [BASE_ALIAS, 50],
+		})).toBeNull();
+	});
+});
+
+describe('readComposedColor — values that are not composed colours', () => {
+	it('returns null for a plain alias', () => {
+		expect(readComposedColor(BASE_ALIAS)).toBeNull();
+	});
+
+	it('returns null for a flat colour', () => {
+		expect(readComposedColor({ r: 0, g: 0, b: 1, a: 1 })).toBeNull();
+	});
+
+	it('returns null for primitives and null', () => {
+		expect(readComposedColor(42)).toBeNull();
+		expect(readComposedColor('#0000ff')).toBeNull();
+		expect(readComposedColor(null)).toBeNull();
+	});
+
+	it('returns null when a side has the wrong type', () => {
+		expect(readComposedColor({ color: BASE_ALIAS, opacity: '50' })).toBeNull();
+		expect(readComposedColor({ color: '#0000ff', opacity: 50 })).toBeNull();
+		expect(readComposedColor({ color: BASE_ALIAS })).toBeNull();
+		expect(readComposedColor({ color: BASE_ALIAS, opacity: Number.NaN })).toBeNull();
 	});
 });
