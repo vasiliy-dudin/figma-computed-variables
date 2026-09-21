@@ -285,7 +285,7 @@ Two separate TypeScript projects:
 ### Core Runtime
 - `preact` — lightweight React alternative for UI
 - `monorepo-networker` — type-safe message passing
-- `zod` — runtime schema validation. Figma's plugin sandbox has no `BigInt` (despite Figma's docs), and zod >= 4.6 calls it while loading, so `vite.config.plugin.ts` substitutes a `Number` fallback for every `BigInt` reference in the plugin bundle. Any dependency that uses `BigInt` at load time is covered by the same substitution.
+- `zod` — runtime schema validation. Figma's plugin sandbox has no `BigInt` (despite Figma's docs), and zod >= 4.6 calls it while loading, so `vite.config.plugin.ts` substitutes a `Number` fallback for every `BigInt` reference in the plugin bundle. Any dependency that calls `BigInt` at load time is covered by the same substitution. The catch: it also rewrites `typeof BigInt`, so a library that feature-detects `BigInt` would be told it exists. `scripts/check-sandbox-load.mjs` runs after every build (`postbuild`), loads the bundle with `BigInt` deleted, and fails the build if it cannot load or if such a detection appears.
 - `culori` — color manipulation (alpha blending)
 - `codemirror` — JSON editor with syntax highlighting
 
@@ -370,8 +370,12 @@ anything else falls back to the computed colour, exactly as before update 139.
   a decimal token `0.12` means 12 % to `alpha()` but 0.12 % to Figma, so `12` is written as a
   number instead. The referenced variable must be a number variable.
 - The percentage is clamped to 0-100 when written; `alpha()` clamps the same way.
-- **Fallback to the computed colour** when the base variable does not exist or Figma
-  rejects the value; a rejection is logged to the console with the variable's name.
+- **Fallback to the computed colour** when the base variable does not exist (e.g. the user
+  excluded it with `_`, so a fixed colour is intended and nothing is reported) or Figma
+  rejects the value. A rejection is counted, `ApplyResult.rejectedComposedColors`, and shown
+  in the Apply message ("N alpha() values saved as fixed colours: Figma refused a linked
+  value"), because otherwise the user would believe the links exist. It usually means an
+  outdated Figma app. The console gets one warning per Apply, not one per token.
 
 ### Opacity scale
 

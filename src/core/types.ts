@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { COLOR_OPACITY_SCOPE } from './constants';
 
 // Token Types - extensible for future types
 export const TokenTypeSchema = z.enum([
@@ -39,7 +40,7 @@ export type TokenValue = z.infer<typeof TokenValueSchema>;
 const VARIABLE_SCOPE_VALUES = [
 	'ALL_SCOPES', 'TEXT_CONTENT', 'CORNER_RADIUS', 'WIDTH_HEIGHT', 'GAP',
 	'ALL_FILLS', 'FRAME_FILL', 'SHAPE_FILL', 'TEXT_FILL', 'STROKE_COLOR',
-	'STROKE_FLOAT', 'EFFECT_FLOAT', 'EFFECT_COLOR', 'OPACITY', 'COLOR_OPACITY',
+	'STROKE_FLOAT', 'EFFECT_FLOAT', 'EFFECT_COLOR', 'OPACITY', COLOR_OPACITY_SCOPE,
 	'FONT_FAMILY', 'FONT_STYLE', 'FONT_WEIGHT', 'FONT_SIZE',
 	'LINE_HEIGHT', 'LETTER_SPACING', 'PARAGRAPH_SPACING', 'PARAGRAPH_INDENT',
 ] as const;
@@ -139,6 +140,10 @@ export interface ApplyResult {
 	// matching the token over a translucent base, which Apply cannot rewrite without changing
 	// its colour. Counts mode values, not variables: a two-mode token counts twice.
 	preservedComposedColors: number;
+	// How many alpha() mode values were written as fixed colours because Figma refused the
+	// composed colour, e.g. an app version older than Plugin API update 139. Excluded bases
+	// are not counted: a fixed colour is what the user asked for there.
+	rejectedComposedColors: number;
 }
 
 // Token map for quick lookups

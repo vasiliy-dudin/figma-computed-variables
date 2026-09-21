@@ -2,7 +2,7 @@ import { formatHex, formatRgb, parse as parseColor, converter } from 'culori';
 import { ResolvedValue, TokenMap, RGBA, ColorModifyFn, AmountValue, AlphaIntent, Token } from './types';
 import { parseExpression } from './parser';
 import { CircularDependencyError } from './validator';
-import { PATTERNS } from './constants';
+import { PATTERNS, COLOR_OPACITY_SCOPE } from './constants';
 
 const toRgb = converter('rgb');
 const toOklch = converter('oklch');
@@ -13,9 +13,6 @@ const MAX_PERCENT = 100;
 const MIN_HUE_SHIFT = -360;
 const MAX_HUE_SHIFT = 360;
 const DECIMAL_TO_PERCENT_SCALE = 100;
-// Figma's opacity variables for composed colours hold a percentage (60 means 60 %), and Figma
-// marks them with this scope. A plain number in a token with it is a percentage, not a fraction.
-const PERCENT_SCALED_SCOPE = 'COLOR_OPACITY';
 
 // Matches a resolved amount-token value written as a percentage, e.g. "15%".
 // No sign allowed — mirrors the literal alpha()/darken()/lighten()/saturate()/desaturate() syntax.
@@ -271,7 +268,7 @@ function resolveAmount(
 function isPercentScaled(token: Token | undefined): boolean {
 	const scope = token?.$scope;
 	if (scope === undefined) return false;
-	return (Array.isArray(scope) ? scope : [scope]).includes(PERCENT_SCALED_SCOPE);
+	return (Array.isArray(scope) ? scope : [scope]).includes(COLOR_OPACITY_SCOPE);
 }
 
 /**

@@ -12,7 +12,21 @@ import { prepareVariables, PreparedVariable } from '@plugin/prepareVariables';
 // smaller than any percentage difference a user could intend.
 const PERCENT_MATCH_EPSILON = 1e-9;
 
-type ModeWriteOutcome = 'written' | 'preserved';
+type ModeWriteOutcome =
+	| { kind: 'written' }
+	// Left as it was: a composed colour over a translucent base that still matches its token.
+	| { kind: 'preserved' }
+	// The computed colour was written because Figma refused the composed colour.
+	| { kind: 'composed-rejected'; error: unknown };
+
+const WRITTEN: ModeWriteOutcome = { kind: 'written' };
+const PRESERVED: ModeWriteOutcome = { kind: 'preserved' };
+
+interface WriteTally {
+	preserved: number;
+	rejected: number;
+	firstRejection?: unknown;
+}
 
 /**
  * Apply token JSON to Figma Variables: creates what is missing, merges modes, then writes
@@ -25,31 +39,47 @@ export async function applyToVariables(json: TokenJSON): Promise<ApplyResult> {
 	const prepared = prepareVariables(json, collections, index, errors);
 
 	const tokenMap = createTokenMap(json);
-	let preservedComposedColors = 0;
+	const tally: WriteTally = { preserved: 0, rejected: 0 };
 	for (const entry of prepared) {
-		preservedComposedColors += await writeValues(entry, tokenMap, index, errors);
+		await writeValues(entry, tokenMap, index, errors, tally);
 	}
+	warnAboutRejections(tally);
 
-	return { errors, preservedComposedColors };
+	return { errors, preservedComposedColors: tally.preserved, rejectedComposedColors: tally.rejected };
 }
 
-/** Second pass: writes every mode of one variable. Returns how many modes were left untouched. */
+/** One warning per Apply: a refusal usually applies to every token, so one line each would drown the console. */
+function warnAboutRejections(tally: WriteTally): void {
+	if (tally.rejected === 0) return;
+	console.warn(
+		`[applyToVariables] Figma refused ${tally.rejected} composed colour write(s); those values were written as computed colours. First error:`,
+		tally.firstRejection
+	);
+}
+
+/** Second pass: writes every mode of one variable and records what happened to each in the tally. */
 async function writeValues(
 	entry: PreparedVariable,
 	tokenMap: TokenMap,
 	index: VariableIndex,
-	errors: ValidationError[]
-): Promise<number> {
+	errors: ValidationError[],
+	tally: WriteTally
+): Promise<void> {
 	const { collection, collectionName, tokenPath, token } = entry;
 	// Normalize a shorthand scalar to a per-mode record first
 	const normalizedValue = normalizeModeValues(token.$value, collection.modes.map(m => m.name));
 	const fullPath = `${collectionName}.${tokenPath}`;
-	let preserved = 0;
 
 	for (const mode of collection.modes) {
 		if (normalizedValue[mode.name] === undefined) continue;
 		try {
-			if (await writeModeValue(entry, mode, fullPath, tokenMap, index) === 'preserved') preserved++;
+			const outcome = await writeModeValue(entry, mode, fullPath, tokenMap, index);
+			if (outcome.kind === 'preserved') {
+				tally.preserved++;
+			} else if (outcome.kind === 'composed-rejected') {
+				tally.rejected++;
+				if (tally.rejected === 1) tally.firstRejection = outcome.error;
+			}
 		} catch (err) {
 			errors.push({
 				collection: collectionName,
@@ -60,7 +90,6 @@ async function writeValues(
 			});
 		}
 	}
-	return preserved;
 }
 
 async function writeModeValue(
@@ -70,19 +99,35 @@ async function writeModeValue(
 	tokenMap: TokenMap,
 	index: VariableIndex
 ): Promise<ModeWriteOutcome> {
-	const { variable, figmaType } = entry;
 	const intent = resolveAlphaIntent(fullPath, mode.name, tokenMap);
 
-	// A native composed colour keeps the token linked to its base; anything that
-	// cannot be written that way falls through to the computed colour.
+	// A native composed colour keeps the token linked to its base.
 	if (intent?.eligible) {
-		if (writeComposedColor(variable, mode.modeId, intent, index)) return 'written';
-	} else if (intent && await isComposedColorUnchanged(variable.valuesByMode[mode.modeId], intent)) {
-		return 'preserved';
+		const composed = writeComposedColor(entry.variable, mode.modeId, intent, index);
+		if (composed.status === 'written') return WRITTEN;
+
+		writeComputedValue(entry, mode, fullPath, tokenMap, index);
+		return composed.status === 'rejected' ? { kind: 'composed-rejected', error: composed.error } : WRITTEN;
 	}
 
-	setVariableValue(variable, mode.modeId, resolveToken(fullPath, mode.name, tokenMap), figmaType, index);
-	return 'written';
+	// Over a translucent base the computed colour would paint differently and cut the reference.
+	if (intent && await isComposedColorUnchanged(entry.variable.valuesByMode[mode.modeId], intent)) {
+		return PRESERVED;
+	}
+
+	writeComputedValue(entry, mode, fullPath, tokenMap, index);
+	return WRITTEN;
+}
+
+function writeComputedValue(
+	entry: PreparedVariable,
+	mode: { modeId: string; name: string },
+	fullPath: string,
+	tokenMap: TokenMap,
+	index: VariableIndex
+): void {
+	const resolved = resolveToken(fullPath, mode.name, tokenMap);
+	setVariableValue(entry.variable, mode.modeId, resolved, entry.figmaType, index);
 }
 
 /**

@@ -1,6 +1,6 @@
 import { TokenJSON, Token, ModeValues } from '@core/types';
 import { condenseModeValues, nestifyFlatPaths } from '@core/tokenUtils';
-import { FIGMA_TYPE_MAP } from '@core/constants';
+import { FIGMA_TYPE_MAP, COLOR_OPACITY_SCOPE } from '@core/constants';
 import { rgbaToHex } from '@core/resolver';
 import { readComposedColor, ComposedColorParts, ComposedOpacity } from '@plugin/composeColor';
 
@@ -13,10 +13,6 @@ const UNRESOLVED_REFERENCE_PREFIX = 'unresolved-variable:';
 
 // Figma stores composed-colour opacity as a percentage; RGBA alpha is a 0-1 fraction.
 const PERCENT_SCALE = 100;
-
-// Figma's scope for opacity variables. Absent from @figma/plugin-typings 1.138.0, hence a string.
-// A plain number in a token with this scope already reads as a percentage.
-const PERCENT_SCOPE = 'COLOR_OPACITY';
 
 /**
  * Import all Figma Variables and convert to TokenJSON format
@@ -92,7 +88,8 @@ function markPercentChain(id: string, byId: Map<string, Variable>, marked: Set<s
 	const variable = byId.get(id);
 	if (!variable || visited.has(id) || variable.resolvedType !== 'FLOAT') return;
 	visited.add(id);
-	if ((variable.scopes as string[] | undefined)?.includes(PERCENT_SCOPE)) return;
+	// The scope is not in the typings' VariableScope union yet, hence the widening to string[].
+	if ((variable.scopes as string[] | undefined)?.includes(COLOR_OPACITY_SCOPE)) return;
 
 	for (const value of Object.values(variable.valuesByMode)) {
 		if (typeof value === 'number') {

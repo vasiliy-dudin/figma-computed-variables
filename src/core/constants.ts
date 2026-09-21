@@ -1,5 +1,11 @@
 type FigmaVariableType = 'COLOR' | 'FLOAT' | 'STRING' | 'BOOLEAN';
 
+// Figma's scope for the opacity variables of composed colours (Plugin API update 139).
+// A plain number in a token with this scope is a percentage (60 = 60 %), not a fraction.
+// Not in @figma/plugin-typings 1.138.0, so it is spelled out here and shared by the
+// validator's scope list, the resolver's amount scale and Import.
+export const COLOR_OPACITY_SCOPE = 'COLOR_OPACITY';
+
 // Type mapping: Token type → Figma Variable type
 // Extensible for future token types
 export const TYPE_MAP: Record<string, FigmaVariableType> = {

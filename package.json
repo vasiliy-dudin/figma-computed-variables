@@ -6,6 +6,7 @@
     "dev": "run-p _watch:*",
     "prebuild": "tsc && tsc -P tsconfig.node.json && rimraf dist",
     "build": "run-s _build:ui _build:plugin",
+    "postbuild": "node scripts/check-sandbox-load.mjs",
     "test": "vitest run",
     "test:watch": "vitest",
     "_watch:ui": "vite build -c ./vite.config.ui.ts --watch --mode=development",

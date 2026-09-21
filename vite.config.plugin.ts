@@ -39,6 +39,11 @@ export default defineConfig(({ mode }) => ({
 		// before starting. Every BigInt reference in the bundle falls back to Number when the
 		// real one is missing; `typeof` never throws, even for an undeclared name. The plugin
 		// itself never uses bigints, so the fallback only ever fills that unused table.
+		//
+		// Limitation: the substitution also rewrites `typeof BigInt`, so code that feature-detects
+		// BigInt would be told it exists in the sandbox. None of the bundled dependencies does
+		// today. scripts/check-sandbox-load.mjs runs after every build, loads the bundle without
+		// BigInt and fails if such a detection ever appears.
 		BigInt: '(typeof BigInt === "function" ? BigInt : Number)',
 	},
 }));

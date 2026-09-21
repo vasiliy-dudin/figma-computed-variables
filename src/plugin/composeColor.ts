@@ -44,14 +44,24 @@ export function readComposedColor(value: unknown): ComposedColorParts | null {
 }
 
 /**
+ * What became of an attempt to write a composed colour. Anything but 'written' leaves the
+ * caller to write the computed colour instead; the two reasons differ in whether that is expected.
+ */
+export type ComposedWriteOutcome =
+	| { status: 'written' }
+	// The base variable is not in the file, e.g. the user excluded it with "_": a fixed colour is intended.
+	| { status: 'no-target' }
+	// Figma refused the value, e.g. an app version older than update 139: unexpected, worth telling the user.
+	| { status: 'rejected'; error: unknown };
+
+/**
  * Writes an alpha() intent as a native composed colour: a reference to the base variable plus
  * an opacity, which is a reference to the amount token's variable when that paints the same
- * colour, and the clamped percentage otherwise. Returns false — leaving the caller to write
- * the computed colour — when the base variable does not exist yet or Figma rejects the value.
+ * colour, and the clamped percentage otherwise.
  */
-export function writeComposedColor(variable: Variable, modeId: string, intent: AlphaIntent, index: VariableIndex): boolean {
+export function writeComposedColor(variable: Variable, modeId: string, intent: AlphaIntent, index: VariableIndex): ComposedWriteOutcome {
 	const target = index.find(intent.targetPath);
-	if (!target) return false;
+	if (!target) return { status: 'no-target' };
 
 	const value: VariableComposedColor = {
 		color: { type: 'VARIABLE_ALIAS', id: target.id },
@@ -61,10 +71,9 @@ export function writeComposedColor(variable: Variable, modeId: string, intent: A
 	try {
 		// The typings (1.138.0) do not describe composed colours yet, so VariableValue cannot hold one.
 		variable.setValueForMode(modeId, value as unknown as VariableValue);
-		return true;
-	} catch (err) {
-		console.warn(`[writeComposedColor] Figma rejected a composed colour for "${variable.name}"; writing the computed colour instead.`, err);
-		return false;
+		return { status: 'written' };
+	} catch (error) {
+		return { status: 'rejected', error };
 	}
 }
 

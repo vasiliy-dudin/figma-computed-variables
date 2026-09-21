@@ -130,6 +130,7 @@ async function processApplyQueue(): Promise<void> {
 			sendToUI({
 				type: 'APPLY_SUCCESS',
 				preservedComposedColors: result.preservedComposedColors,
+				rejectedComposedColors: result.rejectedComposedColors,
 			});
 		}
 	} catch (err) {

@@ -17,16 +17,24 @@ import type { ApplyStatus } from "@core/messages";
 
 const APPLIED_MESSAGE = 'Applied to Variables';
 
-/**
- * Success text for Apply. When opacity references over a translucent colour were left in
- * place, say so and why — the plugin skipped them deliberately, and staying silent would
- * read as if those values had been written.
- */
-function applySuccessMessage(preservedComposedColors: number): string {
-	if (preservedComposedColors === 0) return APPLIED_MESSAGE;
+const pluralValues = (count: number): string => (count === 1 ? 'value' : 'values');
 
-	const plural = preservedComposedColors === 1 ? 'value' : 'values';
-	return `${APPLIED_MESSAGE} · kept ${preservedComposedColors} opacity-reference ${plural} over translucent colours unchanged`;
+/**
+ * Success text for Apply. Says what the plugin did differently from what was asked, and why:
+ * staying silent would read as if every alpha() had become a live reference.
+ * - opacity references over a translucent colour were left in place, deliberately;
+ * - some alpha() values are fixed colours because Figma refused a linked one, which usually
+ *   means an outdated Figma app.
+ */
+function applySuccessMessage(preservedComposedColors: number, rejectedComposedColors: number): string {
+	const notes: string[] = [];
+	if (preservedComposedColors > 0) {
+		notes.push(`kept ${preservedComposedColors} opacity-reference ${pluralValues(preservedComposedColors)} over translucent colours unchanged`);
+	}
+	if (rejectedComposedColors > 0) {
+		notes.push(`${rejectedComposedColors} alpha() ${pluralValues(rejectedComposedColors)} saved as fixed colours: Figma refused a linked value (is the Figma app up to date?)`);
+	}
+	return [APPLIED_MESSAGE, ...notes].join(' · ');
 }
 
 function App() {
@@ -68,7 +76,7 @@ function App() {
 
 				case 'APPLY_SUCCESS':
 					setErrors([]);
-					showToast(applySuccessMessage(msg.preservedComposedColors));
+					showToast(applySuccessMessage(msg.preservedComposedColors, msg.rejectedComposedColors));
 					break;
 
 				case 'APPLY_ERROR':
