@@ -42,8 +42,8 @@ export default defineConfig(({ mode }) => ({
 		//
 		// Limitation: the substitution also rewrites `typeof BigInt`, so code that feature-detects
 		// BigInt would be told it exists in the sandbox. None of the bundled dependencies does
-		// today. scripts/check-sandbox-load.mjs runs after every build, loads the bundle without
-		// BigInt and fails if such a detection ever appears.
+		// today. scripts/check-sandbox-load.mjs loads the bundle without BigInt and fails if such a
+		// detection ever appears; it runs after `pnpm build` and in `pnpm test`.
 		BigInt: '(typeof BigInt === "function" ? BigInt : Number)',
 	},
 }));

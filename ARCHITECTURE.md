@@ -285,7 +285,7 @@ Two separate TypeScript projects:
 ### Core Runtime
 - `preact` — lightweight React alternative for UI
 - `monorepo-networker` — type-safe message passing
-- `zod` — runtime schema validation. Figma's plugin sandbox has no `BigInt` (despite Figma's docs), and zod >= 4.6 calls it while loading, so `vite.config.plugin.ts` substitutes a `Number` fallback for every `BigInt` reference in the plugin bundle. Any dependency that calls `BigInt` at load time is covered by the same substitution. The catch: it also rewrites `typeof BigInt`, so a library that feature-detects `BigInt` would be told it exists. `scripts/check-sandbox-load.mjs` runs after every build (`postbuild`), loads the bundle with `BigInt` deleted, and fails the build if it cannot load or if such a detection appears.
+- `zod` — runtime schema validation. Figma's plugin sandbox has no `BigInt` (despite Figma's docs), and zod >= 4.6 calls it while loading, so `vite.config.plugin.ts` substitutes a `Number` fallback for every `BigInt` reference in the plugin bundle. Any dependency that calls `BigInt` at load time is covered by the same substitution. The catch: it also rewrites `typeof BigInt`, so a library that feature-detects `BigInt` would be told it exists. `scripts/check-sandbox-load.mjs` loads the bundle with `BigInt` deleted and fails if it cannot load or if such a detection appears. It runs after `pnpm build` (`postbuild`) and in `pnpm test` (`plugin/__tests__/sandboxLoad.test.ts` builds both the production and the development bundle); `pnpm dev`'s watch mode does not run it, so run the tests after updating dependencies.
 - `culori` — color manipulation (alpha blending)
 - `codemirror` — JSON editor with syntax highlighting
 
@@ -373,9 +373,10 @@ anything else falls back to the computed colour, exactly as before update 139.
 - **Fallback to the computed colour** when the base variable does not exist (e.g. the user
   excluded it with `_`, so a fixed colour is intended and nothing is reported) or Figma
   rejects the value. A rejection is counted, `ApplyResult.rejectedComposedColors`, and shown
-  in the Apply message ("N alpha() values saved as fixed colours: Figma refused a linked
-  value"), because otherwise the user would believe the links exist. It usually means an
-  outdated Figma app. The console gets one warning per Apply, not one per token.
+  as a warning banner that stays until dismissed or the next Apply (`ui/components/ApplyNotice.tsx`,
+  text in `ui/applyNotice.ts`), because otherwise the user would believe the links exist. It
+  usually means an outdated Figma app. Not a toast: it lasts two seconds and does not wrap, so a
+  note this long was cut off. The console gets one warning per Apply, not one per token.
 
 ### Opacity scale
 
@@ -407,7 +408,7 @@ A composed colour authored in Figma over a *translucent* base imports as
 Figma paints. Apply cannot rewrite it without changing its colour, so as long as the stored
 value still matches the token — same target, and the same percentage or the same opacity
 variable — Apply leaves it untouched (`isComposedColorUnchanged()` in
-`plugin/variableWriter.ts`) and reports how many it kept. Once the token changes, it is
+`plugin/variableWriter.ts`) and says how many it kept, in the same banner. Once the token changes, it is
 rewritten as the computed colour. Eligible tokens need no such care: Apply rewrites them as
 composed colours.
 

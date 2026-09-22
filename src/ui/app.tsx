@@ -3,6 +3,9 @@ import { useEffect, useState } from "preact/hooks";
 import { JsonEditor } from "@ui/components/JsonEditor";
 import { Toolbar } from "@ui/components/Toolbar";
 import { ErrorDisplay } from "@ui/components/ErrorDisplay";
+import { ApplyNotice } from "@ui/components/ApplyNotice";
+import { applyNoticeFor } from "@ui/applyNotice";
+import type { ApplyNoticeContent } from "@ui/applyNotice";
 import { Footer } from "@ui/components/Footer";
 import { EmptyState } from "@ui/components/EmptyState";
 import { ResizeHandle } from "@ui/components/ResizeHandle";
@@ -17,29 +20,10 @@ import type { ApplyStatus } from "@core/messages";
 
 const APPLIED_MESSAGE = 'Applied to Variables';
 
-const pluralValues = (count: number): string => (count === 1 ? 'value' : 'values');
-
-/**
- * Success text for Apply. Says what the plugin did differently from what was asked, and why:
- * staying silent would read as if every alpha() had become a live reference.
- * - opacity references over a translucent colour were left in place, deliberately;
- * - some alpha() values are fixed colours because Figma refused a linked one, which usually
- *   means an outdated Figma app.
- */
-function applySuccessMessage(preservedComposedColors: number, rejectedComposedColors: number): string {
-	const notes: string[] = [];
-	if (preservedComposedColors > 0) {
-		notes.push(`kept ${preservedComposedColors} opacity-reference ${pluralValues(preservedComposedColors)} over translucent colours unchanged`);
-	}
-	if (rejectedComposedColors > 0) {
-		notes.push(`${rejectedComposedColors} alpha() ${pluralValues(rejectedComposedColors)} saved as fixed colours: Figma refused a linked value (is the Figma app up to date?)`);
-	}
-	return [APPLIED_MESSAGE, ...notes].join(' · ');
-}
-
 function App() {
 	const [jsonText, setJsonText] = useState<string>("");
 	const [errors, setErrors] = useState<ValidationError[]>([]);
+	const [applyNotice, setApplyNotice] = useState<ApplyNoticeContent | null>(null);
 	const [tokenCount, setTokenCount] = useState(0);
 	const [collectionCount, setCollectionCount] = useState(0);
 	const [showEmptyState, setShowEmptyState] = useState(false);
@@ -67,6 +51,7 @@ function App() {
 					setJsonText(JSON.stringify(msg.json, null, 2));
 					updateStats(msg.json);
 					setErrors([]);
+					setApplyNotice(null);
 					showToast('Variables imported');
 					break;
 
@@ -76,11 +61,13 @@ function App() {
 
 				case 'APPLY_SUCCESS':
 					setErrors([]);
-					showToast(applySuccessMessage(msg.preservedComposedColors, msg.rejectedComposedColors));
+					setApplyNotice(applyNoticeFor(msg.preservedComposedColors, msg.rejectedComposedColors));
+					showToast(APPLIED_MESSAGE);
 					break;
 
 				case 'APPLY_ERROR':
 					setErrors(msg.errors);
+					setApplyNotice(null);
 					break;
 
 				case 'SAVE_SUCCESS':
@@ -218,6 +205,12 @@ function App() {
 			{errors.length > 0 && (
 				<div class="flex-shrink-0">
 					<ErrorDisplay errors={errors} />
+				</div>
+			)}
+
+			{applyNotice && (
+				<div class="flex-shrink-0">
+					<ApplyNotice notice={applyNotice} onDismiss={() => setApplyNotice(null)} />
 				</div>
 			)}
 
