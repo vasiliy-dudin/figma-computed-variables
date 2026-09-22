@@ -33,6 +33,7 @@ src/
 │   ├── prepareVariables.ts # Apply, first pass: collections, modes, variables
 │   ├── variableIndex.ts   # One lookup of every variable per Apply
 │   ├── composeColor.ts    # Read/write Figma composed colours (reference + opacity)
+│   ├── composedRoot.ts    # Import: the variable a chain of composed colours paints
 │   ├── storage.ts         # Persistent storage (clientStorage)
 │   └── plugin.network.ts  # Networker configuration
 │
@@ -52,6 +53,7 @@ src/
 │   ├── messages.ts      # Message type definitions
 │   ├── validator.ts     # Schema + circular dependency validation
 │   ├── resolver.ts      # Expression parser and resolver
+│   ├── alphaIntent.ts   # What an alpha() token asks Figma for (target, opacity)
 │   ├── tokenUtils.ts    # Token map, counting utilities
 │   └── constants.ts     # Type mappings, defaults
 │
@@ -118,7 +120,7 @@ UI                          Plugin
 
 1. **Literal:** `"#ff0000"`, `16`, `"sans-serif"`
 2. **Alias:** `"{red.100}"` → native Figma alias
-3. **Alpha modification:** `"alpha({red.100}, 50%)"` → native Figma composed colour (a reference plus an opacity) when `red.100` is opaque, otherwise computed RGBA — see [Composed colours](#composed-colours-alpha-as-a-live-reference)
+3. **Alpha modification:** `"alpha({red.100}, 50%)"` → native Figma composed colour (a reference plus an opacity) when `red.100` is opaque or leads to an opaque colour through `alpha()` tokens, otherwise computed RGBA — see [Composed colours](#composed-colours-alpha-as-a-live-reference)
 4. **Math expression:** `"{spacing.base} * 2"` → computed number
 5. **String concatenation:** `"Value: {token.value}px"` → computed string
 
@@ -185,10 +187,11 @@ resolver.parseExpression()
     ├─ Detects alpha modifier
     └─ Returns AST: { type: 'alpha', tokenPath: '...', alpha: 0.5 }
     ↓
-resolver.resolveAlphaIntent()
-    └─ Target path, percentage, opacity token, and whether the base is opaque
+alphaIntent.resolveAlphaIntent()
+    └─ Walks the base through alpha() tokens to an opaque root: target, multiplied
+       percentage, opacity token, and whether it got there
     ↓
-opaque base → composeColor.writeComposedColor()
+opaque root → composeColor.writeComposedColor()
     └─ Sets { color: alias, opacity: alias | percentage } in Figma
     ↓
 otherwise, or if that write fails → resolver.resolveToken()
@@ -225,7 +228,7 @@ otherwise, or if that write fails → resolver.resolveToken()
 ### 1. Pure Aliases vs Computed Values
 
 - Simple `{ref}` → **native Figma alias** (maintains reactivity)
-- `alpha({ref}, X%)` over an opaque colour → **native composed colour** (maintains reactivity)
+- `alpha({ref}, X%)` over an opaque colour, or over `alpha()` tokens leading to one → **native composed colour** (maintains reactivity)
 - Other expressions — math, concat, other colour functions → **computed value** (static)
 
 **Rationale:** Preserve Figma's alias system for simple references while enabling advanced computed use cases.
@@ -354,21 +357,28 @@ real Figma on 2026-09-21.
 
 ### Writing — `alpha()` in Apply
 
-For each mode of an `alpha()` token, `resolveAlphaIntent()` in `core/resolver.ts` reports
+For each mode of an `alpha()` token, `resolveAlphaIntent()` in `core/alphaIntent.ts` reports
 the target, the percentage, whether the amount token can be referenced, and whether the
 token is **eligible**. `composeColor.writeComposedColor()` then writes the composed colour;
 anything else falls back to the computed colour, exactly as before update 139.
 
-- **Eligible means the base is fully opaque in that mode.** Figma *replaces* the base's
-  alpha, while `alpha()` *multiplies* it (a 50 % transparent base at 50 % paints 0.5 in
-  Figma, 0.25 in `alpha()`). They agree only on an opaque base. So `alpha` over a
-  translucent colour, over another `alpha` token, or over an alias of one, stays computed.
-  The check resolves the base as a computed value, so an `alpha` token counts with its real,
-  reduced alpha rather than that of the colour it points at.
+- **Eligible means the base leads to an opaque colour in that mode.** Figma *replaces* the
+  base's alpha, while `alpha()` *multiplies* it (a 50 % transparent base at 50 % paints 0.5
+  in Figma, 0.25 in `alpha()`), so a composed colour can only reference an opaque colour.
+  A base that is itself an `alpha()` token — directly or through `{alias}` tokens — is
+  walked down to its opaque root and the percentages multiplied: `alpha(alpha(X, p1), p2)`
+  equals `alpha(X, p1·p2)`, written as a reference to `X`. With `glass = alpha({brand}, 50%)`,
+  `alpha({glass}, 50%)` becomes `brand` at 25 %. The walk stops at the first token that
+  resolves opaque, applying the steps from the root outward with the same clamping as the
+  computed path. It fails — and the token stays computed — at a translucent literal
+  (`#0066FF80`), at another colour function over a translucent colour, or on a cycle.
+  Each check resolves as a computed value, so an `alpha` token counts with its real,
+  reduced alpha.
 - **Opacity is a reference only when that paints the same colour**: the amount token's own
   number must equal the percentage. A `COLOR_OPACITY` token `60`, or `"60%"`, is referenced;
   a decimal token `0.12` means 12 % to `alpha()` but 0.12 % to Figma, so `12` is written as a
-  number instead. The referenced variable must be a number variable.
+  number instead. The referenced variable must be a number variable. Once a chain has
+  multiplied percentages the opacity is always a number.
 - The percentage is clamped to 0-100 when written; `alpha()` clamps the same way.
 - **Fallback to the computed colour** when the base variable does not exist (e.g. the user
   excluded it with `_`, so a fixed colour is intended and nothing is reported) or Figma
@@ -389,7 +399,15 @@ end of an alias chain behind it.
 
 `formatComposedColor()` in `plugin/variableReader.ts`:
 
-- colour reference + number → `alpha({token}, 50%)`;
+- colour reference + number → `alpha({token}, 50%)`. When the referenced variable is itself
+  a composed colour, Figma paints the colour at the end of that chain at *this* value's
+  opacity (it replaces, not multiplies), so Import names that root: `{glass, 42}` with
+  `glass = {brand, 50}` imports as `alpha({brand}, 42%)`. `alpha({glass}, 42%)` would mean
+  42 % of 50 % to the plugin, and the next Apply would halve it. The walk
+  (`plugin/composedRoot.ts`) goes through plain aliases too, reads a variable of the same
+  collection in the mode being imported, follows one from another collection only when
+  all its modes lead to the same variable, and stops at a literal colour side or a library
+  variable, keeping the name as before;
 - colour reference + opacity variable → `alpha({token}, {opacityToken})`, keeping that link.
   The opacity variable itself imports as `"60%"` rather than `60` unless it has the
   `COLOR_OPACITY` scope: Figma does not require the scope, and without it a bare `60` would
@@ -403,9 +421,10 @@ end of an alias chain behind it.
 
 ### Leaving Figma-authored values alone
 
-A composed colour authored in Figma over a *translucent* base imports as
-`alpha({base}, 42%)`, which under `alpha()`'s multiplying rule means less opacity than
-Figma paints. Apply cannot rewrite it without changing its colour, so as long as the stored
+A composed colour authored in Figma over a *translucent literal* base (a colour with its own
+transparency, not a composed colour) imports as `alpha({base}, 42%)`, which under
+`alpha()`'s multiplying rule means less opacity than Figma paints. Over a composed colour
+this does not arise: Import names the chain's root instead, as described above. Apply cannot rewrite it without changing its colour, so as long as the stored
 value still matches the token — same target, and the same percentage or the same opacity
 variable — Apply leaves it untouched (`isComposedColorUnchanged()` in
 `plugin/variableWriter.ts`) and says how many it kept, in the same banner. Once the token changes, it is

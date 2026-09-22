@@ -256,7 +256,8 @@
 					<ul class="small mb-0 mt-1">
 						<li><code>alpha({color.primary}, 50%)</code> becomes a Figma variable that references <code>color/primary</code> with 50% opacity — change the base colour in Figma and every <code>alpha()</code> colour follows.</li>
 						<li>When the opacity comes from a token, the variable references that token's variable too. In Figma, opacity variables hold a percentage: <code>60</code> means 60%. Give such tokens the <code>"$scope": "COLOR_OPACITY"</code> so the plugin reads <code>60</code> the same way.</li>
-						<li>Over a colour that is already transparent, <code>alpha()</code> writes a fixed colour, as before: Figma would replace the colour's transparency, while <code>alpha()</code> multiplies it.</li>
+						<li><code>alpha()</code> of an <code>alpha()</code> colour stays linked too: with <code>glass</code> = <code>alpha({color.brand}, 50%)</code>, <code>alpha({color.glass}, 50%)</code> becomes a reference to <code>color/brand</code> at 25%. After an Import the JSON names <code>color.brand</code> directly.</li>
+						<li>Over a colour with its own transparency, such as <code>#0066FF80</code>, <code>alpha()</code> writes a fixed colour, as before: there is no opaque variable to reference, and Figma would replace the colour's transparency where <code>alpha()</code> multiplies it.</li>
 					</ul>
 				</div>
 

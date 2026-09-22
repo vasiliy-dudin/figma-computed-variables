@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { resolveToken, resolveAlphaIntent } from '../resolver.ts';
+import { resolveToken } from '../resolver.ts';
+import { resolveAlphaIntent } from '../alphaIntent.ts';
 import { createTokenMap } from '../tokenUtils.ts';
 import type { TokenJSON, RGBA } from '../types';
 

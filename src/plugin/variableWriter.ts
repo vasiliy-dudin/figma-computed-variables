@@ -1,6 +1,7 @@
 import { TokenJSON, ResolvedValue, RGBA, TokenMap, ValidationError, ApplyResult, AlphaIntent } from '@core/types';
 import { createTokenMap, normalizeModeValues } from '@core/tokenUtils';
-import { resolveToken, resolveAlphaIntent, hexToRgba } from '@core/resolver';
+import { resolveToken, hexToRgba } from '@core/resolver';
+import { resolveAlphaIntent } from '@core/alphaIntent';
 import { readComposedColor, writeComposedColor } from '@plugin/composeColor';
 import { buildVariableIndex, VariableIndex } from '@plugin/variableIndex';
 import { prepareVariables, PreparedVariable } from '@plugin/prepareVariables';

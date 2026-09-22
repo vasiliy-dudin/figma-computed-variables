@@ -102,7 +102,7 @@ function isVariableComposedColor(value: unknown): value is VariableComposedColor
 	return colorIsValid && opacityIsValid;
 }
 
-function isVariableAlias(value: unknown): value is VariableAlias {
+export function isVariableAlias(value: unknown): value is VariableAlias {
 	if (typeof value !== 'object' || value === null) return false;
 	const candidate = value as { type?: unknown; id?: unknown };
 	return candidate.type === 'VARIABLE_ALIAS' && typeof candidate.id === 'string';

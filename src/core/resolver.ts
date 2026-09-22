@@ -1,5 +1,5 @@
 import { formatHex, formatRgb, parse as parseColor, converter } from 'culori';
-import { ResolvedValue, TokenMap, RGBA, ColorModifyFn, AmountValue, AlphaIntent, Token } from './types';
+import { ResolvedValue, TokenMap, RGBA, ColorModifyFn, AmountValue, Token } from './types';
 import { parseExpression } from './parser';
 import { CircularDependencyError } from './validator';
 import { PATTERNS, COLOR_OPACITY_SCOPE } from './constants';
@@ -122,88 +122,13 @@ export function resolveToken(
 }
 
 /**
- * Report what an alpha() token asks for — its target path and opacity percentage —
- * without computing the resulting colour. Returns null when the token is not an
- * alpha() expression, or when its target or amount cannot be determined.
- *
- * Failures resolve to null rather than throwing on purpose: the caller falls through
- * to the normal resolveToken path, where the same failure surfaces once, attributed
- * to the right collection, token and mode.
- *
- * The percentage is deliberately not clamped. resolveAmount returns it raw, so
- * alpha({x}, 150%) yields 150 — a value Figma cannot store, which simply fails to
- * match and lets the variable be overwritten. That is the safe direction.
- */
-export function resolveAlphaIntent(
-	tokenPath: string,
-	mode: string,
-	tokenMap: TokenMap
-): AlphaIntent | null {
-	const token = tokenMap.get(tokenPath);
-	if (!token) return null;
-
-	const value =
-		typeof token.$value === 'string' || typeof token.$value === 'number'
-			? token.$value
-			: token.$value[mode];
-	if (value === undefined) return null;
-
-	try {
-		const expr = parseExpression(value, token.$type);
-		if (expr.type !== 'alpha') return null;
-
-		const visited = new Set([tokenPath]);
-		const percent = resolveAmount(expr.amount, mode, tokenMap, new Set(visited), 'percent');
-		return {
-			targetPath: expr.tokenPath,
-			percent,
-			opacityTokenPath: referenceablePercentToken(expr.amount, percent, mode, tokenMap, new Set(visited)),
-			eligible: isOpaqueBase(expr.tokenPath, mode, tokenMap, new Set(visited)),
-		};
-	} catch {
-		return null;
-	}
-}
-
-/**
- * True when the base resolves to a fully opaque colour. Resolved the normal way, as a computed
- * value, so a base that is itself an alpha() token counts with its real, reduced alpha rather
- * than the alpha of the colour it points at.
- */
-function isOpaqueBase(basePath: string, mode: string, tokenMap: TokenMap, visited: Set<string>): boolean {
-	const base = resolveToConcreteValue(basePath, mode, tokenMap, visited).value;
-	if (typeof base === 'number') return false;
-	const color = typeof base === 'object' ? base : hexToRgba(base);
-	return color.a === 1;
-}
-
-/**
- * The amount token's path when a composed colour may reference it and still paint the same
- * colour: its own value, as the plugin writes it to Figma, must equal the percentage. A decimal
- * token such as 0.12 means 12 % to alpha() but 0.12 % to Figma, so it is not referenced.
- */
-function referenceablePercentToken(
-	amount: AmountValue,
-	percent: number,
-	mode: string,
-	tokenMap: TokenMap,
-	visited: Set<string>
-): string | null {
-	if (amount.kind !== 'reference') return null;
-
-	const value = resolveToConcreteValue(amount.tokenPath, mode, tokenMap, visited).value;
-	const figmaNumber = typeof value === 'number' ? value : parseFloat(String(value));
-	return figmaNumber === percent ? amount.tokenPath : null;
-}
-
-/**
  * Resolve a token to a concrete (non-alias) value by following alias chains.
  * Used when a computed expression (alpha, colorModify, math, concat) needs the
  * actual value of a token that may itself be a pure alias pointing to another alias.
  * `visited` is mutated in place across the chain — do NOT copy it in the recursive
  * call here; copying happens at the call sites inside resolveToken's switch cases.
  */
-function resolveToConcreteValue(
+export function resolveToConcreteValue(
 	tokenPath: string,
 	mode: string,
 	tokenMap: TokenMap,
@@ -223,7 +148,7 @@ function resolveToConcreteValue(
  * is treated as a fraction equivalent to a percentage (e.g. "0.05" ≡ "5%"); for
  * degrees a bare number is used as-is, since hueShift has no percentage convention.
  */
-function resolveAmount(
+export function resolveAmount(
 	amount: AmountValue,
 	mode: string,
 	tokenMap: TokenMap,

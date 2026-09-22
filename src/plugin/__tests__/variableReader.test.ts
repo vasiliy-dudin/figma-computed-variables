@@ -217,3 +217,24 @@ describe('importVariablesToJSON — opacity variables of composed colours', () =
 		expect((await importedValues([BASE, { id: 'op', name: 'op', resolvedType: 'FLOAT', value: 12.5 }, overlay('op')])).op).toBe('12.5%');
 	});
 });
+
+// Figma replaces a base's alpha: {glass, 42} with glass = {brand, 50} paints brand at 42 %.
+// Importing it as alpha({glass}, 42%) would mean 42 % of 50 % and halve it on the next Apply.
+describe('importVariablesToJSON — composed colour over a composed colour', () => {
+	afterEach(() => {
+		vi.unstubAllGlobals();
+	});
+
+	it('imports it as alpha() of the root colour with its own percentage', async () => {
+		activateVariablesMock([
+			{ id: 'brand', name: 'brand', resolvedType: 'COLOR', value: { r: 0, g: 0, b: 1, a: 1 } },
+			{ id: 'glass', name: 'glass', resolvedType: 'COLOR', value: composedColor(alias('brand'), 50) },
+			{ id: 'frost', name: 'frost', resolvedType: 'COLOR', value: composedColor(alias('glass'), 42) },
+		]);
+
+		const json = await importVariablesToJSON();
+
+		expect((json[COLLECTION_NAME].glass as Token).$value).toBe('alpha({brand}, 50%)');
+		expect((json[COLLECTION_NAME].frost as Token).$value).toBe('alpha({brand}, 42%)');
+	});
+});

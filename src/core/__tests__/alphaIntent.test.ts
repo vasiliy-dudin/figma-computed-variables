@@ -1,7 +1,8 @@
 import { describe, it, expect } from 'vitest';
-import { resolveAlphaIntent } from '../resolver.ts';
+import { resolveAlphaIntent } from '../alphaIntent.ts';
+import { resolveToken } from '../resolver.ts';
 import { createTokenMap } from '../tokenUtils.ts';
-import type { TokenJSON } from '../types';
+import type { TokenJSON, RGBA } from '../types';
 
 const MODE = 'Light';
 
@@ -42,6 +43,16 @@ const json: TokenJSON = {
 		aliasOfAlpha: { $type: 'color', $value: '{semantic.literalAmount}' },
 		onAliasOfAlpha: { $type: 'color', $value: 'alpha({semantic.aliasOfAlpha}, 50%)' },
 		onModeDependentBase: { $type: 'color', $value: 'alpha({foundation.color.opaqueInLightOnly}, 50%)' },
+		threeLevels: { $type: 'color', $value: 'alpha({semantic.onAlpha}, 50%)' },
+		onOverHundred: { $type: 'color', $value: 'alpha({semantic.overHundred}, 50%)' },
+		mid40: { $type: 'color', $value: 'alpha({foundation.color.primary}, 40%)' },
+		mid150: { $type: 'color', $value: 'alpha({semantic.mid40}, 150%)' },
+		onMid150: { $type: 'color', $value: 'alpha({semantic.mid150}, 50%)' },
+		onTranslucentChain: { $type: 'color', $value: 'alpha({semantic.onTranslucent}, 50%)' },
+		chainWithOpacityToken: { $type: 'color', $value: 'alpha({semantic.literalAmount}, {foundation.opacity.figmaPercent})' },
+		onPerMode: { $type: 'color', $value: 'alpha({semantic.perMode}, 50%)' },
+		cycleA: { $type: 'color', $value: 'alpha({semantic.cycleB}, 50%)' },
+		cycleB: { $type: 'color', $value: 'alpha({semantic.cycleA}, 50%)' },
 	},
 };
 
@@ -151,16 +162,78 @@ describe('resolveAlphaIntent — eligibility for a native composed colour', () =
 		expect(intent('semantic.onTranslucent')?.eligible).toBe(false);
 	});
 
-	it('rejects alpha over an alpha token', () => {
-		expect(intent('semantic.onAlpha')?.eligible).toBe(false);
-	});
-
-	it('rejects alpha over an alias of an alpha token', () => {
-		expect(intent('semantic.onAliasOfAlpha')?.eligible).toBe(false);
-	});
 
 	it('decides per mode', () => {
 		expect(intent('semantic.onModeDependentBase', 'Light')?.eligible).toBe(true);
 		expect(intent('semantic.onModeDependentBase', 'Dark')?.eligible).toBe(false);
+	});
+});
+
+// Figma replaces a base's alpha, so a base that is itself an alpha() token is walked down to its
+// opaque root and the percentages multiplied: alpha(alpha(X, p1), p2) equals alpha(X, p1·p2).
+describe('resolveAlphaIntent — walking an alpha() chain to its opaque root', () => {
+	/** Alpha the computed path gives this token, as a percentage. */
+	function computedPercent(path: string, mode: string = MODE): number {
+		const resolved = resolveToken(path, mode, tokenMap);
+		if (resolved.isAlias) throw new Error('expected a computed colour');
+		return (resolved.value as RGBA).a * 100;
+	}
+
+	it('references the root with the multiplied percentage', () => {
+		expect(intent('semantic.onAlpha')).toEqual({
+			targetPath: 'foundation.color.primary',
+			percent: 25,
+			opacityTokenPath: null,
+			eligible: true,
+		});
+	});
+
+	it('walks through an alias to an alpha() token', () => {
+		expect(intent('semantic.onAliasOfAlpha')).toMatchObject({ targetPath: 'foundation.color.primary', percent: 25, eligible: true });
+	});
+
+	it('walks three levels', () => {
+		expect(intent('semantic.threeLevels')).toMatchObject({ targetPath: 'foundation.color.primary', percent: 12.5, eligible: true });
+	});
+
+	// alpha(primary, 150%) clamps to fully opaque, so the walk stops there and references it.
+	it('stops at the first opaque token in the chain', () => {
+		expect(intent('semantic.onOverHundred')).toMatchObject({ targetPath: 'semantic.overHundred', percent: 50, eligible: true });
+	});
+
+	// 40 % then 150 % is 60 %, still translucent, so the walk continues to the root.
+	it('handles a step above 100 % over a translucent colour', () => {
+		expect(intent('semantic.onMid150')).toMatchObject({ targetPath: 'foundation.color.primary', eligible: true });
+		expect(intent('semantic.onMid150')?.percent).toBeCloseTo(30, 9);
+	});
+
+	it.each(['semantic.onAlpha', 'semantic.onAliasOfAlpha', 'semantic.threeLevels', 'semantic.onOverHundred', 'semantic.onMid150', 'semantic.chainWithOpacityToken'])(
+		'paints exactly what alpha() computes: %s',
+		(path) => {
+			expect(intent(path)?.percent).toBeCloseTo(computedPercent(path), 9);
+		}
+	);
+
+	it('writes the opacity as a number once percentages are multiplied', () => {
+		expect(intent('semantic.chainWithOpacityToken')).toMatchObject({
+			targetPath: 'foundation.color.primary',
+			percent: 30,
+			opacityTokenPath: null,
+			eligible: true,
+		});
+	});
+
+	it('walks per mode', () => {
+		expect(intent('semantic.onPerMode', 'Light')).toMatchObject({ targetPath: 'foundation.color.primary', percent: 20, eligible: true });
+		// In Dark the base is an opaque literal, so it is referenced directly.
+		expect(intent('semantic.onPerMode', 'Dark')).toMatchObject({ targetPath: 'semantic.perMode', percent: 50, eligible: true });
+	});
+
+	it('is not eligible when the chain ends at a translucent literal', () => {
+		expect(intent('semantic.onTranslucentChain')).toMatchObject({ targetPath: 'semantic.onTranslucent', percent: 50, eligible: false });
+	});
+
+	it('terminates on a cycle', () => {
+		expect(intent('semantic.cycleA')).toBeNull();
 	});
 });

@@ -2,7 +2,8 @@ import { TokenJSON, Token, ModeValues } from '@core/types';
 import { condenseModeValues, nestifyFlatPaths } from '@core/tokenUtils';
 import { FIGMA_TYPE_MAP, COLOR_OPACITY_SCOPE } from '@core/constants';
 import { rgbaToHex } from '@core/resolver';
-import { readComposedColor, ComposedColorParts, ComposedOpacity } from '@plugin/composeColor';
+import { readComposedColor, isVariableAlias, ComposedColorParts, ComposedOpacity } from '@plugin/composeColor';
+import { findComposedRoot, ImportContext } from '@plugin/composedRoot';
 
 // Prefix for a placeholder path when a variable referenced by a composed colour (its colour
 // or its opacity) cannot be resolved locally, e.g. it lives in a library not available to
@@ -25,24 +26,27 @@ export async function importVariablesToJSON(): Promise<TokenJSON> {
 		variablesByCollection.set(collection.id, variables.filter((v): v is Variable => v !== null));
 	}
 
-	const percentVariableIds = findPercentVariables([...variablesByCollection.values()].flat());
+	const allVariables = [...variablesByCollection.values()].flat();
+	const byId = new Map(allVariables.map(v => [v.id, v]));
+	const percentVariableIds = findPercentVariables(allVariables, byId);
 	const result: TokenJSON = {};
 	for (const collection of collections) {
 		const flatTokens = new Map<string, Token>();
 		for (const variable of variablesByCollection.get(collection.id) ?? []) {
 			// Figma uses '/' for groups; convert to dot-path for plugin JSON
 			const dotPath = variable.name.replace(/\//g, '.');
-			flatTokens.set(dotPath, await toToken(variable, collection, percentVariableIds.has(variable.id)));
+			flatTokens.set(dotPath, await toToken(variable, collection, percentVariableIds.has(variable.id), byId));
 		}
 		result[collection.name] = nestifyFlatPaths(flatTokens);
 	}
 	return result;
 }
 
-async function toToken(variable: Variable, collection: VariableCollection, asPercent: boolean): Promise<Token> {
+async function toToken(variable: Variable, collection: VariableCollection, asPercent: boolean, byId: Map<string, Variable>): Promise<Token> {
 	const modes: ModeValues = {};
 	for (const mode of collection.modes) {
-		modes[mode.name] = await formatValue(variable.valuesByMode[mode.modeId], variable.resolvedType, asPercent);
+		const context: ImportContext = { byId, collectionId: collection.id, modeId: mode.modeId };
+		modes[mode.name] = await formatValue(variable.valuesByMode[mode.modeId], variable.resolvedType, asPercent, context);
 	}
 
 	const tokenType = FIGMA_TYPE_MAP[variable.resolvedType];
@@ -71,8 +75,7 @@ async function toToken(variable: Variable, collection: VariableCollection, asPer
  * Follows alias chains between number variables to the variable that holds the number;
  * a variable with the scope is left as it is, since the scope already says how to read it.
  */
-function findPercentVariables(variables: Variable[]): Set<string> {
-	const byId = new Map(variables.map(v => [v.id, v]));
+function findPercentVariables(variables: Variable[], byId: Map<string, Variable>): Set<string> {
 	const marked = new Set<string>();
 	for (const variable of variables) {
 		if (variable.resolvedType !== 'COLOR') continue;
@@ -100,18 +103,14 @@ function markPercentChain(id: string, byId: Map<string, Variable>, marked: Set<s
 	}
 }
 
-function isVariableAlias(value: unknown): value is VariableAlias {
-	return typeof value === 'object' && value !== null && (value as { type?: unknown }).type === 'VARIABLE_ALIAS';
-}
-
 /**
  * Format a Figma variable value to token format. `asPercent` writes a number as "60%"; see
  * findPercentVariables.
  */
-async function formatValue(value: VariableValue, type: VariableResolvedDataType, asPercent: boolean): Promise<string | number> {
+async function formatValue(value: VariableValue, type: VariableResolvedDataType, asPercent: boolean, context: ImportContext): Promise<string | number> {
 	const composed = readComposedColor(value);
 	if (composed) {
-		return formatComposedColor(composed);
+		return formatComposedColor(composed, context);
 	}
 
 	if (value !== null && typeof value === 'object' && 'type' in value && value.type === 'VARIABLE_ALIAS') {
@@ -153,12 +152,14 @@ async function formatValue(value: VariableValue, type: VariableResolvedDataType,
  * validation reports on Apply; qualifying only composed colours would make the two kinds of
  * reference behave differently in the same file, which is harder to explain.
  */
-async function formatComposedColor(parts: ComposedColorParts): Promise<string> {
+async function formatComposedColor(parts: ComposedColorParts, context: ImportContext): Promise<string> {
 	if (parts.color.kind === 'rgb') {
 		return formatLiteralColorWithOpacity(parts.color.value, parts.opacity);
 	}
 
-	const colorPath = await referencePath(parts.color.id);
+	// Reference what really provides the colour: Figma replaces a base's alpha, so a chain of
+	// composed colours paints its root's colour at this value's opacity. See findComposedRoot.
+	const colorPath = await referencePath(findComposedRoot(parts.color.id, context));
 	const amount = parts.opacity.kind === 'percent'
 		? `${parts.opacity.value}%`
 		: `{${await referencePath(parts.opacity.id)}}`;
