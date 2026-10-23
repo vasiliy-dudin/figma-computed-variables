@@ -1,6 +1,6 @@
 import { TokenJSON, Token, ModeValues } from '@core/types';
 import { condenseModeValues, nestifyFlatPaths } from '@core/tokenUtils';
-import { FIGMA_TYPE_MAP, COLOR_OPACITY_SCOPE } from '@core/constants';
+import { FIGMA_TYPE_MAP, COLOR_OPACITY_SCOPE, FIGMA_ALL_SCOPES } from '@core/constants';
 import { rgbaToHex } from '@core/resolver';
 import { readComposedColor, isVariableAlias, ComposedColorParts, ComposedOpacity } from '@plugin/composeColor';
 import { findComposedRoot, ImportContext } from '@plugin/composedRoot';
@@ -58,10 +58,11 @@ async function toToken(variable: Variable, collection: VariableCollection, asPer
 	if (variable.description) {
 		token.$description = variable.description;
 	}
-	// Omit $scope when the default ALL_SCOPES is set — keeps JSON clean
+	// Omit $scope when the default ALL_SCOPES is set — keeps JSON clean.
+	// An empty list means "hidden from every picker" and must survive as [], or it would read as ALL_SCOPES.
 	// Guard against undefined scopes on variables created before scopes API
-	const scopes: VariableScope[] = variable.scopes ?? [];
-	if (scopes.length > 0 && !scopes.includes('ALL_SCOPES')) {
+	const scopes: VariableScope[] | undefined = variable.scopes;
+	if (scopes !== undefined && !scopes.includes(FIGMA_ALL_SCOPES)) {
 		token.$scope = scopes.length === 1 ? scopes[0] : [...scopes];
 	}
 	return token;

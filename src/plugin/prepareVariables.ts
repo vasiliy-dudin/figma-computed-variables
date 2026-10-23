@@ -1,5 +1,5 @@
-import { TokenJSON, Token, ValidationError } from '@core/types';
-import { TYPE_MAP } from '@core/constants';
+import { TokenJSON, Token, ValidationError, VariableScopeValue } from '@core/types';
+import { ALL_SCOPE_ALIAS, FIGMA_ALL_SCOPES, TYPE_MAP } from '@core/constants';
 import { flattenTokenGroup, isExcluded } from '@core/tokenUtils';
 import type { VariableIndex } from '@plugin/variableIndex';
 
@@ -122,6 +122,12 @@ function applyMetadata(variable: Variable, token: Token): void {
 	}
 	if (token.$scope !== undefined) {
 		const scopes = Array.isArray(token.$scope) ? token.$scope : [token.$scope];
-		variable.scopes = scopes as VariableScope[];
+		variable.scopes = scopes.map(toFigmaScope);
 	}
+}
+
+/** Figma name of a JSON scope: the ALL alias becomes ALL_SCOPES, every other scope passes through. */
+function toFigmaScope(scope: VariableScopeValue): VariableScope {
+	// COLOR_OPACITY is ahead of the typings, so the JSON scope list is wider than VariableScope.
+	return (scope === ALL_SCOPE_ALIAS ? FIGMA_ALL_SCOPES : scope) as VariableScope;
 }

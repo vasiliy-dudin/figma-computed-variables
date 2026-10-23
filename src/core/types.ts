@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { COLOR_OPACITY_SCOPE } from './constants';
+import { ALL_SCOPE_ALIAS, COLOR_OPACITY_SCOPE, FIGMA_ALL_SCOPES } from './constants';
 
 // Token Types - extensible for future types
 export const TokenTypeSchema = z.enum([
@@ -37,8 +37,9 @@ export type TokenValue = z.infer<typeof TokenValueSchema>;
 // All valid Figma VariableScope values — keep in sync with @figma/plugin-typings.
 // COLOR_OPACITY comes from Plugin API update 139 and is ahead of the typings (1.138.0 lacks it);
 // without it, importing a file that uses the scope would fail validation.
+// ALL_SCOPE_ALIAS is JSON-only shorthand for ALL_SCOPES; Apply translates it before writing.
 const VARIABLE_SCOPE_VALUES = [
-	'ALL_SCOPES', 'TEXT_CONTENT', 'CORNER_RADIUS', 'WIDTH_HEIGHT', 'GAP',
+	ALL_SCOPE_ALIAS, FIGMA_ALL_SCOPES, 'TEXT_CONTENT', 'CORNER_RADIUS', 'WIDTH_HEIGHT', 'GAP',
 	'ALL_FILLS', 'FRAME_FILL', 'SHAPE_FILL', 'TEXT_FILL', 'STROKE_COLOR',
 	'STROKE_FLOAT', 'EFFECT_FLOAT', 'EFFECT_COLOR', 'OPACITY', COLOR_OPACITY_SCOPE,
 	'FONT_FAMILY', 'FONT_STYLE', 'FONT_WEIGHT', 'FONT_SIZE',

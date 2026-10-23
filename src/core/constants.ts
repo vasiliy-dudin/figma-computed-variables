@@ -6,6 +6,11 @@ type FigmaVariableType = 'COLOR' | 'FLOAT' | 'STRING' | 'BOOLEAN';
 // validator's scope list, the resolver's amount scale and Import.
 export const COLOR_OPACITY_SCOPE = 'COLOR_OPACITY';
 
+// Short JSON spelling of Figma's ALL_SCOPES. Apply writes it as ALL_SCOPES; the long form stays
+// accepted so older JSON keeps validating.
+export const ALL_SCOPE_ALIAS = 'ALL';
+export const FIGMA_ALL_SCOPES = 'ALL_SCOPES';
+
 // Type mapping: Token type → Figma Variable type
 // Extensible for future token types
 export const TYPE_MAP: Record<string, FigmaVariableType> = {
@@ -107,7 +112,7 @@ export function generateExampleJSON(options: ExampleOptions): import('./types').
 				"base": { $type: "number", $value: val(8, 8), ...meta("Base spacing unit (8px grid)", "GAP") },
 			},
 			"opacity": {
-				"subtle": { $type: "number", $value: val(0.12, 0.12), ...meta("Subtle overlay opacity, written as a decimal (0.12 = 12%)", "ALL_SCOPES") },
+				"subtle": { $type: "number", $value: val(0.12, 0.12), ...meta("Subtle overlay opacity, written as a decimal (0.12 = 12%)", ALL_SCOPE_ALIAS) },
 			},
 		},
 		"semantic": {

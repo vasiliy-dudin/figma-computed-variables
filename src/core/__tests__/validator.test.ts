@@ -322,6 +322,11 @@ describe('validate — $scope', () => {
 		expect(validate(withScope(['COLOR_OPACITY', 'OPACITY'])).valid).toBe(true);
 	});
 
+	it('accepts ALL as shorthand for ALL_SCOPES, and ALL_SCOPES itself', () => {
+		expect(validate(withScope('ALL')).valid).toBe(true);
+		expect(validate(withScope('ALL_SCOPES')).valid).toBe(true);
+	});
+
 	it('still rejects an unknown scope', () => {
 		expect(validate(withScope('NOT_A_SCOPE')).valid).toBe(false);
 	});

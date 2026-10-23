@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import type { Token } from '@core/types';
 import { validate } from '@core/validator';
 import { applyToVariables } from '../variableWriter';
 import { importVariablesToJSON } from '../variableReader';
@@ -69,5 +70,30 @@ describe('Import → Apply round trip of a composed colour with an opacity varia
 		expect(snapshot(file)).toEqual(before);
 		expect(overlay.valuesByMode[modeId]).toEqual(composed);
 		expect(opacity.valuesByMode[modeId]).toBe(60);
+	});
+});
+
+describe('applyToVariables — $scope', () => {
+	afterEach(() => {
+		vi.unstubAllGlobals();
+	});
+
+	async function appliedScopes(scope: Token['$scope']): Promise<VariableScope[]> {
+		const file = activateEmptyFileMock();
+		const result = await applyToVariables({ tokens: { size: { $type: 'number', $value: 8, $scope: scope } } });
+		expect(result.errors).toEqual([]);
+		return [...file.variables.values()][0].scopes;
+	}
+
+	it('writes the ALL shorthand as ALL_SCOPES', async () => {
+		expect(await appliedScopes('ALL')).toEqual(['ALL_SCOPES']);
+	});
+
+	it('still writes ALL_SCOPES as it is', async () => {
+		expect(await appliedScopes('ALL_SCOPES')).toEqual(['ALL_SCOPES']);
+	});
+
+	it('passes other scopes through unchanged', async () => {
+		expect(await appliedScopes(['GAP', 'WIDTH_HEIGHT'])).toEqual(['GAP', 'WIDTH_HEIGHT']);
 	});
 });

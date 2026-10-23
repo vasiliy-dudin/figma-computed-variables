@@ -135,6 +135,7 @@ Prefix any key with `_` to exclude it from being applied to Figma Variables. Wor
 ```
 
 ### Two modes, Description, Scope
+`$scope` sets where a variable appears in Figma's pickers. Leave it out and Apply keeps the variable's current scope; write `"ALL"` to show it everywhere, or `[]` to hide it from every picker.
 ```
 {
   "foundation": {

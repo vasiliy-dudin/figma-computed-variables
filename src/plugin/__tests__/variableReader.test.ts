@@ -238,3 +238,32 @@ describe('importVariablesToJSON — composed colour over a composed colour', () 
 		expect((json[COLLECTION_NAME].frost as Token).$value).toBe('alpha({brand}, 42%)');
 	});
 });
+
+describe('importVariablesToJSON — $scope', () => {
+	afterEach(() => {
+		vi.unstubAllGlobals();
+	});
+
+	async function importedScope(scopes: VariableScope[] | undefined): Promise<Token['$scope']> {
+		activateVariablesMock([{ id: 'size', name: 'size', resolvedType: 'FLOAT', value: 8, scopes }]);
+		const json = await importVariablesToJSON();
+		return (json[COLLECTION_NAME].size as Token).$scope;
+	}
+
+	it('omits $scope for the default ALL_SCOPES', async () => {
+		expect(await importedScope(['ALL_SCOPES'])).toBeUndefined();
+	});
+
+	it('imports a single scope as a string', async () => {
+		expect(await importedScope(['FONT_SIZE'])).toBe('FONT_SIZE');
+	});
+
+	it('imports several scopes as a list', async () => {
+		expect(await importedScope(['GAP', 'WIDTH_HEIGHT'])).toEqual(['GAP', 'WIDTH_HEIGHT']);
+	});
+
+	// No scopes hides the variable from every picker; dropping $scope would turn it into ALL_SCOPES.
+	it('keeps an empty scope list as []', async () => {
+		expect(await importedScope([])).toEqual([]);
+	});
+});
