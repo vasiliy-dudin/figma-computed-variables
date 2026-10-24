@@ -56,7 +56,8 @@ src/
 │   ├── alphaIntent.ts   # What an alpha() token asks Figma for (target, opacity)
 │   ├── tokenUtils.ts    # Token map, counting utilities
 │   ├── orderedJson.ts   # JSON parse/stringify that keeps key order (Maps)
-│   ├── orderedTokenTree.ts # Token tree in Figma's order; written order for Apply
+│   ├── orderedTokenTree.ts # Import: token tree in Figma's order, and its JSON text
+│   ├── writtenOrder.ts  # Apply: order of collections, tokens, modes in the editor text
 │   └── constants.ts     # Type mappings, defaults
 │
 └── common/              # Networker configuration
@@ -263,7 +264,7 @@ A JavaScript object always lists integer-like keys (`"50"`, `"100"`) first, in a
 
 - Import builds the tree as `Map`s (`orderedTokenTree.ts`) and sends it as text, formatted like `JSON.stringify(value, null, 2)`. Mode values inside `$value` follow the collection's mode order.
 - Save and load pass the editor text through untouched; TokenJSON travels next to it for validation and stats.
-- Apply sends the text. The plugin parses it with `parseOrderedJson()`, which puts a marker in front of every key before `JSON.parse` (so no key is integer-like) and builds `Map`s without it. `readWrittenOrder()` lists the collections, token paths and mode names as written. The content still comes from the validated TokenJSON; `prepareVariables()` only re-ranks it with `sortByWrittenOrder()`, so new collections, variables and modes are created in that order. Without a written order (tests, direct calls) it uses TokenJSON's own order.
+- Apply sends the text. The plugin parses it with `parseOrderedJson()`, which puts a marker in front of every key before `JSON.parse` (so no key is integer-like) and builds `Map`s without it. `readWrittenOrder()` (`writtenOrder.ts`) lists the collections, token paths and mode names as written. The content still comes from the validated TokenJSON; `prepareVariables()` only re-ranks it with `sortByWrittenOrder()`, so new collections, variables and modes are created in that order. Without a written order (tests, direct calls) it uses TokenJSON's own order.
 
 **Rationale:** The token order of the panel in Figma, or the order the user wrote, is part of the design system and must survive Import, Save, reload and Apply.
 

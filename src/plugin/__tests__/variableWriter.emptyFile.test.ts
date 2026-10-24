@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { Token } from '@core/types';
 import { parseOrderedJson, toPlainJson } from '@core/orderedJson';
-import { readWrittenOrder } from '@core/orderedTokenTree';
+import { readWrittenOrder } from '@core/writtenOrder';
 import { validate } from '@core/validator';
 import { applyToVariables } from '../variableWriter';
 import { importVariablesToJSON } from '../variableReader';

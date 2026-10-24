@@ -2,7 +2,7 @@ import { TokenJSON, ResolvedValue, RGBA, TokenMap, ValidationError, ApplyResult,
 import { createTokenMap, normalizeModeValues } from '@core/tokenUtils';
 import { resolveToken, hexToRgba } from '@core/resolver';
 import { resolveAlphaIntent } from '@core/alphaIntent';
-import type { TokenJSONOrder } from '@core/orderedTokenTree';
+import type { TokenJSONOrder } from '@core/writtenOrder';
 import { readComposedColor, writeComposedColor } from '@plugin/composeColor';
 import { buildVariableIndex, VariableIndex } from '@plugin/variableIndex';
 import { prepareVariables, PreparedVariable } from '@plugin/prepareVariables';

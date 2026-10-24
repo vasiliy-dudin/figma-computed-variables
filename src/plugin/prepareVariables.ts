@@ -2,7 +2,8 @@ import { TokenJSON, Token, ValidationError, VariableScopeValue } from '@core/typ
 import { ALL_SCOPE_ALIAS, FIGMA_ALL_SCOPES, TYPE_MAP } from '@core/constants';
 import { flattenTokenGroup, isExcluded } from '@core/tokenUtils';
 import { fromPlainJson } from '@core/orderedJson';
-import { CollectionOrder, readWrittenOrder, sortByWrittenOrder, TokenJSONOrder } from '@core/orderedTokenTree';
+import { readWrittenOrder, sortByWrittenOrder } from '@core/writtenOrder';
+import type { CollectionOrder, TokenJSONOrder } from '@core/writtenOrder';
 import type { VariableIndex } from '@plugin/variableIndex';
 
 // The mode a collection gets when its tokens name none.
@@ -37,15 +38,18 @@ export function prepareVariables(
 	writtenOrder: TokenJSONOrder = readWrittenOrder(fromPlainJson(json))
 ): PreparedVariable[] {
 	const prepared: PreparedVariable[] = [];
+	const orderedCollections = sortByWrittenOrder(Object.entries(json), ([name]) => name, [...writtenOrder.keys()]);
 
-	for (const [collectionName, tokens] of sortByWrittenOrder(Object.entries(json), ([name]) => name, [...writtenOrder.keys()])) {
+	for (const [collectionName, tokens] of orderedCollections) {
 		if (isExcluded(collectionName)) continue;
 		const collection = findOrCreateCollection(collectionName, collections, index);
 		const order = writtenOrder.get(collectionName) ?? EMPTY_COLLECTION_ORDER;
 		const flatTokens = flattenTokenGroup(tokens);
 		addMissingModes(collection, flatTokens, order.modeNames);
 
-		for (const [tokenPath, token] of sortByWrittenOrder([...flatTokens], ([path]) => path, order.tokenPaths)) {
+		const orderedTokens = sortByWrittenOrder([...flatTokens], ([path]) => path, order.tokenPaths);
+
+		for (const [tokenPath, token] of orderedTokens) {
 			if (tokenPath.split('.').some(isExcluded)) continue;
 			const entry = prepareVariable(collectionName, collection, tokenPath, token, index, errors);
 			if (entry) prepared.push(entry);

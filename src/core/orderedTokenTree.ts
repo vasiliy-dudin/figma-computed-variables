@@ -1,10 +1,11 @@
+import { TOKEN_SELF_KEY, TOKEN_VALUE_KEY } from './constants';
 import { fromPlainJson, OrderedJsonObject, OrderedJsonValue, stringifyOrderedJson } from './orderedJson';
 import { Token, TokenGroup, TokenJSON } from './types';
+import { sortByWrittenOrder } from './writtenOrder';
 
 // A plain object always lists integer-like keys ("50", "100") first, in ascending order,
 // whatever order they were added in. Import builds the tree as Maps so the Figma panel
-// order of tokens and groups survives into the editor text, and Apply re-ranks what it
-// creates by the order the text was written in.
+// order of tokens and groups survives into the editor text.
 export type OrderedTokenGroup = Map<string, Token | OrderedTokenGroup>;
 
 /** A collection read from Figma: its token tree, and its mode names in Figma's order. */
@@ -12,19 +13,6 @@ export interface OrderedCollection {
 	tokens: OrderedTokenGroup;
 	modeNames: string[];
 }
-
-/** Written order of one collection: flat token paths and mode names, each first occurrence once. */
-export interface CollectionOrder {
-	tokenPaths: string[];
-	modeNames: string[];
-}
-
-/** Written order of a whole TokenJSON; the Map's own key order is the collection order. */
-export type TokenJSONOrder = Map<string, CollectionOrder>;
-
-const SELF_KEY = '$self';
-const TYPE_KEY = '$type';
-const VALUE_KEY = '$value';
 
 /**
  * Convert a flat Map<dotPath, Token> into a nested tree that keeps insertion order.
@@ -48,7 +36,7 @@ function childGroup(parent: OrderedTokenGroup, name: string): OrderedTokenGroup 
 	if (existing instanceof Map) return existing;
 
 	// A token that already sits at this path becomes the group's own value.
-	const group: OrderedTokenGroup = existing ? new Map([[SELF_KEY, existing]]) : new Map();
+	const group: OrderedTokenGroup = existing ? new Map([[TOKEN_SELF_KEY, existing]]) : new Map();
 	parent.set(name, group);
 	return group;
 }
@@ -56,7 +44,7 @@ function childGroup(parent: OrderedTokenGroup, name: string): OrderedTokenGroup 
 function setLeaf(parent: OrderedTokenGroup, name: string, token: Token): void {
 	const existing = parent.get(name);
 	if (existing instanceof Map) {
-		existing.set(SELF_KEY, token);
+		existing.set(TOKEN_SELF_KEY, token);
 	} else {
 		parent.set(name, token);
 	}
@@ -100,60 +88,9 @@ function groupToOrderedJson(group: OrderedTokenGroup, modeNames: string[]): Orde
 // A token's $value is a plain object, so its mode names are put back in the collection's order.
 function tokenToOrderedJson(token: Token, modeNames: string[]): OrderedJsonValue {
 	const ordered = fromPlainJson(token);
-	const modes = ordered instanceof Map ? ordered.get(VALUE_KEY) : undefined;
+	const modes = ordered instanceof Map ? ordered.get(TOKEN_VALUE_KEY) : undefined;
 	if (ordered instanceof Map && modes instanceof Map) {
-		ordered.set(VALUE_KEY, new Map(sortByWrittenOrder([...modes], ([modeName]) => modeName, modeNames)));
+		ordered.set(TOKEN_VALUE_KEY, new Map(sortByWrittenOrder([...modes], ([modeName]) => modeName, modeNames)));
 	}
 	return ordered;
-}
-
-/**
- * Written order of the collections, tokens and modes in a parsed editor text; returns an
- * empty order for a document that is not an object. Token paths follow flattenTokenGroup.
- */
-export function readWrittenOrder(document: OrderedJsonValue): TokenJSONOrder {
-	const order: TokenJSONOrder = new Map();
-	if (!(document instanceof Map)) return order;
-
-	for (const [collectionName, group] of document) {
-		const collectionOrder: CollectionOrder = { tokenPaths: [], modeNames: [] };
-		if (group instanceof Map) collectGroupOrder(group, '', collectionOrder);
-		order.set(collectionName, collectionOrder);
-	}
-	return order;
-}
-
-function collectGroupOrder(group: OrderedJsonObject, path: string, order: CollectionOrder): void {
-	// Same walk as flattenTokenGroup: a group's own $self token comes before its children.
-	const self = group.get(SELF_KEY);
-	if (self instanceof Map && path) collectToken(self, path, order);
-
-	for (const [name, node] of group) {
-		if (name === SELF_KEY || !(node instanceof Map)) continue;
-		const childPath = path ? `${path}.${name}` : name;
-		if (node.has(TYPE_KEY)) {
-			collectToken(node, childPath, order);
-		} else {
-			collectGroupOrder(node, childPath, order);
-		}
-	}
-}
-
-function collectToken(token: OrderedJsonObject, path: string, order: CollectionOrder): void {
-	order.tokenPaths.push(path);
-	const modes = token.get(VALUE_KEY);
-	if (!(modes instanceof Map)) return;
-
-	for (const modeName of modes.keys()) {
-		if (!order.modeNames.includes(modeName)) order.modeNames.push(modeName);
-	}
-}
-
-/** Sort by each key's position in writtenOrder; returns a new array with unknown keys last, in their original order. */
-export function sortByWrittenOrder<T>(items: T[], keyOf: (item: T) => string, writtenOrder: string[]): T[] {
-	const positions = new Map(writtenOrder.map((key, position) => [key, position]));
-	const ranked = items.map((item, index) => ({ item, index, rank: positions.get(keyOf(item)) ?? writtenOrder.length }));
-	// The index tie-break keeps the result independent of whether the engine's sort is stable.
-	ranked.sort((a, b) => a.rank - b.rank || a.index - b.index);
-	return ranked.map(({ item }) => item);
 }

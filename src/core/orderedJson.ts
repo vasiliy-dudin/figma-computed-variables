@@ -19,7 +19,18 @@ const JSON_WHITESPACE = new Set([' ', '\t', '\n', '\r']);
 
 /** Parse JSON text keeping the written key order; returns objects as Maps and throws like JSON.parse. */
 export function parseOrderedJson(text: string): OrderedJsonValue {
-	return toOrdered(JSON.parse(markKeys(text)), key => key.slice(KEY_MARKER.length));
+	return toOrdered(parseMarked(text), key => key.slice(KEY_MARKER.length));
+}
+
+function parseMarked(text: string): unknown {
+	try {
+		return JSON.parse(markKeys(text));
+	} catch (markedError) {
+		// The markers show up in the message and shift its positions; parsing the original
+		// text throws the error the user should see. Should it parse, the first error stands.
+		JSON.parse(text);
+		throw markedError;
+	}
 }
 
 /** Convert a plain JSON-compatible value; returns objects as Maps in their own key order. */
@@ -73,9 +84,11 @@ function toOrdered(value: unknown, keyName: (key: string) => string): OrderedJso
 }
 
 // Outside string literals JSON has no quotes, so every quote found here opens a string;
-// the string is a key when the next non-whitespace character is a colon.
+// the string is a key when the next non-whitespace character is a colon. Pieces are joined
+// once at the end: repeated concatenation can be quadratic in engines without rope strings,
+// and the engine of Figma's sandbox is not documented.
 function markKeys(text: string): string {
-	let marked = '';
+	const parts: string[] = [];
 	let index = 0;
 	while (index < text.length) {
 		const stringStart = text.indexOf(QUOTE, index);
@@ -83,10 +96,13 @@ function markKeys(text: string): string {
 
 		const stringEnd = findStringEnd(text, stringStart);
 		const isKey = text[skipWhitespace(text, stringEnd + 1)] === KEY_SEPARATOR;
-		marked += text.slice(index, stringStart + 1) + (isKey ? KEY_MARKER : '') + text.slice(stringStart + 1, stringEnd + 1);
+		parts.push(text.slice(index, stringStart + 1));
+		if (isKey) parts.push(KEY_MARKER);
+		parts.push(text.slice(stringStart + 1, stringEnd + 1));
 		index = stringEnd + 1;
 	}
-	return marked + text.slice(index);
+	parts.push(text.slice(index));
+	return parts.join('');
 }
 
 function findStringEnd(text: string, stringStart: number): number {

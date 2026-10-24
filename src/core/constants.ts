@@ -11,6 +11,12 @@ export const COLOR_OPACITY_SCOPE = 'COLOR_OPACITY';
 export const ALL_SCOPE_ALIAS = 'ALL';
 export const FIGMA_ALL_SCOPES = 'ALL_SCOPES';
 
+// Token JSON keys, for code that walks the JSON without the TokenGroup type: the ordered trees.
+// $self holds a group's own token; a node with $type is a token, not a group.
+export const TOKEN_SELF_KEY = '$self';
+export const TOKEN_TYPE_KEY = '$type';
+export const TOKEN_VALUE_KEY = '$value';
+
 // Type mapping: Token type → Figma Variable type
 // Extensible for future token types
 export const TYPE_MAP: Record<string, FigmaVariableType> = {

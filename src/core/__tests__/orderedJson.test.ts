@@ -16,8 +16,19 @@ describe('parseOrderedJson', () => {
 		expect(toPlainJson(parseOrderedJson(text))).toEqual(JSON.parse(text));
 	});
 
-	it('throws on invalid JSON', () => {
-		expect(() => parseOrderedJson('{"a": }')).toThrow();
+	// The key markers shift every position after them; the message must point at the user's text.
+	it('throws the error JSON.parse gives for the original text', () => {
+		const invalid = '{"first": 1, "second": 2, "third": }';
+		const expected = ((): string => {
+			try {
+				JSON.parse(invalid);
+				return 'no error';
+			} catch (err) {
+				return err instanceof Error ? err.message : String(err);
+			}
+		})();
+
+		expect(() => parseOrderedJson(invalid)).toThrow(expected);
 	});
 });
 

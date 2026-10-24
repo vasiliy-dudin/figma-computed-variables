@@ -12,6 +12,8 @@ export type UIToPluginMessage =
 // Plugin → UI messages
 export type PluginToUIMessage =
 	// jsonText keeps the Figma order of tokens and groups, which json loses for integer-like names.
+	// json is still sent for the stats: the editor's own check only counts valid JSON, and an
+	// import with unresolved library references is not valid until the user fixes them.
 	| { type: 'IMPORT_SUCCESS'; json: TokenJSON; jsonText: string }
 	| { type: 'IMPORT_ERROR'; error: string }
 	| { type: 'APPLY_SUCCESS'; preservedComposedColors: number; rejectedComposedColors: number }
