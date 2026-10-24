@@ -1,10 +1,15 @@
 import { TokenJSON, Token, ValidationError, VariableScopeValue } from '@core/types';
 import { ALL_SCOPE_ALIAS, FIGMA_ALL_SCOPES, TYPE_MAP } from '@core/constants';
 import { flattenTokenGroup, isExcluded } from '@core/tokenUtils';
+import { fromPlainJson } from '@core/orderedJson';
+import { CollectionOrder, readWrittenOrder, sortByWrittenOrder, TokenJSONOrder } from '@core/orderedTokenTree';
 import type { VariableIndex } from '@plugin/variableIndex';
 
 // The mode a collection gets when its tokens name none.
 const DEFAULT_MODE_NAME = 'Mode 1';
+
+// For a collection the written order does not mention: its tokens keep the json's order.
+const EMPTY_COLLECTION_ORDER: CollectionOrder = { tokenPaths: [], modeNames: [] };
 
 /** A variable that exists in Figma and is ready to receive its token's values. */
 export interface PreparedVariable {
@@ -21,22 +26,26 @@ export interface PreparedVariable {
  * their descriptions and scopes, without writing any values. Doing this before any value is
  * written means a reference to a collection defined later in the JSON resolves on the first
  * Apply. Problems are appended to `errors`; the tokens they affect are left out.
+ * Collections, variables and modes are created in `writtenOrder`, the order of the editor
+ * text; `json` alone lists integer-like names first. Without it, `json`'s own order is used.
  */
 export function prepareVariables(
 	json: TokenJSON,
 	collections: VariableCollection[],
 	index: VariableIndex,
-	errors: ValidationError[]
+	errors: ValidationError[],
+	writtenOrder: TokenJSONOrder = readWrittenOrder(fromPlainJson(json))
 ): PreparedVariable[] {
 	const prepared: PreparedVariable[] = [];
 
-	for (const [collectionName, tokens] of Object.entries(json)) {
+	for (const [collectionName, tokens] of sortByWrittenOrder(Object.entries(json), ([name]) => name, [...writtenOrder.keys()])) {
 		if (isExcluded(collectionName)) continue;
 		const collection = findOrCreateCollection(collectionName, collections, index);
+		const order = writtenOrder.get(collectionName) ?? EMPTY_COLLECTION_ORDER;
 		const flatTokens = flattenTokenGroup(tokens);
-		addMissingModes(collection, flatTokens);
+		addMissingModes(collection, flatTokens, order.modeNames);
 
-		for (const [tokenPath, token] of flatTokens) {
+		for (const [tokenPath, token] of sortByWrittenOrder([...flatTokens], ([path]) => path, order.tokenPaths)) {
 			if (tokenPath.split('.').some(isExcluded)) continue;
 			const entry = prepareVariable(collectionName, collection, tokenPath, token, index, errors);
 			if (entry) prepared.push(entry);
@@ -55,7 +64,7 @@ function findOrCreateCollection(name: string, collections: VariableCollection[],
 	return created;
 }
 
-function addMissingModes(collection: VariableCollection, flatTokens: Map<string, Token>): void {
+function addMissingModes(collection: VariableCollection, flatTokens: Map<string, Token>, writtenModeNames: string[]): void {
 	const modes = new Set<string>();
 	for (const token of flatTokens.values()) {
 		if (typeof token.$value !== 'string' && typeof token.$value !== 'number') {
@@ -66,7 +75,7 @@ function addMissingModes(collection: VariableCollection, flatTokens: Map<string,
 	}
 
 	const existingModes = collection.modes.map(m => m.name);
-	for (const modeName of modes) {
+	for (const modeName of sortByWrittenOrder([...modes], name => name, writtenModeNames)) {
 		if (!existingModes.includes(modeName)) {
 			collection.addMode(modeName);
 		}

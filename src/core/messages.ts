@@ -1,23 +1,24 @@
-import { TokenJSON, ValidationError } from './types';
+import { SavedTokens, TokenJSON, ValidationError } from './types';
 
 export type ApplyStatus = 'idle' | 'running' | 'queued';
 
 // UI → Plugin messages
 export type UIToPluginMessage =
 	| { type: 'IMPORT_VARIABLES' }
-	| { type: 'APPLY_TO_VARIABLES'; json: TokenJSON }
-	| { type: 'SAVE_JSON'; json: TokenJSON }
+	| { type: 'APPLY_TO_VARIABLES'; jsonText: string }
+	| { type: 'SAVE_JSON'; jsonText: string }
 	| { type: 'RESIZE_WINDOW'; width: number; height: number };
 
 // Plugin → UI messages
 export type PluginToUIMessage =
-	| { type: 'IMPORT_SUCCESS'; json: TokenJSON }
+	// jsonText keeps the Figma order of tokens and groups, which json loses for integer-like names.
+	| { type: 'IMPORT_SUCCESS'; json: TokenJSON; jsonText: string }
 	| { type: 'IMPORT_ERROR'; error: string }
 	| { type: 'APPLY_SUCCESS'; preservedComposedColors: number; rejectedComposedColors: number }
 	| { type: 'APPLY_ERROR'; errors: ValidationError[] }
 	| { type: 'SAVE_SUCCESS' }
 	| { type: 'SAVE_ERROR'; error: string }
-	| { type: 'LOAD_JSON'; json: TokenJSON | null }
+	| { type: 'LOAD_JSON'; saved: SavedTokens | null }
 	| { type: 'STARTUP_INFO'; hasVariables: boolean }
 	| { type: 'APPLY_STATUS'; state: ApplyStatus };
 

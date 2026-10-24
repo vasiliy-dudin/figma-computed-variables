@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Token } from '@core/types';
-import { importVariablesToJSON } from '../variableReader';
+import { stringifyCollections } from '@core/orderedTokenTree';
+import { importVariablesToJSON, readVariableCollections } from '../variableReader';
 
 const MODE_ID = 'mode-1';
 const MODE_NAME = 'Mode 1';
@@ -265,5 +266,23 @@ describe('importVariablesToJSON — $scope', () => {
 	// No scopes hides the variable from every picker; dropping $scope would turn it into ALL_SCOPES.
 	it('keeps an empty scope list as []', async () => {
 		expect(await importedScope([])).toEqual([]);
+	});
+});
+
+describe('readVariableCollections — order', () => {
+	afterEach(() => {
+		vi.unstubAllGlobals();
+	});
+
+	it('keeps the Figma panel order of tokens and groups, including integer-like names', async () => {
+		activateVariablesMock(['gray/base', 'gray/800', 'gray/100', 'spacing/xs', 'spacing/4/inner'].map((name, index) => (
+			{ id: `v${index}`, name, resolvedType: 'FLOAT', value: index }
+		)));
+
+		const text = stringifyCollections(await readVariableCollections());
+		const positions = ['"base"', '"800"', '"100"', '"xs"', '"4"'].map(key => text.indexOf(key));
+
+		expect(positions).toEqual([...positions].sort((a, b) => a - b));
+		expect(positions).not.toContain(-1);
 	});
 });

@@ -1,5 +1,6 @@
 import { TokenJSON, Token, ModeValues } from '@core/types';
-import { condenseModeValues, nestifyFlatPaths } from '@core/tokenUtils';
+import { condenseModeValues } from '@core/tokenUtils';
+import { nestifyFlatPathsOrdered, OrderedCollection, toTokenJSON } from '@core/orderedTokenTree';
 import { FIGMA_TYPE_MAP, COLOR_OPACITY_SCOPE, FIGMA_ALL_SCOPES } from '@core/constants';
 import { rgbaToHex } from '@core/resolver';
 import { readComposedColor, isVariableAlias, ComposedColorParts, ComposedOpacity } from '@plugin/composeColor';
@@ -19,6 +20,14 @@ const PERCENT_SCALE = 100;
  * Import all Figma Variables and convert to TokenJSON format
  */
 export async function importVariablesToJSON(): Promise<TokenJSON> {
+	return toTokenJSON(await readVariableCollections());
+}
+
+/**
+ * Read all Figma Variables; returns each collection's token tree and mode names keyed by
+ * collection name, in Figma's order. Serialize it with stringifyCollections to keep that order.
+ */
+export async function readVariableCollections(): Promise<Map<string, OrderedCollection>> {
 	const collections = await figma.variables.getLocalVariableCollectionsAsync();
 	const variablesByCollection = new Map<string, Variable[]>();
 	for (const collection of collections) {
@@ -29,7 +38,7 @@ export async function importVariablesToJSON(): Promise<TokenJSON> {
 	const allVariables = [...variablesByCollection.values()].flat();
 	const byId = new Map(allVariables.map(v => [v.id, v]));
 	const percentVariableIds = findPercentVariables(allVariables, byId);
-	const result: TokenJSON = {};
+	const result = new Map<string, OrderedCollection>();
 	for (const collection of collections) {
 		const flatTokens = new Map<string, Token>();
 		for (const variable of variablesByCollection.get(collection.id) ?? []) {
@@ -37,7 +46,7 @@ export async function importVariablesToJSON(): Promise<TokenJSON> {
 			const dotPath = variable.name.replace(/\//g, '.');
 			flatTokens.set(dotPath, await toToken(variable, collection, percentVariableIds.has(variable.id), byId));
 		}
-		result[collection.name] = nestifyFlatPaths(flatTokens);
+		result.set(collection.name, { tokens: nestifyFlatPathsOrdered(flatTokens), modeNames: collection.modes.map(mode => mode.name) });
 	}
 	return result;
 }

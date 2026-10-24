@@ -78,6 +78,13 @@ export const TokenJSONSchema = z.record(z.string(), TokenGroupSchema);
 
 export type TokenJSON = z.infer<typeof TokenJSONSchema>;
 
+// Token JSON restored from storage. jsonText is the text exactly as the user saved it,
+// which json loses for integer-like keys ("100" is always listed before "base").
+export interface SavedTokens {
+	json: TokenJSON;
+	jsonText: string;
+}
+
 // Supported color modifier function names
 export type ColorModifyFn = 'darken' | 'lighten' | 'saturate' | 'desaturate' | 'hueShift';
 

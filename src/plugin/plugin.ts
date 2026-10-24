@@ -2,14 +2,22 @@ import { PLUGIN } from "@common/networkSides";
 import { PLUGIN_CHANNEL } from "@plugin/plugin.network";
 import { Networker } from "monorepo-networker";
 import { loadJSON, saveJSON } from "@plugin/storage";
-import { importVariablesToJSON } from "@plugin/variableReader";
+import { readVariableCollections } from "@plugin/variableReader";
 import { applyToVariables } from "@plugin/variableWriter";
 import { validate, validateSchema } from "@core/validator";
+import { parseOrderedJson, toPlainJson } from "@core/orderedJson";
+import { readWrittenOrder, stringifyCollections, toTokenJSON } from "@core/orderedTokenTree";
+import type { TokenJSONOrder } from "@core/orderedTokenTree";
 import { sendToUI, onUIMessage } from "@plugin/messaging";
 import type { ApplyStatus } from "@core/messages";
 import type { TokenJSON } from "@core/types";
 
-let pendingApply: TokenJSON | null = null;
+interface PendingApply {
+	json: TokenJSON;
+	writtenOrder: TokenJSONOrder;
+}
+
+let pendingApply: PendingApply | null = null;
 let applyStatus: ApplyStatus = 'idle';
 let applyInFlight = false;
 
@@ -28,12 +36,12 @@ async function bootstrap() {
 
 	// Load saved JSON and check for existing variables on startup
 	try {
-		const savedJSON = await loadJSON();
-		sendToUI({ type: 'LOAD_JSON', json: savedJSON });
+		const saved = await loadJSON();
+		sendToUI({ type: 'LOAD_JSON', saved });
 
 		const collections = await figma.variables.getLocalVariableCollectionsAsync();
 		const hasVariables = collections.length > 0;
-		const hasSavedJSON = savedJSON !== null && Object.keys(savedJSON).length > 0;
+		const hasSavedJSON = saved !== null && Object.keys(saved.json).length > 0;
 		sendToUI({ type: 'STARTUP_INFO', hasVariables: hasVariables || hasSavedJSON });
 	} catch (err) {
 		console.error("Error loading saved JSON:", err);
@@ -44,23 +52,24 @@ async function bootstrap() {
 		try {
 			switch (msg.type) {
 				case 'IMPORT_VARIABLES': {
-					const json = await importVariablesToJSON();
-					sendToUI({ type: 'IMPORT_SUCCESS', json });
+					const collections = await readVariableCollections();
+					sendToUI({ type: 'IMPORT_SUCCESS', json: toTokenJSON(collections), jsonText: stringifyCollections(collections) });
 					break;
 				}
 
 				case 'APPLY_TO_VARIABLES': {
-					queueApply(msg.json);
+					queueApply(msg.jsonText);
 					break;
 				}
 
 				case 'SAVE_JSON': {
-					const schemaResult = validateSchema(msg.json);
+					const schemaResult = validateSchema(JSON.parse(msg.jsonText));
 					if (!schemaResult.valid) {
 						sendToUI({ type: 'SAVE_ERROR', error: 'Cannot save: invalid JSON structure' });
 						break;
 					}
-					await saveJSON(schemaResult.data);
+					// The text, not schemaResult.data: parsing reorders integer-like keys.
+					await saveJSON(msg.jsonText);
 					sendToUI({ type: 'SAVE_SUCCESS' });
 					break;
 				}
@@ -92,14 +101,15 @@ async function bootstrap() {
 
 bootstrap();
 
-function queueApply(json: TokenJSON): void {
-	const validationResult = validate(json);
+function queueApply(jsonText: string): void {
+	const document = parseOrderedJson(jsonText);
+	const validationResult = validate(toPlainJson(document));
 	if (!validationResult.valid) {
 		sendToUI({ type: 'APPLY_ERROR', errors: validationResult.errors });
 		return;
 	}
 
-	pendingApply = validationResult.data;
+	pendingApply = { json: validationResult.data, writtenOrder: readWrittenOrder(document) };
 	if (applyInFlight) {
 		if (applyStatus !== 'queued') {
 			sendApplyStatus('queued');
@@ -123,7 +133,7 @@ async function processApplyQueue(): Promise<void> {
 	sendApplyStatus('running');
 
 	try {
-		const result = await applyToVariables(next);
+		const result = await applyToVariables(next.json, next.writtenOrder);
 		if (result.errors.length > 0) {
 			sendToUI({ type: 'APPLY_ERROR', errors: result.errors });
 		} else {

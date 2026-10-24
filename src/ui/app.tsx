@@ -40,15 +40,15 @@ function App() {
 		return onPluginMessage((msg) => {
 			switch (msg.type) {
 				case 'LOAD_JSON':
-					if (msg.json) {
-						setJsonText(JSON.stringify(msg.json, null, 2));
-						updateStats(msg.json);
+					if (msg.saved) {
+						setJsonText(msg.saved.jsonText);
+						updateStats(msg.saved.json);
 						setShowEmptyState(false);
 					}
 					break;
 
 				case 'IMPORT_SUCCESS':
-					setJsonText(JSON.stringify(msg.json, null, 2));
+					setJsonText(msg.jsonText);
 					updateStats(msg.json);
 					setErrors([]);
 					setApplyNotice(null);
@@ -157,8 +157,9 @@ function App() {
 
 	function handleApply(): void {
 		try {
-			const parsed = JSON.parse(jsonText);
-			sendToPlugin({ type: 'APPLY_TO_VARIABLES', json: parsed });
+			// Parsed only to report a syntax error here; the plugin reads the text in its written order.
+			JSON.parse(jsonText);
+			sendToPlugin({ type: 'APPLY_TO_VARIABLES', jsonText });
 		} catch (err) {
 			setErrors([{
 				collection: 'json',
@@ -171,8 +172,9 @@ function App() {
 
 	function handleSave(): void {
 		try {
-			const parsed = JSON.parse(jsonText);
-			sendToPlugin({ type: 'SAVE_JSON', json: parsed });
+			// Parsed only to report a syntax error here; the plugin stores the text as written.
+			JSON.parse(jsonText);
+			sendToPlugin({ type: 'SAVE_JSON', jsonText });
 		} catch (err) {
 			setErrors([{
 				collection: 'json',

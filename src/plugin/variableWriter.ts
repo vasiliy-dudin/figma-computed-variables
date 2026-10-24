@@ -2,6 +2,7 @@ import { TokenJSON, ResolvedValue, RGBA, TokenMap, ValidationError, ApplyResult,
 import { createTokenMap, normalizeModeValues } from '@core/tokenUtils';
 import { resolveToken, hexToRgba } from '@core/resolver';
 import { resolveAlphaIntent } from '@core/alphaIntent';
+import type { TokenJSONOrder } from '@core/orderedTokenTree';
 import { readComposedColor, writeComposedColor } from '@plugin/composeColor';
 import { buildVariableIndex, VariableIndex } from '@plugin/variableIndex';
 import { prepareVariables, PreparedVariable } from '@plugin/prepareVariables';
@@ -33,11 +34,11 @@ interface WriteTally {
  * Apply token JSON to Figma Variables: creates what is missing, merges modes, then writes
  * values. Two passes, so every variable exists before any value refers to it.
  */
-export async function applyToVariables(json: TokenJSON): Promise<ApplyResult> {
+export async function applyToVariables(json: TokenJSON, writtenOrder?: TokenJSONOrder): Promise<ApplyResult> {
 	const errors: ValidationError[] = [];
 	const collections = await figma.variables.getLocalVariableCollectionsAsync();
 	const index = await buildVariableIndex(collections);
-	const prepared = prepareVariables(json, collections, index, errors);
+	const prepared = prepareVariables(json, collections, index, errors, writtenOrder);
 
 	const tokenMap = createTokenMap(json);
 	const tally: WriteTally = { preserved: 0, rejected: 0 };

@@ -55,6 +55,8 @@ src/
 │   ├── resolver.ts      # Expression parser and resolver
 │   ├── alphaIntent.ts   # What an alpha() token asks Figma for (target, opacity)
 │   ├── tokenUtils.ts    # Token map, counting utilities
+│   ├── orderedJson.ts   # JSON parse/stringify that keeps key order (Maps)
+│   ├── orderedTokenTree.ts # Token tree in Figma's order; written order for Apply
 │   └── constants.ts     # Type mappings, defaults
 │
 └── common/              # Networker configuration
@@ -71,7 +73,7 @@ All plugin ↔ UI communication uses **monorepo-networker** with typed messages.
 UI                          Plugin
 │                           │
 ├─ IMPORT_VARIABLES ───────>│
-│<─────────── IMPORT_SUCCESS┤ (with TokenJSON)
+│<─────────── IMPORT_SUCCESS┤ (with TokenJSON and its text)
 │                           │
 ├─ APPLY_TO_VARIABLES ─────>│
 │<──────────── APPLY_SUCCESS┤ (or APPLY_ERROR)
@@ -86,17 +88,17 @@ UI                          Plugin
 
 **UI → Plugin:**
 - `IMPORT_VARIABLES` — read all Figma variables
-- `APPLY_TO_VARIABLES` — write TokenJSON to Figma
-- `SAVE_JSON` — persist TokenJSON to clientStorage
+- `APPLY_TO_VARIABLES` — write the editor text to Figma
+- `SAVE_JSON` — persist the editor text to clientStorage, as written
 
 **Plugin → UI:**
-- `IMPORT_SUCCESS` — imported TokenJSON
+- `IMPORT_SUCCESS` — imported TokenJSON, and its text in Figma's order
 - `IMPORT_ERROR` — import failed
 - `APPLY_SUCCESS` — variables updated
 - `APPLY_ERROR` — validation errors
 - `SAVE_SUCCESS` — storage updated
 - `SAVE_ERROR` — storage failed
-- `LOAD_JSON` — restored from storage
+- `LOAD_JSON` — restored from storage: the saved text and its TokenJSON
 
 ## Data Model
 
@@ -135,11 +137,11 @@ UI sends IMPORT_VARIABLES
     ↓
 Plugin reads figma.variables.getLocalVariableCollectionsAsync()
     ↓
-variableReader.ts converts to TokenJSON format
+variableReader.ts builds an ordered token tree (orderedTokenTree.ts)
     ↓
-Plugin sends IMPORT_SUCCESS
+Plugin sends IMPORT_SUCCESS: TokenJSON, and the tree serialized as text
     ↓
-UI updates JsonEditor
+UI shows the text in JsonEditor; stats come from TokenJSON
 ```
 
 ### 2. Apply Flow
@@ -147,16 +149,16 @@ UI updates JsonEditor
 ```
 User clicks Apply
     ↓
-UI sends APPLY_TO_VARIABLES
+UI sends APPLY_TO_VARIABLES with the editor text
     ↓
-Plugin validates via validator.ts
+Plugin parses it in written order (orderedJson.ts), validates via validator.ts
     ├─ Schema validation (Zod)
     ├─ Reference validation
     └─ Circular dependency detection
     ↓
 variableWriter.ts creates/updates Figma variables, in two passes
     ├─ Pass 1 (prepareVariables.ts): find or create collections, merge modes,
-    │   find or create variables, set descriptions and scopes
+    │   find or create variables, set descriptions and scopes — in written order
     └─ Pass 2: resolve expressions via resolver.ts and set values
         (native alias, composed colour, or computed value)
     ↓
@@ -251,8 +253,19 @@ otherwise, or if that write fails → resolver.resolveToken()
 
 - Auto-save to `figma.clientStorage` on explicit save action
 - Auto-load on plugin startup
+- The editor text is stored as written, as `{ jsonText }`, after the plugin checks its schema. Older entries, a compact JSON string, still load, formatted the way the editor used to show them.
 
 **Rationale:** Preserve work between sessions without cluttering Figma document.
+
+### 6. Key Order Lives in the Text
+
+A JavaScript object always lists integer-like keys (`"50"`, `"100"`) first, in ascending order, whatever order they were added in. `JSON.parse`, `JSON.stringify` and `postMessage` keep that rule, so a scale like `gray/base, gray/800, gray/100` would come back as `100, 800, base`.
+
+- Import builds the tree as `Map`s (`orderedTokenTree.ts`) and sends it as text, formatted like `JSON.stringify(value, null, 2)`. Mode values inside `$value` follow the collection's mode order.
+- Save and load pass the editor text through untouched; TokenJSON travels next to it for validation and stats.
+- Apply sends the text. The plugin parses it with `parseOrderedJson()`, which puts a marker in front of every key before `JSON.parse` (so no key is integer-like) and builds `Map`s without it. `readWrittenOrder()` lists the collections, token paths and mode names as written. The content still comes from the validated TokenJSON; `prepareVariables()` only re-ranks it with `sortByWrittenOrder()`, so new collections, variables and modes are created in that order. Without a written order (tests, direct calls) it uses TokenJSON's own order.
+
+**Rationale:** The token order of the panel in Figma, or the order the user wrote, is part of the design system and must survive Import, Save, reload and Apply.
 
 ### 5. Message-Based Architecture
 
@@ -328,6 +341,7 @@ Two separate TypeScript projects:
 2. **Mode Consistency Not Enforced** — tokens can have different modes across collections
 5. **No Type Coercion** — `{number-token}px` won't convert number to string automatically
 6. **Manual Sync Required** — plugin doesn't watch for external changes to Figma Variables
+7. **Apply Does Not Reorder Existing Variables** — written order only decides where new collections, variables and modes are created; ones that already exist in Figma keep their place
 
 ## Composed colours: alpha() as a live reference
 

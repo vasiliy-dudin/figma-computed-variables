@@ -1,5 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { Token } from '@core/types';
+import { parseOrderedJson, toPlainJson } from '@core/orderedJson';
+import { readWrittenOrder } from '@core/orderedTokenTree';
 import { validate } from '@core/validator';
 import { applyToVariables } from '../variableWriter';
 import { importVariablesToJSON } from '../variableReader';
@@ -95,5 +97,33 @@ describe('applyToVariables — $scope', () => {
 
 	it('passes other scopes through unchanged', async () => {
 		expect(await appliedScopes(['GAP', 'WIDTH_HEIGHT'])).toEqual(['GAP', 'WIDTH_HEIGHT']);
+	});
+});
+
+describe('applyToVariables — written order', () => {
+	afterEach(() => {
+		vi.unstubAllGlobals();
+	});
+
+	// A plain object lists "2024", "100" and "2" first; Figma should get them in the order written.
+	it('creates collections, variables and modes in the written order', async () => {
+		const file = activateEmptyFileMock();
+		const document = parseOrderedJson(`{
+			"semantic": { "gray": {
+				"base": { "$type": "number", "$value": { "Wide": 1, "2": 2 } },
+				"100": { "$type": "number", "$value": { "Wide": 3, "2": 4 } }
+			} },
+			"2024": { "size": { "$type": "number", "$value": 1 } }
+		}`);
+		const validated = validate(toPlainJson(document));
+		if (!validated.valid) throw new Error('fixture JSON is invalid');
+
+		const result = await applyToVariables(validated.data, readWrittenOrder(document));
+
+		expect(result.errors).toEqual([]);
+		expect(file.collections.map(c => c.name)).toEqual(['semantic', '2024']);
+		const semantic = file.collections[0];
+		expect(semantic.variableIds.map(id => file.variables.get(id)?.name)).toEqual(['gray/base', 'gray/100']);
+		expect(semantic.modes.map(m => m.name)).toEqual(['Mode 1', 'Wide', '2']);
 	});
 });
