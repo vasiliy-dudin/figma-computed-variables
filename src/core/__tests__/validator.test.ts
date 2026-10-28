@@ -1,7 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import { validate } from '../validator.ts';
-import { EXAMPLE_TOKEN_JSON, generateExampleJSON } from '../constants.ts';
+import { generateExampleJSON } from '../constants.ts';
 import type { TokenJSON } from '../types';
+import { EXAMPLE_TOKEN_JSON } from './legacyExampleTokens.ts';
 
 // --- Valid fixtures ---
 
@@ -56,7 +57,7 @@ describe('validate — valid inputs', () => {
 		expect(result.valid).toBe(true);
 	});
 
-	it('returns valid for the built-in EXAMPLE_TOKEN_JSON shown on first run', () => {
+	it('returns valid for the former first-run example JSON', () => {
 		const result = validate(EXAMPLE_TOKEN_JSON);
 		expect(result.valid).toBe(true);
 	});

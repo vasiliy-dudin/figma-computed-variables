@@ -25,10 +25,11 @@ Tokens are defined in JSON with math, color modifier functions, and alias refere
 | Expression | Example | Result |
 |---|---|---|
 | Alias | `"{color.primary}"` | `#0066FF` |
-| Math | `"{spacing.base} * 2"` | `16` |
+| Math | `"{spacing.base} * 2"`, `"Math.round({spacing.base} * 1.3)"` | `16`, `10` |
 | Merge text | `"{font.family}, sans-serif"` | `Inter, sans-serif` |
 | Opacity | `alpha({color.primary}, 50%)` | `rgba(0, 102, 255, 0.5)` |
 | Opacity (token reference) | `alpha({color.primary}, {opacity.subtle})` — `opacity.subtle = 0.05` | `rgba(0, 102, 255, 0.05)` |
+| Opacity (expression) | `alpha({color.primary}, {opacity.subtle} * 2)` — `opacity.subtle = 0.05` | `rgba(0, 102, 255, 0.1)` |
 | Darken | `darken({color.primary}, 30%)` | `#003899` |
 | Lighten | `lighten({color.primary}, 30%)` | `#66AAFF` |
 | Saturate | `saturate({color.primary}, 50%)` | `#0044FF` |

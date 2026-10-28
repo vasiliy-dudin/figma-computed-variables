@@ -88,12 +88,13 @@ export interface SavedTokens {
 // Supported color modifier function names
 export type ColorModifyFn = 'darken' | 'lighten' | 'saturate' | 'desaturate' | 'hueShift';
 
-// Amount argument for alpha()/colorModify() functions — either a literal number
-// (already in the function's native scale, e.g. raw percent) or a reference to
-// another token whose resolved value supplies the amount.
+// Amount argument for alpha()/colorModify() functions — a literal number (already
+// in the function's native scale, e.g. raw percent), a reference to another token
+// whose resolved value supplies the amount, or an arithmetic expression over both.
 export type AmountValue =
 	| { kind: 'literal'; amount: number }
-	| { kind: 'reference'; tokenPath: string };
+	| { kind: 'reference'; tokenPath: string }
+	| { kind: 'expression'; expression: string };
 
 // Expression AST types
 export type Expression =

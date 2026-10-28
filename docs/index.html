@@ -193,8 +193,8 @@
 							</tr>
 							<tr>
 								<td>Math</td>
-								<td><code>"{spacing.base} * 2"</code></td>
-								<td><code>16</code></td>
+								<td><code>"{spacing.base} * 2"</code><br><code>"Math.round({spacing.base} * 1.3)"</code></td>
+								<td><code>16</code><br><code>10</code></td>
 							</tr>
 							<tr>
 								<td>Merge text</td>
@@ -204,6 +204,11 @@
 							<tr>
 								<td>Opacity</td>
 								<td><code>alpha({color.primary}, 50%)</code></td>
+								<td><span class="swatch me-1" style="background:rgba(0,102,255,0.5);"></span><code>rgba(0, 102, 255, 0.5)</code></td>
+							</tr>
+							<tr>
+								<td>Opacity, computed</td>
+								<td><code>alpha({color.primary}, 25% * 2)</code></td>
 								<td><span class="swatch me-1" style="background:rgba(0,102,255,0.5);"></span><code>rgba(0, 102, 255, 0.5)</code></td>
 							</tr>
 							<tr>
@@ -248,7 +253,7 @@
 							</tr>
 						</tbody>
 					</table>
-					<p class="text-muted small">Amounts can also reference another token, e.g. <code>alpha({color.primary}, {opacity.subtle})</code>. That token can hold a percentage (<code>5%</code>) or a decimal (<code>0.05</code>); for <code>hueShift()</code>, just degrees.</p>
+					<p class="text-muted small">Amounts can also reference another token, e.g. <code>alpha({color.primary}, {opacity.subtle})</code>. That token can hold a percentage (<code>5%</code>) or a decimal (<code>0.05</code>); for <code>hueShift()</code>, just degrees. An amount can also be arithmetic, e.g. <code>alpha({color.primary}, {opacity.hover} * 2)</code> or <code>hueShift({color.primary}, -{angle.accent})</code>: each token is read as above, then the result is computed. Numbers in it may carry the function's unit (<code>50% / 2</code>); a single number still needs it.</p>
 				</figure>
 
 				<div class="callout mt-4">
@@ -257,6 +262,7 @@
 						<li><code>alpha({color.primary}, 50%)</code> becomes a Figma variable that references <code>color/primary</code> with 50% opacity — change the base colour in Figma and every <code>alpha()</code> colour follows.</li>
 						<li>When the opacity comes from a token, the variable references that token's variable too. In Figma, opacity variables hold a percentage: <code>60</code> means 60%. Give such tokens the <code>"$scope": "COLOR_OPACITY"</code> so the plugin reads <code>60</code> the same way.</li>
 						<li><code>alpha()</code> of an <code>alpha()</code> colour stays linked too: with <code>glass</code> = <code>alpha({color.brand}, 50%)</code>, <code>alpha({color.glass}, 50%)</code> becomes a reference to <code>color/brand</code> at 25%. After an Import the JSON names <code>color.brand</code> directly.</li>
+						<li>With a computed amount, such as <code>alpha({color.primary}, {opacity.hover} * 2)</code>, the variable still references <code>color/primary</code>, but its opacity is the computed number: Figma cannot multiply, so the link to <code>opacity.hover</code> is not kept.</li>
 						<li>Over a colour with its own transparency, such as <code>#0066FF80</code>, <code>alpha()</code> writes a fixed colour, as before: there is no opaque variable to reference, and Figma would replace the colour's transparency where <code>alpha()</code> multiplies it.</li>
 					</ul>
 				</div>

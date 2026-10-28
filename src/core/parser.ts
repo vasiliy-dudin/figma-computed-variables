@@ -31,8 +31,12 @@ export function parseExpression(input: string | number, type: TokenType): Expres
 			amount: { kind: 'reference', tokenPath: alphaRefMatch[2] }
 		};
 	}
+	const amountExpression = parseAmountExpression(valueStr);
+	if (amountExpression?.type === 'alpha') {
+		return amountExpression;
+	}
 	if (PATTERNS.alphaFunctionPrefix.test(valueStr)) {
-		throw new Error('Invalid alpha() syntax: use a percentage (alpha({token}, 15%)) or a token reference (alpha({token}, {opacityToken})).');
+		throw new Error('Invalid alpha() syntax: use a percentage (alpha({token}, 15%)), a token reference (alpha({token}, {opacityToken})) or an expression (alpha({token}, {opacityToken} * 2)).');
 	}
 
 	// 3. Detect color modifier functions: darken({token}, 20%), lighten(...), hueShift({token}, 50deg),
@@ -77,8 +81,12 @@ export function parseExpression(input: string | number, type: TokenType): Expres
 		};
 	}
 
+	if (amountExpression) {
+		return amountExpression;
+	}
+
 	if (PATTERNS.colorFunctionPrefix.test(valueStr)) {
-		throw new Error('Invalid color modifier syntax: use percentages (10%) / degrees (30deg) depending on the function, or a token reference such as darken({token}, {amountToken}).');
+		throw new Error('Invalid color modifier syntax: use percentages (10%) / degrees (30deg) depending on the function, a token reference such as darken({token}, {amountToken}), or an expression such as darken({token}, {amountToken} * 2).');
 	}
 
 	// 4. Type-specific parsing
@@ -111,9 +119,43 @@ export function parseExpression(input: string | number, type: TokenType): Expres
 }
 
 /**
+ * Parse a colour function whose second argument is an arithmetic expression, e.g.
+ * alpha({color}, {opacity} * 2). Returns null for any other value, including a single number
+ * with a wrong or missing unit, which the caller reports as a syntax error.
+ */
+function parseAmountExpression(valueStr: string): Expression | null {
+	const match = matchAmountExpression(valueStr);
+	if (!match) {
+		return null;
+	}
+	const amount = { kind: 'expression', expression: match.expression } as const;
+	return match.fn === 'alpha'
+		? { type: 'alpha', tokenPath: match.basePath, amount }
+		: { type: 'colorModify', fn: match.fn, tokenPath: match.basePath, amount };
+}
+
+export interface AmountExpressionMatch {
+	fn: 'alpha' | ColorModifyFn;
+	basePath: string;
+	expression: string;
+}
+
+/** The parts of a colour function whose amount is an expression; null for any other value. Shared with the validator. */
+export function matchAmountExpression(valueStr: string): AmountExpressionMatch | null {
+	const match = valueStr.match(PATTERNS.colorFunctionExpression);
+	if (!match || PATTERNS.singleAmountTerm.test(match[3])) {
+		return null;
+	}
+	return { fn: match[1] as 'alpha' | ColorModifyFn, basePath: match[2], expression: match[3] };
+}
+
+/**
  * Check if a string contains math operators or token references
  */
 function containsMathOrTokens(value: string): boolean {
+	// A sign belongs to the number in "-30deg", not to a subtraction
+	if (PATTERNS.signedUnitNumber.test(value)) return false;
+
 	// Contains token references
 	const tokenReferenceRegex = new RegExp(PATTERNS.tokenReference);
 	if (tokenReferenceRegex.test(value)) return true;

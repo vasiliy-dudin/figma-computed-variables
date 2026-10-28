@@ -1,6 +1,8 @@
 import { TokenJSONSchema, TokenJSON, ValidationError, TokenMap, Token, ColorModifyFn } from './types';
 import { createTokenMap, detectAmbiguousAliases, extractTokenReferences, flattenTokenGroup, isExcluded } from './tokenUtils';
 import { PATTERNS } from './constants';
+import { matchAmountExpression } from './parser';
+import { amountSyntaxError } from './amountExpression';
 import { ZodIssue } from 'zod';
 
 const SCALAR_MODE_SENTINEL = '';
@@ -231,9 +233,6 @@ function collectModifierSyntaxErrors(ctx: ModifierValidationContext): Validation
 
 	const alphaErrors = matchAndValidateModifier(trimmed, PATTERNS.alphaFunction, PATTERNS.alphaFunctionRef, () => 'alpha', 1, 2, refCtx);
 	if (alphaErrors) return alphaErrors;
-	if (PATTERNS.alphaFunctionPrefix.test(trimmed)) {
-		return [createSyntaxError(collectionName, tokenPath, mode, 'alpha() requires a percentage amount (alpha({token}, 15%)) or a token reference (alpha({token}, {opacityToken})).')];
-	}
 
 	const percentErrors = matchAndValidateModifier(trimmed, PATTERNS.colorPercentFunction, PATTERNS.colorPercentFunctionRef, m => m[1] as ColorModifyFn, 2, 3, refCtx);
 	if (percentErrors) return percentErrors;
@@ -241,8 +240,16 @@ function collectModifierSyntaxErrors(ctx: ModifierValidationContext): Validation
 	const hueErrors = matchAndValidateModifier(trimmed, PATTERNS.hueShiftFunction, PATTERNS.hueShiftFunctionRef, () => 'hueShift', 1, 2, refCtx);
 	if (hueErrors) return hueErrors;
 
+	// After the literal and reference forms, as in the parser: a lone {ref} is not an expression
+	const expressionErrors = validateAmountExpression(trimmed, refCtx);
+	if (expressionErrors) return expressionErrors;
+
+	if (PATTERNS.alphaFunctionPrefix.test(trimmed)) {
+		return [createSyntaxError(collectionName, tokenPath, mode, 'alpha() requires a percentage amount (alpha({token}, 15%)), a token reference (alpha({token}, {opacityToken})) or an expression (alpha({token}, {opacityToken} * 2)).')];
+	}
+
 	if (PATTERNS.colorFunctionPrefix.test(trimmed)) {
-		return [createSyntaxError(collectionName, tokenPath, mode, 'Color modifiers require percentages (10%) or degrees (30deg) depending on the function, or a token reference such as darken({token}, {amountToken}).')];
+		return [createSyntaxError(collectionName, tokenPath, mode, 'Color modifiers require percentages (10%) or degrees (30deg) depending on the function, a token reference such as darken({token}, {amountToken}), or an expression such as darken({token}, {amountToken} * 2).')];
 	}
 
 	return [];
@@ -273,6 +280,30 @@ function matchAndValidateModifier(
 	const errors = validateModifierReference({ fn, refPath: match[refPathGroup], ...ctx });
 	if (refMatch) {
 		errors.push(...validateAmountReference({ fn, amountPath: refMatch[amountGroup], ...ctx }));
+	}
+	return errors;
+}
+
+/**
+ * Validate a colour function whose amount is an expression: the base must be a colour, no
+ * reference inside the amount may be a colour, and the amount must parse with the function's
+ * unit. Returns null when the value is not such a function.
+ */
+function validateAmountExpression(
+	trimmed: string,
+	ctx: Omit<ModifierReferenceContext, 'fn' | 'refPath'>
+): ValidationError[] | null {
+	const match = matchAmountExpression(trimmed);
+	if (!match) return null;
+
+	const { fn, basePath, expression } = match;
+	const errors = validateModifierReference({ fn, refPath: basePath, ...ctx });
+	for (const amountPath of new Set(extractTokenReferences(expression))) {
+		errors.push(...validateAmountReference({ fn, amountPath, ...ctx }));
+	}
+	const syntaxError = amountSyntaxError(expression, fn === 'hueShift' ? 'degrees' : 'percent');
+	if (syntaxError) {
+		errors.push(createSyntaxError(ctx.collectionName, ctx.tokenPath, ctx.mode, `${fn}() amount "${expression}" is invalid: ${syntaxError}`));
 	}
 	return errors;
 }

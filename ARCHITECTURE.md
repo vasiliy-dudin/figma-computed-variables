@@ -52,7 +52,11 @@ src/
 │   ├── types.ts         # Zod schemas, TypeScript types
 │   ├── messages.ts      # Message type definitions
 │   ├── validator.ts     # Schema + circular dependency validation
-│   ├── resolver.ts      # Expression parser and resolver
+│   ├── parser.ts        # Token value → expression AST
+│   ├── resolver.ts      # Resolves an expression to a value in a mode
+│   ├── arithmetic.ts    # Safe evaluator for math and amount expressions (no eval)
+│   ├── arithmeticTokens.ts # Its tokenizer: numbers, {references}, Math.*, operators, units
+│   ├── amountExpression.ts # Colour function amounts written as arithmetic
 │   ├── alphaIntent.ts   # What an alpha() token asks Figma for (target, opacity)
 │   ├── tokenUtils.ts    # Token map, counting utilities
 │   ├── orderedJson.ts   # JSON parse/stringify that keeps key order (Maps)
@@ -124,8 +128,9 @@ UI                          Plugin
 1. **Literal:** `"#ff0000"`, `16`, `"sans-serif"`
 2. **Alias:** `"{red.100}"` → native Figma alias
 3. **Alpha modification:** `"alpha({red.100}, 50%)"` → native Figma composed colour (a reference plus an opacity) when `red.100` is opaque or leads to an opaque colour through `alpha()` tokens, otherwise computed RGBA — see [Composed colours](#composed-colours-alpha-as-a-live-reference)
-4. **Math expression:** `"{spacing.base} * 2"` → computed number
-5. **String concatenation:** `"Value: {token.value}px"` → computed string
+4. **Math expression:** `"{spacing.base} * 2"` → computed number. Operators `+ - * / % **`, parentheses, unary signs, and `Math` constants and functions (`Math.round({spacing.base} * 1.5)`), with the precedence and results of JavaScript. Anything else — other names, property access, calls — is an error
+5. **Amount expression:** the second argument of any colour function can be arithmetic: `"alpha({color.primary}, {opacity.hover} * 2)"`. Each reference is first read on the function's scale, by the same rules as a single reference (`8%`, `0.08` and a `COLOR_OPACITY` `8` all give 8 %), then the expression is computed and clamped like a literal. Numbers may carry the function's unit (`50% / 2`, `10deg * 3`); `%` is never remainder here. A single number keeps its strict form, so `alpha({x}, 50)` is still an error. For `alpha()` the base stays linked in Figma, but the opacity is written as a number, since Figma cannot multiply
+6. **String concatenation:** `"Value: {token.value}px"` → computed string
 
 ## Core Workflows
 
@@ -186,7 +191,7 @@ ErrorDisplay shows issues or clears
 ```
 Token value: "alpha({foundation.color.red}, 50%)"
     ↓
-resolver.parseExpression()
+parser.parseExpression()
     ├─ Detects alpha modifier
     └─ Returns AST: { type: 'alpha', tokenPath: '...', alpha: 0.5 }
     ↓
@@ -324,15 +329,15 @@ Two separate TypeScript projects:
 ### Adding New Expression Types
 
 1. Add AST type to `Expression` union in `core/types.ts`
-2. Implement parser in `resolver.parseExpression()`
-3. Implement evaluator in `resolver.resolveExpression()`
+2. Implement parser in `parser.parseExpression()`
+3. Implement evaluator in `resolver.resolveToken()`
 
 
 ## Security Considerations
 
 1. **No External Network Calls** — plugin runs fully offline
 2. **Input Sanitization** — Zod validates all JSON before processing
-3. **Expression Safety** — no `eval()`, all expressions parsed and validated
+3. **Expression Safety** — no `eval()` or `new Function`: math and amount expressions go through a recursive-descent evaluator (`arithmetic.ts`) that accepts only numbers, `{references}`, operators, parentheses and `Math` members, so a value such as `"{x} + figma.root.remove()"` fails for that token instead of running
 4. **Storage Isolation** — `clientStorage` is plugin-scoped, not file-scoped, so `storage.ts` namespaces each entry with a per-file id persisted via `pluginData` on `figma.root`
 5. **Message Validation** — all cross-context messages are typed
 
@@ -427,7 +432,8 @@ end of an alias chain behind it.
   The opacity variable itself imports as `"60%"` rather than `60` unless it has the
   `COLOR_OPACITY` scope: Figma does not require the scope, and without it a bare `60` would
   read as a fraction. Alias chains are followed to the variable holding the number. The
-  catch: such a token can no longer be used in maths (`{opacityToken} * 2`);
+  catch: such a token can no longer be used in number maths (`{gap} * {opacityToken}`); in an
+  amount expression (`alpha({token}, {opacityToken} * 2)`) it still works;
 - literal colour + opacity variable → the flat colour it paints, because `alpha()` needs a
   token reference; the link to the opacity variable is lost;
 - a referenced variable that cannot be resolved locally (a library, a deleted variable) →

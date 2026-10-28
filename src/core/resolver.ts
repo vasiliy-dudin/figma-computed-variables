@@ -3,6 +3,8 @@ import { ResolvedValue, TokenMap, RGBA, ColorModifyFn, AmountValue, Token } from
 import { parseExpression } from './parser';
 import { CircularDependencyError } from './validator';
 import { PATTERNS, COLOR_OPACITY_SCOPE } from './constants';
+import { evaluateArithmetic } from './arithmetic';
+import { evaluateAmountExpression } from './amountExpression';
 
 const toRgb = converter('rgb');
 const toOklch = converter('oklch');
@@ -158,6 +160,11 @@ export function resolveAmount(
 	if (amount.kind === 'literal') {
 		return amount.amount;
 	}
+	if (amount.kind === 'expression') {
+		return evaluateAmountExpression(amount.expression, unit, tokenPath =>
+			resolveAmount({ kind: 'reference', tokenPath }, mode, tokenMap, new Set(visited), unit)
+		);
+	}
 
 	const resolved = resolveToConcreteValue(amount.tokenPath, mode, tokenMap, visited);
 	const raw = String(resolved.value).trim();
@@ -296,11 +303,11 @@ function evaluateMath(
 	tokenMap: TokenMap,
 	visited: Set<string>
 ): number {
-	// Replace token references with their resolved numeric values
-	let resolved = expression;
+	// References are resolved before parsing, so their errors take precedence over syntax errors
+	const referenceValues = new Map<string, number>();
 	const tokenRegex = /\{([^}]+)\}/g;
 	let match;
-	
+
 	while ((match = tokenRegex.exec(expression)) !== null) {
 		const tokenPath = match[1];
 		const tokenValue = resolveToConcreteValue(tokenPath, mode, tokenMap, new Set(visited));
@@ -308,16 +315,14 @@ function evaluateMath(
 		if (typeof tokenValue.value !== 'number') {
 			throw new Error(`Token ${tokenPath} is not a number (found: ${typeof tokenValue.value})`);
 		}
-		
-		// Replace the token reference with its numeric value
-		resolved = resolved.replace(`{${tokenPath}}`, String(tokenValue.value));
+
+		referenceValues.set(tokenPath, tokenValue.value);
 	}
-	
-	// Evaluate the expression using Function constructor (ES2017 compatible)
+
 	try {
-		const result = new Function('return (' + resolved + ')')();
-		
-		if (typeof result !== 'number' || !isFinite(result)) {
+		const result = evaluateArithmetic(expression, referenceValues);
+
+		if (!isFinite(result)) {
 			throw new Error('Result is not a finite number');
 		}
 		

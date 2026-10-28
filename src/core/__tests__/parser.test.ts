@@ -127,6 +127,50 @@ describe('parseExpression — color modifiers', () => {
 	});
 });
 
+describe('parseExpression — expression amounts', () => {
+	const expressions = ['{a} * 2', '({a} + {b}) / 2', '50% / 2', '-{deg}', 'Math.min({a}, 50%)'];
+
+	it.each(expressions)('parses alpha() with amount %j', expression => {
+		expect(parseExpression(`alpha({base}, ${expression})`, 'color')).toEqual({
+			type: 'alpha',
+			tokenPath: 'base',
+			amount: { kind: 'expression', expression },
+		});
+	});
+
+	it.each(['darken', 'lighten', 'saturate', 'desaturate', 'hueShift'] as const)('parses %s() with an expression amount', fn => {
+		expect(parseExpression(`${fn}({base}, {a} * 2)`, 'color')).toEqual({
+			type: 'colorModify',
+			fn,
+			tokenPath: 'base',
+			amount: { kind: 'expression', expression: '{a} * 2' },
+		});
+	});
+
+	it('trims spaces around the expression', () => {
+		expect(parseExpression('alpha({base},   {a} * 2  )', 'color')).toMatchObject({
+			amount: { kind: 'expression', expression: '{a} * 2' },
+		});
+	});
+
+	it('keeps a single literal or reference in its existing form', () => {
+		expect(parseExpression('alpha({base}, 15%)', 'color')).toMatchObject({ amount: { kind: 'literal', amount: 15 } });
+		expect(parseExpression('alpha({base}, {a})', 'color')).toMatchObject({ amount: { kind: 'reference', tokenPath: 'a' } });
+		expect(parseExpression('hueShift({base}, -30deg)', 'color')).toMatchObject({ amount: { kind: 'literal', amount: -30 } });
+	});
+
+	it.each([
+		'alpha({base}, 50)',
+		'alpha({base}, -5%)',
+		'alpha({base}, 50deg)',
+		'darken({base}, 20deg)',
+		'darken({base}, 20px)',
+		'hueShift({base}, 30%)',
+	])('still rejects a single number with a wrong or missing unit: %j', value => {
+		expect(() => parseExpression(value, 'color')).toThrow();
+	});
+});
+
 describe('parseExpression — math', () => {
 	it('parses math expression with token reference', () => {
 		expect(parseExpression('{foundation.spacing.base} * 2', 'number')).toEqual({
@@ -140,6 +184,18 @@ describe('parseExpression — math', () => {
 			type: 'math',
 			expression: '8 + 4',
 		});
+	});
+
+	it('reads a signed number with a unit as a literal, like an unsigned one', () => {
+		expect(parseExpression('-30deg', 'number')).toEqual({ type: 'literal', value: -30 });
+		expect(parseExpression('+30deg', 'number')).toEqual({ type: 'literal', value: 30 });
+		expect(parseExpression('30deg', 'number')).toEqual({ type: 'literal', value: 30 });
+		expect(parseExpression('-8%', 'number')).toEqual({ type: 'literal', value: '-8%' });
+	});
+
+	it('still reads a sign without a unit, or next to other terms, as math', () => {
+		expect(parseExpression('-30', 'number')).toEqual({ type: 'math', expression: '-30' });
+		expect(parseExpression('{a} - 30deg', 'number')).toEqual({ type: 'math', expression: '{a} - 30deg' });
 	});
 });
 

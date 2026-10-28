@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi, afterEach } from 'vitest';
 import { converter } from 'culori';
 import { resolveToken, hexToRgba, rgbaToHex } from '../resolver.ts';
 import { createTokenMap } from '../tokenUtils.ts';
@@ -401,6 +401,23 @@ describe('resolveToken — math expressions', () => {
 		};
 		const result = resolveToken('computed.calc', 'light', makeMap(json));
 		expect(result).toEqual({ isAlias: false, value: 14 });
+	});
+
+	describe('code in a math value', () => {
+		afterEach(() => {
+			vi.unstubAllGlobals();
+		});
+
+		it('fails for that token without running the code', () => {
+			const remove = vi.fn();
+			vi.stubGlobal('figma', { root: { remove } });
+			const json: TokenJSON = {
+				...singleColorJson,
+				computed: { attack: { $type: 'number', $value: '{foundation.spacing.base} + figma.root.remove()' } },
+			};
+			expect(() => resolveToken('computed.attack', 'light', makeMap(json))).toThrow('Math evaluation failed');
+			expect(remove).not.toHaveBeenCalled();
+		});
 	});
 });
 

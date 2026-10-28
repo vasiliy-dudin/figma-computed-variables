@@ -1,0 +1,4895 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`regression baseline > EXAMPLE_TOKEN_JSON 1`] = `
+{
+  "tokens": {
+    "foundation.color.accent :: dark": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "oklch(0.75 0.18 250)",
+        },
+      },
+    },
+    "foundation.color.accent :: light": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "oklch(0.65 0.2 250)",
+        },
+      },
+    },
+    "foundation.color.neutral :: dark": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "oklch(0.4 0.02 220)",
+        },
+      },
+    },
+    "foundation.color.neutral :: light": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "oklch(0.85 0.02 220)",
+        },
+      },
+    },
+    "foundation.color.primary :: dark": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "#3388FF",
+        },
+      },
+    },
+    "foundation.color.primary :: light": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "#0066FF",
+        },
+      },
+    },
+    "foundation.color.surface :: dark": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "#1A1A1A",
+        },
+      },
+    },
+    "foundation.color.surface :: light": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "#FFFFFF",
+        },
+      },
+    },
+    "foundation.opacity.subtle :: dark": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 0.12,
+        },
+      },
+    },
+    "foundation.opacity.subtle :: light": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 0.12,
+        },
+      },
+    },
+    "foundation.spacing.base :: dark": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 8,
+        },
+      },
+    },
+    "foundation.spacing.base :: light": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 8,
+        },
+      },
+    },
+    "semantic.button.background :: dark": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": true,
+          "targetPath": "foundation.color.primary",
+        },
+      },
+    },
+    "semantic.button.background :: light": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": true,
+          "targetPath": "foundation.color.primary",
+        },
+      },
+    },
+    "semantic.button.backgroundActive :: dark": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 0.8950262036355964,
+            "g": 0.4369247688650549,
+            "r": 0.08183870064446377,
+          },
+        },
+      },
+    },
+    "semantic.button.backgroundActive :: light": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 0.8822276042792658,
+            "g": 0.28449151721632665,
+            "r": 0,
+          },
+        },
+      },
+    },
+    "semantic.button.backgroundGhost :: dark": {
+      "alphaIntent": {
+        "eligible": true,
+        "opacityTokenPath": null,
+        "percent": 12,
+        "targetPath": "foundation.color.primary",
+      },
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 0.12,
+            "b": 1,
+            "g": 0.5333333333333333,
+            "r": 0.2,
+          },
+        },
+      },
+    },
+    "semantic.button.backgroundGhost :: light": {
+      "alphaIntent": {
+        "eligible": true,
+        "opacityTokenPath": null,
+        "percent": 18,
+        "targetPath": "foundation.color.primary",
+      },
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 0.18,
+            "b": 1,
+            "g": 0.4,
+            "r": 0,
+          },
+        },
+      },
+    },
+    "semantic.button.backgroundHover :: dark": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 1,
+            "g": 0.5698785327908361,
+            "r": 0.23839335086950914,
+          },
+        },
+      },
+    },
+    "semantic.button.backgroundHover :: light": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 1,
+            "g": 0.4695719762827452,
+            "r": 0.11235380545103582,
+          },
+        },
+      },
+    },
+    "semantic.button.backgroundSubtle :: dark": {
+      "alphaIntent": {
+        "eligible": true,
+        "opacityTokenPath": null,
+        "percent": 12,
+        "targetPath": "foundation.color.primary",
+      },
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 0.12,
+            "b": 1,
+            "g": 0.5333333333333333,
+            "r": 0.2,
+          },
+        },
+      },
+    },
+    "semantic.button.backgroundSubtle :: light": {
+      "alphaIntent": {
+        "eligible": true,
+        "opacityTokenPath": null,
+        "percent": 12,
+        "targetPath": "foundation.color.primary",
+      },
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 0.12,
+            "b": 1,
+            "g": 0.4,
+            "r": 0,
+          },
+        },
+      },
+    },
+    "semantic.button.padding :: dark": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 16,
+        },
+      },
+    },
+    "semantic.button.padding :: light": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 16,
+        },
+      },
+    },
+    "semantic.status.successBase :: dark": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "oklch(0.62 0.13 150)",
+        },
+      },
+    },
+    "semantic.status.successBase :: light": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "oklch(0.73 0.15 150)",
+        },
+      },
+    },
+    "semantic.status.successOverlay :: dark": {
+      "alphaIntent": {
+        "eligible": true,
+        "opacityTokenPath": null,
+        "percent": 35,
+        "targetPath": "semantic.status.successBase",
+      },
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 0.35,
+            "b": 0.3546792182052774,
+            "g": 0.6099002191193024,
+            "r": 0.25810885424237506,
+          },
+        },
+      },
+    },
+    "semantic.status.successOverlay :: light": {
+      "alphaIntent": {
+        "eligible": true,
+        "opacityTokenPath": null,
+        "percent": 40,
+        "targetPath": "semantic.status.successBase",
+      },
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 0.4,
+            "b": 0.4522833706330918,
+            "g": 0.7586991185900382,
+            "r": 0.3392207904058159,
+          },
+        },
+      },
+    },
+    "semantic.text.accent :: dark": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 0.9054275411874096,
+            "g": 0.7472748969355077,
+            "r": 0,
+          },
+        },
+      },
+    },
+    "semantic.text.accent :: light": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 1,
+            "g": 0.480513964661932,
+            "r": 0.5008808415832701,
+          },
+        },
+      },
+    },
+    "semantic.text.muted :: dark": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 0.885372916476007,
+            "g": 0.6933039759526483,
+            "r": 0.4416678363731089,
+          },
+        },
+      },
+    },
+    "semantic.text.muted :: light": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 0.8512118447840511,
+            "g": 0.5782382883901983,
+            "r": 0.31969363174560744,
+          },
+        },
+      },
+    },
+    "semantic.text.primary :: dark": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": true,
+          "targetPath": "foundation.color.neutral",
+        },
+      },
+    },
+    "semantic.text.primary :: light": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": true,
+          "targetPath": "foundation.color.neutral",
+        },
+      },
+    },
+    "semantic.text.primaryStrong :: dark": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 1,
+            "g": 0.7012765960420505,
+            "r": 0.16590374827901452,
+          },
+        },
+      },
+    },
+    "semantic.text.primaryStrong :: light": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 1,
+            "g": 0.5653164690814678,
+            "r": 0,
+          },
+        },
+      },
+    },
+  },
+  "validationErrors": [],
+}
+`;
+
+exports[`regression baseline > colour functions 1`] = `
+{
+  "tokens": {
+    "alpha.aliasAmountRef :: (all modes)": {
+      "alphaIntent": {
+        "eligible": true,
+        "opacityTokenPath": "amounts.aliasPercent",
+        "percent": 8,
+        "targetPath": "base.blue",
+      },
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 0.08,
+            "b": 1,
+            "g": 0.4,
+            "r": 0,
+          },
+        },
+      },
+    },
+    "alpha.decimalRef :: (all modes)": {
+      "alphaIntent": {
+        "eligible": true,
+        "opacityTokenPath": null,
+        "percent": 8,
+        "targetPath": "base.blue",
+      },
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 0.08,
+            "b": 1,
+            "g": 0.4,
+            "r": 0,
+          },
+        },
+      },
+    },
+    "alpha.fraction :: (all modes)": {
+      "alphaIntent": {
+        "eligible": true,
+        "opacityTokenPath": null,
+        "percent": 12.5,
+        "targetPath": "base.blue",
+      },
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 0.125,
+            "b": 1,
+            "g": 0.4,
+            "r": 0,
+          },
+        },
+      },
+    },
+    "alpha.literal :: (all modes)": {
+      "alphaIntent": {
+        "eligible": true,
+        "opacityTokenPath": null,
+        "percent": 50,
+        "targetPath": "base.blue",
+      },
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 0.5,
+            "b": 1,
+            "g": 0.4,
+            "r": 0,
+          },
+        },
+      },
+    },
+    "alpha.overAlias :: (all modes)": {
+      "alphaIntent": {
+        "eligible": true,
+        "opacityTokenPath": null,
+        "percent": 40,
+        "targetPath": "base.alias",
+      },
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 0.4,
+            "b": 1,
+            "g": 0.4,
+            "r": 0,
+          },
+        },
+      },
+    },
+    "alpha.overAlpha :: (all modes)": {
+      "alphaIntent": {
+        "eligible": true,
+        "opacityTokenPath": null,
+        "percent": 25,
+        "targetPath": "base.blue",
+      },
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 0.25,
+            "b": 1,
+            "g": 0.4,
+            "r": 0,
+          },
+        },
+      },
+    },
+    "alpha.overOklch :: (all modes)": {
+      "alphaIntent": {
+        "eligible": true,
+        "opacityTokenPath": null,
+        "percent": 30,
+        "targetPath": "base.oklch",
+      },
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 0.3,
+            "b": 1,
+            "g": 0.5692615817582858,
+            "r": 0,
+          },
+        },
+      },
+    },
+    "alpha.overRange :: (all modes)": {
+      "alphaIntent": {
+        "eligible": true,
+        "opacityTokenPath": null,
+        "percent": 150,
+        "targetPath": "base.blue",
+      },
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 1,
+            "g": 0.4,
+            "r": 0,
+          },
+        },
+      },
+    },
+    "alpha.overRangeMidChain :: (all modes)": {
+      "alphaIntent": {
+        "eligible": true,
+        "opacityTokenPath": null,
+        "percent": 50,
+        "targetPath": "alpha.overRange",
+      },
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 0.5,
+            "b": 1,
+            "g": 0.4,
+            "r": 0,
+          },
+        },
+      },
+    },
+    "alpha.overRgba :: (all modes)": {
+      "alphaIntent": {
+        "eligible": false,
+        "opacityTokenPath": null,
+        "percent": 50,
+        "targetPath": "base.rgba",
+      },
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 0.25,
+            "b": 0,
+            "g": 0.4,
+            "r": 1,
+          },
+        },
+      },
+    },
+    "alpha.overTranslucent :: (all modes)": {
+      "alphaIntent": {
+        "eligible": false,
+        "opacityTokenPath": null,
+        "percent": 50,
+        "targetPath": "base.translucent",
+      },
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 0.25098039215686274,
+            "b": 1,
+            "g": 0.4,
+            "r": 0,
+          },
+        },
+      },
+    },
+    "alpha.perMode :: dark": {
+      "alphaIntent": {
+        "eligible": true,
+        "opacityTokenPath": null,
+        "percent": 30,
+        "targetPath": "base.modes",
+      },
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 0.3,
+            "b": 1,
+            "g": 0.5333333333333333,
+            "r": 0.2,
+          },
+        },
+      },
+    },
+    "alpha.perMode :: light": {
+      "alphaIntent": {
+        "eligible": true,
+        "opacityTokenPath": "amounts.modes",
+        "percent": 10,
+        "targetPath": "base.modes",
+      },
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 0.1,
+            "b": 1,
+            "g": 0.4,
+            "r": 0,
+          },
+        },
+      },
+    },
+    "alpha.percentRef :: (all modes)": {
+      "alphaIntent": {
+        "eligible": true,
+        "opacityTokenPath": "amounts.percent",
+        "percent": 8,
+        "targetPath": "base.blue",
+      },
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 0.08,
+            "b": 1,
+            "g": 0.4,
+            "r": 0,
+          },
+        },
+      },
+    },
+    "alpha.scopedPercentRef :: (all modes)": {
+      "alphaIntent": {
+        "eligible": true,
+        "opacityTokenPath": "amounts.scopedPercent",
+        "percent": 8,
+        "targetPath": "base.blue",
+      },
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 0.08,
+            "b": 1,
+            "g": 0.4,
+            "r": 0,
+          },
+        },
+      },
+    },
+    "alpha.scopedRef :: (all modes)": {
+      "alphaIntent": {
+        "eligible": true,
+        "opacityTokenPath": "amounts.scoped",
+        "percent": 8,
+        "targetPath": "base.blue",
+      },
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 0.08,
+            "b": 1,
+            "g": 0.4,
+            "r": 0,
+          },
+        },
+      },
+    },
+    "alpha.threeLevels :: (all modes)": {
+      "alphaIntent": {
+        "eligible": true,
+        "opacityTokenPath": null,
+        "percent": 12.5,
+        "targetPath": "base.blue",
+      },
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 0.125,
+            "b": 1,
+            "g": 0.4,
+            "r": 0,
+          },
+        },
+      },
+    },
+    "alpha.zero :: (all modes)": {
+      "alphaIntent": {
+        "eligible": true,
+        "opacityTokenPath": null,
+        "percent": 0,
+        "targetPath": "base.blue",
+      },
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 0,
+            "b": 1,
+            "g": 0.4,
+            "r": 0,
+          },
+        },
+      },
+    },
+    "amounts.aliasPercent :: (all modes)": {
+      "resolved": {
+        "result": {
+          "isAlias": true,
+          "targetPath": "amounts.percent",
+        },
+      },
+    },
+    "amounts.decimal :: (all modes)": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 0.08,
+        },
+      },
+    },
+    "amounts.degrees :: (all modes)": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 30,
+        },
+      },
+    },
+    "amounts.modes :: dark": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "20%",
+        },
+      },
+    },
+    "amounts.modes :: light": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "10%",
+        },
+      },
+    },
+    "amounts.negativeDegrees :: (all modes)": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": -30,
+        },
+      },
+    },
+    "amounts.negativeDegreesString :: (all modes)": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "-30deg",
+        },
+      },
+    },
+    "amounts.negativePlain :: (all modes)": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": -30,
+        },
+      },
+    },
+    "amounts.percent :: (all modes)": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "8%",
+        },
+      },
+    },
+    "amounts.plainDegrees :: (all modes)": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 30,
+        },
+      },
+    },
+    "amounts.scoped :: (all modes)": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 8,
+        },
+      },
+    },
+    "amounts.scopedPercent :: (all modes)": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "8%",
+        },
+      },
+    },
+    "base.alias :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": true,
+          "targetPath": "base.blue",
+        },
+      },
+    },
+    "base.blue :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "#0066FF",
+        },
+      },
+    },
+    "base.gray :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "#808080",
+        },
+      },
+    },
+    "base.modes :: dark": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "#3388FF",
+        },
+      },
+    },
+    "base.modes :: light": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "#0066FF",
+        },
+      },
+    },
+    "base.oklch :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "oklch(0.65 0.2 250)",
+        },
+      },
+    },
+    "base.rgb :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "rgb(255, 102, 0)",
+        },
+      },
+    },
+    "base.rgba :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "rgba(255, 102, 0, 0.5)",
+        },
+      },
+    },
+    "base.translucent :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "#0066FF80",
+        },
+      },
+    },
+    "modify.darken :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 0.843351157264288,
+            "g": 0.24384954613522752,
+            "r": 0,
+          },
+        },
+      },
+    },
+    "modify.darkenDecimalRef :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 0.9369760883454463,
+            "g": 0.3391951762893565,
+            "r": 0,
+          },
+        },
+      },
+    },
+    "modify.darkenOklch :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 0.8231666217301148,
+            "g": 0.4060257212632971,
+            "r": 0,
+          },
+        },
+      },
+    },
+    "modify.darkenOverRange :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 0.25053261864063436,
+            "g": 0,
+            "r": 0.06739924709761022,
+          },
+        },
+      },
+    },
+    "modify.darkenRef :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 0.9369760883454463,
+            "g": 0.3391951762893565,
+            "r": 0,
+          },
+        },
+      },
+    },
+    "modify.desaturate :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 0.8512118447840511,
+            "g": 0.5782382883901983,
+            "r": 0.31969363174560744,
+          },
+        },
+      },
+    },
+    "modify.desaturateFull :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 0.5628956454831866,
+            "g": 0.5628956454831866,
+            "r": 0.5628956454831866,
+          },
+        },
+      },
+    },
+    "modify.hueShift :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 0.9573074801177998,
+            "g": 0.27964419914700006,
+            "r": 0.4903852310919861,
+          },
+        },
+      },
+    },
+    "modify.hueShiftDegreesRef :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 0.9573074801177998,
+            "g": 0.27964419914700006,
+            "r": 0.4903852310919861,
+          },
+        },
+      },
+    },
+    "modify.hueShiftGray :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 0.5019607843137255,
+            "g": 0.5019607843137255,
+            "r": 0.5019607843137255,
+          },
+        },
+      },
+    },
+    "modify.hueShiftNegative :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 0.9266589834561014,
+            "g": 0.49671000610277677,
+            "r": 0,
+          },
+        },
+      },
+    },
+    "modify.hueShiftNegativePlainRef :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 0.9008904034806662,
+            "g": 0.5139708126905993,
+            "r": 0,
+          },
+        },
+      },
+    },
+    "modify.hueShiftNegativeRef :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 0.9008904034806662,
+            "g": 0.5139708126905993,
+            "r": 0,
+          },
+        },
+      },
+    },
+    "modify.hueShiftNegativeStringRef :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 0.9008904034806662,
+            "g": 0.5139708126905993,
+            "r": 0,
+          },
+        },
+      },
+    },
+    "modify.hueShiftOverRange :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 0.9999999999999999,
+            "g": 0.4000000000000009,
+            "r": 0,
+          },
+        },
+      },
+    },
+    "modify.hueShiftPlainRef :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 0.9573074801177998,
+            "g": 0.27964419914700006,
+            "r": 0.4903852310919861,
+          },
+        },
+      },
+    },
+    "modify.lighten :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 1,
+            "g": 0.5156848329437559,
+            "r": 0.16510002367799562,
+          },
+        },
+      },
+    },
+    "modify.lightenRgb :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 0.10637891864837104,
+            "g": 0.4400464383733608,
+            "r": 1,
+          },
+        },
+      },
+    },
+    "modify.lightenScopedRef :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 1,
+            "g": 0.4464580601440212,
+            "r": 0.0818203677719975,
+          },
+        },
+      },
+    },
+    "modify.overAlias :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 1,
+            "g": 0.5156848329437559,
+            "r": 0.16510002367799562,
+          },
+        },
+      },
+    },
+    "modify.overAlpha :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 0.5,
+            "b": 0.843351157264288,
+            "g": 0.24384954613522752,
+            "r": 0,
+          },
+        },
+      },
+    },
+    "modify.perMode :: dark": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 1,
+            "g": 0.6250507314653748,
+            "r": 0.29413846764606627,
+          },
+        },
+      },
+    },
+    "modify.perMode :: light": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 0.9212956055842529,
+            "g": 0.3237532792293923,
+            "r": 0,
+          },
+        },
+      },
+    },
+    "modify.saturate :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 1,
+            "g": 0.5579518546531776,
+            "r": 0,
+          },
+        },
+      },
+    },
+    "modify.saturateRef :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 1,
+            "g": 0.5653164690814678,
+            "r": 0,
+          },
+        },
+      },
+    },
+  },
+  "validationErrors": [],
+}
+`;
+
+exports[`regression baseline > docs examples 1`] = `
+{
+  "tokens": {
+    "color.alias :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": true,
+          "targetPath": "color.primary",
+        },
+      },
+    },
+    "color.alpha :: (all modes)": {
+      "alphaIntent": {
+        "eligible": true,
+        "opacityTokenPath": null,
+        "percent": 50,
+        "targetPath": "color.primary",
+      },
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 0.5,
+            "b": 1,
+            "g": 0.4,
+            "r": 0,
+          },
+        },
+      },
+    },
+    "color.darken :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 0.766179415206986,
+            "g": 0.1537271562779208,
+            "r": 0,
+          },
+        },
+      },
+    },
+    "color.desaturate :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 0.6556464651932953,
+            "g": 0.46163649446035254,
+            "r": 0.34834802927628084,
+          },
+        },
+      },
+    },
+    "color.hueShift :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 0.9573074801177998,
+            "g": 0.27964419914700006,
+            "r": 0.4903852310919861,
+          },
+        },
+      },
+    },
+    "color.lighten :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 1,
+            "g": 0.5732748255828012,
+            "r": 0.22455674236351109,
+          },
+        },
+      },
+    },
+    "color.primary :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "#0066FF",
+        },
+      },
+    },
+    "color.saturate :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 1,
+            "g": 0.23167836745203363,
+            "r": 0,
+          },
+        },
+      },
+    },
+    "font.family :: (all modes)": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "Inter",
+        },
+      },
+    },
+    "font.stack :: (all modes)": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "Inter, sans-serif",
+        },
+      },
+    },
+    "spacing._base :: (all modes)": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 8,
+        },
+      },
+    },
+    "spacing.base :: (all modes)": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 8,
+        },
+      },
+    },
+    "spacing.double :: (all modes)": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 16,
+        },
+      },
+    },
+    "spacing.lg :: (all modes)": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 24,
+        },
+      },
+    },
+    "spacing.md :: (all modes)": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 16,
+        },
+      },
+    },
+    "spacing.sm :: (all modes)": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 12,
+        },
+      },
+    },
+    "spacing.xl :: (all modes)": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 32,
+        },
+      },
+    },
+    "spacing.xs :: (all modes)": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 8,
+        },
+      },
+    },
+  },
+  "validationErrors": [],
+}
+`;
+
+exports[`regression baseline > errors 1`] = `
+{
+  "tokens": {
+    "base.amount :: (all modes)": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "8%",
+        },
+      },
+    },
+    "base.blue :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "#0066FF",
+        },
+      },
+    },
+    "base.cycleA :: (all modes)": {
+      "resolved": {
+        "error": "Circular dependency: base.cycleA → base.cycleB → base.cycleA",
+      },
+    },
+    "base.cycleB :: (all modes)": {
+      "resolved": {
+        "error": "Circular dependency: base.cycleB → base.cycleA → base.cycleB",
+      },
+    },
+    "base.eight :: (all modes)": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 8,
+        },
+      },
+    },
+    "base.percentNumber :: (all modes)": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "50%",
+        },
+      },
+    },
+    "base.word :: (all modes)": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "abc",
+        },
+      },
+    },
+    "errors.alphaDegrees :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "error": "Invalid alpha() syntax: use a percentage (alpha({token}, 15%)), a token reference (alpha({token}, {opacityToken})) or an expression (alpha({token}, {opacityToken} * 2)).",
+      },
+    },
+    "errors.alphaExpression :: (all modes)": {
+      "alphaIntent": {
+        "eligible": true,
+        "opacityTokenPath": null,
+        "percent": 16,
+        "targetPath": "base.blue",
+      },
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 0.16,
+            "b": 1,
+            "g": 0.4,
+            "r": 0,
+          },
+        },
+      },
+    },
+    "errors.alphaMissingAmount :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "error": "Token not found: base.missing",
+      },
+    },
+    "errors.alphaMissingBase :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "error": "Token not found: base.missing",
+      },
+    },
+    "errors.alphaNoUnit :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "error": "Invalid alpha() syntax: use a percentage (alpha({token}, 15%)), a token reference (alpha({token}, {opacityToken})) or an expression (alpha({token}, {opacityToken} * 2)).",
+      },
+    },
+    "errors.alphaWordRef :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "error": "Invalid amount from token reference {base.word}: expected a percentage (e.g. 15%) or a decimal (e.g. 0.15), found "abc".",
+      },
+    },
+    "errors.danglingOperator :: (all modes)": {
+      "resolved": {
+        "error": "Math evaluation failed: The expression ends too early.",
+      },
+    },
+    "errors.darkenDegrees :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "error": "Invalid color modifier syntax: use percentages (10%) / degrees (30deg) depending on the function, a token reference such as darken({token}, {amountToken}), or an expression such as darken({token}, {amountToken} * 2).",
+      },
+    },
+    "errors.darkenExpression :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 0.8822276042792658,
+            "g": 0.28449151721632665,
+            "r": 0,
+          },
+        },
+      },
+    },
+    "errors.divisionByZero :: (all modes)": {
+      "resolved": {
+        "error": "Math evaluation failed: Result is not a finite number",
+      },
+    },
+    "errors.hueShiftPercent :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "error": "Invalid color modifier syntax: use percentages (10%) / degrees (30deg) depending on the function, a token reference such as darken({token}, {amountToken}), or an expression such as darken({token}, {amountToken} * 2).",
+      },
+    },
+    "errors.mathOnPercent :: (all modes)": {
+      "resolved": {
+        "error": "Token base.percentNumber is not a number (found: string)",
+      },
+    },
+    "errors.mathOnString :: (all modes)": {
+      "resolved": {
+        "error": "Token base.word is not a number (found: string)",
+      },
+    },
+    "errors.missingRef :: (all modes)": {
+      "resolved": {
+        "error": "Token not found: base.missing",
+      },
+    },
+    "errors.tightDoubleMinus :: (all modes)": {
+      "resolved": {
+        "error": "Math evaluation failed: Unsupported operator "--" at position 2; put a space or parentheses between the signs.",
+      },
+    },
+    "errors.unknownFunction :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "mix({base.blue}, 50%)",
+        },
+      },
+    },
+    "errors.unknownIdentifier :: (all modes)": {
+      "resolved": {
+        "error": "Math evaluation failed: Unknown name "foo". Only numbers, {token} references and Math functions are allowed.",
+      },
+    },
+  },
+  "validationErrors": [
+    {
+      "collection": "errors",
+      "errorType": "reference",
+      "message": "Reference "{base.missing}" does not exist",
+      "mode": undefined,
+      "token": "alphaMissingBase",
+    },
+    {
+      "collection": "errors",
+      "errorType": "reference",
+      "message": "Reference "{base.missing}" does not exist",
+      "mode": undefined,
+      "token": "alphaMissingAmount",
+    },
+    {
+      "collection": "errors",
+      "errorType": "reference",
+      "message": "Reference "{base.missing}" does not exist",
+      "mode": undefined,
+      "token": "missingRef",
+    },
+    {
+      "collection": "errors",
+      "errorType": "syntax",
+      "message": "alpha() requires a percentage amount (alpha({token}, 15%)), a token reference (alpha({token}, {opacityToken})) or an expression (alpha({token}, {opacityToken} * 2)).",
+      "mode": undefined,
+      "token": "alphaNoUnit",
+    },
+    {
+      "collection": "errors",
+      "errorType": "syntax",
+      "message": "alpha() requires a percentage amount (alpha({token}, 15%)), a token reference (alpha({token}, {opacityToken})) or an expression (alpha({token}, {opacityToken} * 2)).",
+      "mode": undefined,
+      "token": "alphaDegrees",
+    },
+    {
+      "collection": "errors",
+      "errorType": "syntax",
+      "message": "Color modifiers require percentages (10%) or degrees (30deg) depending on the function, a token reference such as darken({token}, {amountToken}), or an expression such as darken({token}, {amountToken} * 2).",
+      "mode": undefined,
+      "token": "darkenDegrees",
+    },
+    {
+      "collection": "errors",
+      "errorType": "syntax",
+      "message": "Color modifiers require percentages (10%) or degrees (30deg) depending on the function, a token reference such as darken({token}, {amountToken}), or an expression such as darken({token}, {amountToken} * 2).",
+      "mode": undefined,
+      "token": "hueShiftPercent",
+    },
+    {
+      "collection": "base",
+      "errorType": "circular",
+      "message": "Circular dependency: base.cycleA → base.cycleB → base.cycleA",
+      "mode": undefined,
+      "token": "cycleA",
+    },
+    {
+      "collection": "base",
+      "errorType": "circular",
+      "message": "Circular dependency: base.cycleB → base.cycleA → base.cycleB",
+      "mode": undefined,
+      "token": "cycleB",
+    },
+  ],
+}
+`;
+
+exports[`regression baseline > generateExampleJSON {"modeCount":"1","includeDescription":false,"includeScope":false} 1`] = `
+{
+  "tokens": {
+    "foundation.color.accent :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "oklch(0.65 0.2 250)",
+        },
+      },
+    },
+    "foundation.color.accentSubtle :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "oklch(0.65 0.2 250 / 0.15)",
+        },
+      },
+    },
+    "foundation.color.neutral :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "oklch(0.85 0.02 220)",
+        },
+      },
+    },
+    "foundation.color.primary :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "#0066FF",
+        },
+      },
+    },
+    "foundation.color.surface :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "#FFFFFF",
+        },
+      },
+    },
+    "foundation.opacity.subtle :: (all modes)": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 0.12,
+        },
+      },
+    },
+    "foundation.spacing.base :: (all modes)": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 8,
+        },
+      },
+    },
+    "semantic.color.background :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": true,
+          "targetPath": "color.surface",
+        },
+      },
+    },
+    "semantic.color.interactive :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": true,
+          "targetPath": "color.primary",
+        },
+      },
+    },
+    "semantic.color.interactiveActive :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 0.8822276042792658,
+            "g": 0.28449151721632665,
+            "r": 0,
+          },
+        },
+      },
+    },
+    "semantic.color.interactiveHover :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 1,
+            "g": 0.4695719762827452,
+            "r": 0.11235380545103582,
+          },
+        },
+      },
+    },
+    "semantic.color.interactiveMuted :: (all modes)": {
+      "alphaIntent": {
+        "eligible": true,
+        "opacityTokenPath": null,
+        "percent": 18,
+        "targetPath": "color.primary",
+      },
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 0.18,
+            "b": 1,
+            "g": 0.4,
+            "r": 0,
+          },
+        },
+      },
+    },
+    "semantic.color.interactiveSubtle :: (all modes)": {
+      "alphaIntent": {
+        "eligible": true,
+        "opacityTokenPath": null,
+        "percent": 12,
+        "targetPath": "color.primary",
+      },
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 0.12,
+            "b": 1,
+            "g": 0.4,
+            "r": 0,
+          },
+        },
+      },
+    },
+    "semantic.color.statusSuccess :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "oklch(0.73 0.15 150)",
+        },
+      },
+    },
+    "semantic.color.statusSuccessOverlay :: (all modes)": {
+      "alphaIntent": {
+        "eligible": true,
+        "opacityTokenPath": null,
+        "percent": 40,
+        "targetPath": "color.statusSuccess",
+      },
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 0.4,
+            "b": 0.4522833706330918,
+            "g": 0.7586991185900382,
+            "r": 0.3392207904058159,
+          },
+        },
+      },
+    },
+    "semantic.color.textAccent :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 1,
+            "g": 0.480513964661932,
+            "r": 0.5008808415832701,
+          },
+        },
+      },
+    },
+    "semantic.color.textMuted :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 0.8512118447840511,
+            "g": 0.5782382883901983,
+            "r": 0.31969363174560744,
+          },
+        },
+      },
+    },
+    "semantic.color.textPrimary :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": true,
+          "targetPath": "color.neutral",
+        },
+      },
+    },
+    "semantic.spacing.lg :: (all modes)": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 24,
+        },
+      },
+    },
+    "semantic.spacing.md :: (all modes)": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 16,
+        },
+      },
+    },
+  },
+  "validationErrors": [],
+}
+`;
+
+exports[`regression baseline > generateExampleJSON {"modeCount":"1","includeDescription":false,"includeScope":true} 1`] = `
+{
+  "tokens": {
+    "foundation.color.accent :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "oklch(0.65 0.2 250)",
+        },
+      },
+    },
+    "foundation.color.accentSubtle :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "oklch(0.65 0.2 250 / 0.15)",
+        },
+      },
+    },
+    "foundation.color.neutral :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "oklch(0.85 0.02 220)",
+        },
+      },
+    },
+    "foundation.color.primary :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "#0066FF",
+        },
+      },
+    },
+    "foundation.color.surface :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "#FFFFFF",
+        },
+      },
+    },
+    "foundation.opacity.subtle :: (all modes)": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 0.12,
+        },
+      },
+    },
+    "foundation.spacing.base :: (all modes)": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 8,
+        },
+      },
+    },
+    "semantic.color.background :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": true,
+          "targetPath": "color.surface",
+        },
+      },
+    },
+    "semantic.color.interactive :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": true,
+          "targetPath": "color.primary",
+        },
+      },
+    },
+    "semantic.color.interactiveActive :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 0.8822276042792658,
+            "g": 0.28449151721632665,
+            "r": 0,
+          },
+        },
+      },
+    },
+    "semantic.color.interactiveHover :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 1,
+            "g": 0.4695719762827452,
+            "r": 0.11235380545103582,
+          },
+        },
+      },
+    },
+    "semantic.color.interactiveMuted :: (all modes)": {
+      "alphaIntent": {
+        "eligible": true,
+        "opacityTokenPath": null,
+        "percent": 18,
+        "targetPath": "color.primary",
+      },
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 0.18,
+            "b": 1,
+            "g": 0.4,
+            "r": 0,
+          },
+        },
+      },
+    },
+    "semantic.color.interactiveSubtle :: (all modes)": {
+      "alphaIntent": {
+        "eligible": true,
+        "opacityTokenPath": null,
+        "percent": 12,
+        "targetPath": "color.primary",
+      },
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 0.12,
+            "b": 1,
+            "g": 0.4,
+            "r": 0,
+          },
+        },
+      },
+    },
+    "semantic.color.statusSuccess :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "oklch(0.73 0.15 150)",
+        },
+      },
+    },
+    "semantic.color.statusSuccessOverlay :: (all modes)": {
+      "alphaIntent": {
+        "eligible": true,
+        "opacityTokenPath": null,
+        "percent": 40,
+        "targetPath": "color.statusSuccess",
+      },
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 0.4,
+            "b": 0.4522833706330918,
+            "g": 0.7586991185900382,
+            "r": 0.3392207904058159,
+          },
+        },
+      },
+    },
+    "semantic.color.textAccent :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 1,
+            "g": 0.480513964661932,
+            "r": 0.5008808415832701,
+          },
+        },
+      },
+    },
+    "semantic.color.textMuted :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 0.8512118447840511,
+            "g": 0.5782382883901983,
+            "r": 0.31969363174560744,
+          },
+        },
+      },
+    },
+    "semantic.color.textPrimary :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": true,
+          "targetPath": "color.neutral",
+        },
+      },
+    },
+    "semantic.spacing.lg :: (all modes)": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 24,
+        },
+      },
+    },
+    "semantic.spacing.md :: (all modes)": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 16,
+        },
+      },
+    },
+  },
+  "validationErrors": [],
+}
+`;
+
+exports[`regression baseline > generateExampleJSON {"modeCount":"1","includeDescription":true,"includeScope":false} 1`] = `
+{
+  "tokens": {
+    "foundation.color.accent :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "oklch(0.65 0.2 250)",
+        },
+      },
+    },
+    "foundation.color.accentSubtle :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "oklch(0.65 0.2 250 / 0.15)",
+        },
+      },
+    },
+    "foundation.color.neutral :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "oklch(0.85 0.02 220)",
+        },
+      },
+    },
+    "foundation.color.primary :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "#0066FF",
+        },
+      },
+    },
+    "foundation.color.surface :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "#FFFFFF",
+        },
+      },
+    },
+    "foundation.opacity.subtle :: (all modes)": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 0.12,
+        },
+      },
+    },
+    "foundation.spacing.base :: (all modes)": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 8,
+        },
+      },
+    },
+    "semantic.color.background :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": true,
+          "targetPath": "color.surface",
+        },
+      },
+    },
+    "semantic.color.interactive :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": true,
+          "targetPath": "color.primary",
+        },
+      },
+    },
+    "semantic.color.interactiveActive :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 0.8822276042792658,
+            "g": 0.28449151721632665,
+            "r": 0,
+          },
+        },
+      },
+    },
+    "semantic.color.interactiveHover :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 1,
+            "g": 0.4695719762827452,
+            "r": 0.11235380545103582,
+          },
+        },
+      },
+    },
+    "semantic.color.interactiveMuted :: (all modes)": {
+      "alphaIntent": {
+        "eligible": true,
+        "opacityTokenPath": null,
+        "percent": 18,
+        "targetPath": "color.primary",
+      },
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 0.18,
+            "b": 1,
+            "g": 0.4,
+            "r": 0,
+          },
+        },
+      },
+    },
+    "semantic.color.interactiveSubtle :: (all modes)": {
+      "alphaIntent": {
+        "eligible": true,
+        "opacityTokenPath": null,
+        "percent": 12,
+        "targetPath": "color.primary",
+      },
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 0.12,
+            "b": 1,
+            "g": 0.4,
+            "r": 0,
+          },
+        },
+      },
+    },
+    "semantic.color.statusSuccess :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "oklch(0.73 0.15 150)",
+        },
+      },
+    },
+    "semantic.color.statusSuccessOverlay :: (all modes)": {
+      "alphaIntent": {
+        "eligible": true,
+        "opacityTokenPath": null,
+        "percent": 40,
+        "targetPath": "color.statusSuccess",
+      },
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 0.4,
+            "b": 0.4522833706330918,
+            "g": 0.7586991185900382,
+            "r": 0.3392207904058159,
+          },
+        },
+      },
+    },
+    "semantic.color.textAccent :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 1,
+            "g": 0.480513964661932,
+            "r": 0.5008808415832701,
+          },
+        },
+      },
+    },
+    "semantic.color.textMuted :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 0.8512118447840511,
+            "g": 0.5782382883901983,
+            "r": 0.31969363174560744,
+          },
+        },
+      },
+    },
+    "semantic.color.textPrimary :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": true,
+          "targetPath": "color.neutral",
+        },
+      },
+    },
+    "semantic.spacing.lg :: (all modes)": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 24,
+        },
+      },
+    },
+    "semantic.spacing.md :: (all modes)": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 16,
+        },
+      },
+    },
+  },
+  "validationErrors": [],
+}
+`;
+
+exports[`regression baseline > generateExampleJSON {"modeCount":"1","includeDescription":true,"includeScope":true} 1`] = `
+{
+  "tokens": {
+    "foundation.color.accent :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "oklch(0.65 0.2 250)",
+        },
+      },
+    },
+    "foundation.color.accentSubtle :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "oklch(0.65 0.2 250 / 0.15)",
+        },
+      },
+    },
+    "foundation.color.neutral :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "oklch(0.85 0.02 220)",
+        },
+      },
+    },
+    "foundation.color.primary :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "#0066FF",
+        },
+      },
+    },
+    "foundation.color.surface :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "#FFFFFF",
+        },
+      },
+    },
+    "foundation.opacity.subtle :: (all modes)": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 0.12,
+        },
+      },
+    },
+    "foundation.spacing.base :: (all modes)": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 8,
+        },
+      },
+    },
+    "semantic.color.background :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": true,
+          "targetPath": "color.surface",
+        },
+      },
+    },
+    "semantic.color.interactive :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": true,
+          "targetPath": "color.primary",
+        },
+      },
+    },
+    "semantic.color.interactiveActive :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 0.8822276042792658,
+            "g": 0.28449151721632665,
+            "r": 0,
+          },
+        },
+      },
+    },
+    "semantic.color.interactiveHover :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 1,
+            "g": 0.4695719762827452,
+            "r": 0.11235380545103582,
+          },
+        },
+      },
+    },
+    "semantic.color.interactiveMuted :: (all modes)": {
+      "alphaIntent": {
+        "eligible": true,
+        "opacityTokenPath": null,
+        "percent": 18,
+        "targetPath": "color.primary",
+      },
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 0.18,
+            "b": 1,
+            "g": 0.4,
+            "r": 0,
+          },
+        },
+      },
+    },
+    "semantic.color.interactiveSubtle :: (all modes)": {
+      "alphaIntent": {
+        "eligible": true,
+        "opacityTokenPath": null,
+        "percent": 12,
+        "targetPath": "color.primary",
+      },
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 0.12,
+            "b": 1,
+            "g": 0.4,
+            "r": 0,
+          },
+        },
+      },
+    },
+    "semantic.color.statusSuccess :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "oklch(0.73 0.15 150)",
+        },
+      },
+    },
+    "semantic.color.statusSuccessOverlay :: (all modes)": {
+      "alphaIntent": {
+        "eligible": true,
+        "opacityTokenPath": null,
+        "percent": 40,
+        "targetPath": "color.statusSuccess",
+      },
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 0.4,
+            "b": 0.4522833706330918,
+            "g": 0.7586991185900382,
+            "r": 0.3392207904058159,
+          },
+        },
+      },
+    },
+    "semantic.color.textAccent :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 1,
+            "g": 0.480513964661932,
+            "r": 0.5008808415832701,
+          },
+        },
+      },
+    },
+    "semantic.color.textMuted :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 0.8512118447840511,
+            "g": 0.5782382883901983,
+            "r": 0.31969363174560744,
+          },
+        },
+      },
+    },
+    "semantic.color.textPrimary :: (all modes)": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": true,
+          "targetPath": "color.neutral",
+        },
+      },
+    },
+    "semantic.spacing.lg :: (all modes)": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 24,
+        },
+      },
+    },
+    "semantic.spacing.md :: (all modes)": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 16,
+        },
+      },
+    },
+  },
+  "validationErrors": [],
+}
+`;
+
+exports[`regression baseline > generateExampleJSON {"modeCount":"2","includeDescription":false,"includeScope":false} 1`] = `
+{
+  "tokens": {
+    "foundation.color.accent :: Mode 1": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "oklch(0.65 0.2 250)",
+        },
+      },
+    },
+    "foundation.color.accent :: Mode 2": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "oklch(0.75 0.18 250)",
+        },
+      },
+    },
+    "foundation.color.accentSubtle :: Mode 1": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "oklch(0.65 0.2 250 / 0.15)",
+        },
+      },
+    },
+    "foundation.color.accentSubtle :: Mode 2": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "oklch(0.75 0.18 250 / 0.2)",
+        },
+      },
+    },
+    "foundation.color.neutral :: Mode 1": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "oklch(0.85 0.02 220)",
+        },
+      },
+    },
+    "foundation.color.neutral :: Mode 2": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "oklch(0.4 0.02 220)",
+        },
+      },
+    },
+    "foundation.color.primary :: Mode 1": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "#0066FF",
+        },
+      },
+    },
+    "foundation.color.primary :: Mode 2": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "#3388FF",
+        },
+      },
+    },
+    "foundation.color.surface :: Mode 1": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "#FFFFFF",
+        },
+      },
+    },
+    "foundation.color.surface :: Mode 2": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "#1A1A1A",
+        },
+      },
+    },
+    "foundation.opacity.subtle :: Mode 1": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 0.12,
+        },
+      },
+    },
+    "foundation.opacity.subtle :: Mode 2": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 0.12,
+        },
+      },
+    },
+    "foundation.spacing.base :: Mode 1": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 8,
+        },
+      },
+    },
+    "foundation.spacing.base :: Mode 2": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 8,
+        },
+      },
+    },
+    "semantic.color.background :: Mode 1": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": true,
+          "targetPath": "color.surface",
+        },
+      },
+    },
+    "semantic.color.background :: Mode 2": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": true,
+          "targetPath": "color.surface",
+        },
+      },
+    },
+    "semantic.color.interactive :: Mode 1": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": true,
+          "targetPath": "color.primary",
+        },
+      },
+    },
+    "semantic.color.interactive :: Mode 2": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": true,
+          "targetPath": "color.primary",
+        },
+      },
+    },
+    "semantic.color.interactiveActive :: Mode 1": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 0.8822276042792658,
+            "g": 0.28449151721632665,
+            "r": 0,
+          },
+        },
+      },
+    },
+    "semantic.color.interactiveActive :: Mode 2": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 0.8950262036355964,
+            "g": 0.4369247688650549,
+            "r": 0.08183870064446377,
+          },
+        },
+      },
+    },
+    "semantic.color.interactiveHover :: Mode 1": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 1,
+            "g": 0.4695719762827452,
+            "r": 0.11235380545103582,
+          },
+        },
+      },
+    },
+    "semantic.color.interactiveHover :: Mode 2": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 1,
+            "g": 0.5698785327908361,
+            "r": 0.23839335086950914,
+          },
+        },
+      },
+    },
+    "semantic.color.interactiveMuted :: Mode 1": {
+      "alphaIntent": {
+        "eligible": true,
+        "opacityTokenPath": null,
+        "percent": 18,
+        "targetPath": "color.primary",
+      },
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 0.18,
+            "b": 1,
+            "g": 0.4,
+            "r": 0,
+          },
+        },
+      },
+    },
+    "semantic.color.interactiveMuted :: Mode 2": {
+      "alphaIntent": {
+        "eligible": true,
+        "opacityTokenPath": null,
+        "percent": 12,
+        "targetPath": "color.primary",
+      },
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 0.12,
+            "b": 1,
+            "g": 0.5333333333333333,
+            "r": 0.2,
+          },
+        },
+      },
+    },
+    "semantic.color.interactiveSubtle :: Mode 1": {
+      "alphaIntent": {
+        "eligible": true,
+        "opacityTokenPath": null,
+        "percent": 12,
+        "targetPath": "color.primary",
+      },
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 0.12,
+            "b": 1,
+            "g": 0.4,
+            "r": 0,
+          },
+        },
+      },
+    },
+    "semantic.color.interactiveSubtle :: Mode 2": {
+      "alphaIntent": {
+        "eligible": true,
+        "opacityTokenPath": null,
+        "percent": 12,
+        "targetPath": "color.primary",
+      },
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 0.12,
+            "b": 1,
+            "g": 0.5333333333333333,
+            "r": 0.2,
+          },
+        },
+      },
+    },
+    "semantic.color.statusSuccess :: Mode 1": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "oklch(0.73 0.15 150)",
+        },
+      },
+    },
+    "semantic.color.statusSuccess :: Mode 2": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "oklch(0.62 0.13 150)",
+        },
+      },
+    },
+    "semantic.color.statusSuccessOverlay :: Mode 1": {
+      "alphaIntent": {
+        "eligible": true,
+        "opacityTokenPath": null,
+        "percent": 40,
+        "targetPath": "color.statusSuccess",
+      },
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 0.4,
+            "b": 0.4522833706330918,
+            "g": 0.7586991185900382,
+            "r": 0.3392207904058159,
+          },
+        },
+      },
+    },
+    "semantic.color.statusSuccessOverlay :: Mode 2": {
+      "alphaIntent": {
+        "eligible": true,
+        "opacityTokenPath": null,
+        "percent": 35,
+        "targetPath": "color.statusSuccess",
+      },
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 0.35,
+            "b": 0.3546792182052774,
+            "g": 0.6099002191193024,
+            "r": 0.25810885424237506,
+          },
+        },
+      },
+    },
+    "semantic.color.textAccent :: Mode 1": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 1,
+            "g": 0.480513964661932,
+            "r": 0.5008808415832701,
+          },
+        },
+      },
+    },
+    "semantic.color.textAccent :: Mode 2": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 0.9054275411874096,
+            "g": 0.7472748969355077,
+            "r": 0,
+          },
+        },
+      },
+    },
+    "semantic.color.textMuted :: Mode 1": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 0.8512118447840511,
+            "g": 0.5782382883901983,
+            "r": 0.31969363174560744,
+          },
+        },
+      },
+    },
+    "semantic.color.textMuted :: Mode 2": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 0.885372916476007,
+            "g": 0.6933039759526483,
+            "r": 0.4416678363731089,
+          },
+        },
+      },
+    },
+    "semantic.color.textPrimary :: Mode 1": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": true,
+          "targetPath": "color.neutral",
+        },
+      },
+    },
+    "semantic.color.textPrimary :: Mode 2": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": true,
+          "targetPath": "color.neutral",
+        },
+      },
+    },
+    "semantic.spacing.lg :: Mode 1": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 24,
+        },
+      },
+    },
+    "semantic.spacing.lg :: Mode 2": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 24,
+        },
+      },
+    },
+    "semantic.spacing.md :: Mode 1": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 16,
+        },
+      },
+    },
+    "semantic.spacing.md :: Mode 2": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 16,
+        },
+      },
+    },
+  },
+  "validationErrors": [],
+}
+`;
+
+exports[`regression baseline > generateExampleJSON {"modeCount":"2","includeDescription":false,"includeScope":true} 1`] = `
+{
+  "tokens": {
+    "foundation.color.accent :: Mode 1": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "oklch(0.65 0.2 250)",
+        },
+      },
+    },
+    "foundation.color.accent :: Mode 2": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "oklch(0.75 0.18 250)",
+        },
+      },
+    },
+    "foundation.color.accentSubtle :: Mode 1": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "oklch(0.65 0.2 250 / 0.15)",
+        },
+      },
+    },
+    "foundation.color.accentSubtle :: Mode 2": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "oklch(0.75 0.18 250 / 0.2)",
+        },
+      },
+    },
+    "foundation.color.neutral :: Mode 1": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "oklch(0.85 0.02 220)",
+        },
+      },
+    },
+    "foundation.color.neutral :: Mode 2": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "oklch(0.4 0.02 220)",
+        },
+      },
+    },
+    "foundation.color.primary :: Mode 1": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "#0066FF",
+        },
+      },
+    },
+    "foundation.color.primary :: Mode 2": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "#3388FF",
+        },
+      },
+    },
+    "foundation.color.surface :: Mode 1": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "#FFFFFF",
+        },
+      },
+    },
+    "foundation.color.surface :: Mode 2": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "#1A1A1A",
+        },
+      },
+    },
+    "foundation.opacity.subtle :: Mode 1": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 0.12,
+        },
+      },
+    },
+    "foundation.opacity.subtle :: Mode 2": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 0.12,
+        },
+      },
+    },
+    "foundation.spacing.base :: Mode 1": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 8,
+        },
+      },
+    },
+    "foundation.spacing.base :: Mode 2": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 8,
+        },
+      },
+    },
+    "semantic.color.background :: Mode 1": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": true,
+          "targetPath": "color.surface",
+        },
+      },
+    },
+    "semantic.color.background :: Mode 2": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": true,
+          "targetPath": "color.surface",
+        },
+      },
+    },
+    "semantic.color.interactive :: Mode 1": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": true,
+          "targetPath": "color.primary",
+        },
+      },
+    },
+    "semantic.color.interactive :: Mode 2": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": true,
+          "targetPath": "color.primary",
+        },
+      },
+    },
+    "semantic.color.interactiveActive :: Mode 1": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 0.8822276042792658,
+            "g": 0.28449151721632665,
+            "r": 0,
+          },
+        },
+      },
+    },
+    "semantic.color.interactiveActive :: Mode 2": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 0.8950262036355964,
+            "g": 0.4369247688650549,
+            "r": 0.08183870064446377,
+          },
+        },
+      },
+    },
+    "semantic.color.interactiveHover :: Mode 1": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 1,
+            "g": 0.4695719762827452,
+            "r": 0.11235380545103582,
+          },
+        },
+      },
+    },
+    "semantic.color.interactiveHover :: Mode 2": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 1,
+            "g": 0.5698785327908361,
+            "r": 0.23839335086950914,
+          },
+        },
+      },
+    },
+    "semantic.color.interactiveMuted :: Mode 1": {
+      "alphaIntent": {
+        "eligible": true,
+        "opacityTokenPath": null,
+        "percent": 18,
+        "targetPath": "color.primary",
+      },
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 0.18,
+            "b": 1,
+            "g": 0.4,
+            "r": 0,
+          },
+        },
+      },
+    },
+    "semantic.color.interactiveMuted :: Mode 2": {
+      "alphaIntent": {
+        "eligible": true,
+        "opacityTokenPath": null,
+        "percent": 12,
+        "targetPath": "color.primary",
+      },
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 0.12,
+            "b": 1,
+            "g": 0.5333333333333333,
+            "r": 0.2,
+          },
+        },
+      },
+    },
+    "semantic.color.interactiveSubtle :: Mode 1": {
+      "alphaIntent": {
+        "eligible": true,
+        "opacityTokenPath": null,
+        "percent": 12,
+        "targetPath": "color.primary",
+      },
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 0.12,
+            "b": 1,
+            "g": 0.4,
+            "r": 0,
+          },
+        },
+      },
+    },
+    "semantic.color.interactiveSubtle :: Mode 2": {
+      "alphaIntent": {
+        "eligible": true,
+        "opacityTokenPath": null,
+        "percent": 12,
+        "targetPath": "color.primary",
+      },
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 0.12,
+            "b": 1,
+            "g": 0.5333333333333333,
+            "r": 0.2,
+          },
+        },
+      },
+    },
+    "semantic.color.statusSuccess :: Mode 1": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "oklch(0.73 0.15 150)",
+        },
+      },
+    },
+    "semantic.color.statusSuccess :: Mode 2": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "oklch(0.62 0.13 150)",
+        },
+      },
+    },
+    "semantic.color.statusSuccessOverlay :: Mode 1": {
+      "alphaIntent": {
+        "eligible": true,
+        "opacityTokenPath": null,
+        "percent": 40,
+        "targetPath": "color.statusSuccess",
+      },
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 0.4,
+            "b": 0.4522833706330918,
+            "g": 0.7586991185900382,
+            "r": 0.3392207904058159,
+          },
+        },
+      },
+    },
+    "semantic.color.statusSuccessOverlay :: Mode 2": {
+      "alphaIntent": {
+        "eligible": true,
+        "opacityTokenPath": null,
+        "percent": 35,
+        "targetPath": "color.statusSuccess",
+      },
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 0.35,
+            "b": 0.3546792182052774,
+            "g": 0.6099002191193024,
+            "r": 0.25810885424237506,
+          },
+        },
+      },
+    },
+    "semantic.color.textAccent :: Mode 1": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 1,
+            "g": 0.480513964661932,
+            "r": 0.5008808415832701,
+          },
+        },
+      },
+    },
+    "semantic.color.textAccent :: Mode 2": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 0.9054275411874096,
+            "g": 0.7472748969355077,
+            "r": 0,
+          },
+        },
+      },
+    },
+    "semantic.color.textMuted :: Mode 1": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 0.8512118447840511,
+            "g": 0.5782382883901983,
+            "r": 0.31969363174560744,
+          },
+        },
+      },
+    },
+    "semantic.color.textMuted :: Mode 2": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 0.885372916476007,
+            "g": 0.6933039759526483,
+            "r": 0.4416678363731089,
+          },
+        },
+      },
+    },
+    "semantic.color.textPrimary :: Mode 1": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": true,
+          "targetPath": "color.neutral",
+        },
+      },
+    },
+    "semantic.color.textPrimary :: Mode 2": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": true,
+          "targetPath": "color.neutral",
+        },
+      },
+    },
+    "semantic.spacing.lg :: Mode 1": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 24,
+        },
+      },
+    },
+    "semantic.spacing.lg :: Mode 2": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 24,
+        },
+      },
+    },
+    "semantic.spacing.md :: Mode 1": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 16,
+        },
+      },
+    },
+    "semantic.spacing.md :: Mode 2": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 16,
+        },
+      },
+    },
+  },
+  "validationErrors": [],
+}
+`;
+
+exports[`regression baseline > generateExampleJSON {"modeCount":"2","includeDescription":true,"includeScope":false} 1`] = `
+{
+  "tokens": {
+    "foundation.color.accent :: Mode 1": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "oklch(0.65 0.2 250)",
+        },
+      },
+    },
+    "foundation.color.accent :: Mode 2": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "oklch(0.75 0.18 250)",
+        },
+      },
+    },
+    "foundation.color.accentSubtle :: Mode 1": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "oklch(0.65 0.2 250 / 0.15)",
+        },
+      },
+    },
+    "foundation.color.accentSubtle :: Mode 2": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "oklch(0.75 0.18 250 / 0.2)",
+        },
+      },
+    },
+    "foundation.color.neutral :: Mode 1": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "oklch(0.85 0.02 220)",
+        },
+      },
+    },
+    "foundation.color.neutral :: Mode 2": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "oklch(0.4 0.02 220)",
+        },
+      },
+    },
+    "foundation.color.primary :: Mode 1": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "#0066FF",
+        },
+      },
+    },
+    "foundation.color.primary :: Mode 2": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "#3388FF",
+        },
+      },
+    },
+    "foundation.color.surface :: Mode 1": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "#FFFFFF",
+        },
+      },
+    },
+    "foundation.color.surface :: Mode 2": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "#1A1A1A",
+        },
+      },
+    },
+    "foundation.opacity.subtle :: Mode 1": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 0.12,
+        },
+      },
+    },
+    "foundation.opacity.subtle :: Mode 2": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 0.12,
+        },
+      },
+    },
+    "foundation.spacing.base :: Mode 1": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 8,
+        },
+      },
+    },
+    "foundation.spacing.base :: Mode 2": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 8,
+        },
+      },
+    },
+    "semantic.color.background :: Mode 1": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": true,
+          "targetPath": "color.surface",
+        },
+      },
+    },
+    "semantic.color.background :: Mode 2": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": true,
+          "targetPath": "color.surface",
+        },
+      },
+    },
+    "semantic.color.interactive :: Mode 1": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": true,
+          "targetPath": "color.primary",
+        },
+      },
+    },
+    "semantic.color.interactive :: Mode 2": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": true,
+          "targetPath": "color.primary",
+        },
+      },
+    },
+    "semantic.color.interactiveActive :: Mode 1": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 0.8822276042792658,
+            "g": 0.28449151721632665,
+            "r": 0,
+          },
+        },
+      },
+    },
+    "semantic.color.interactiveActive :: Mode 2": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 0.8950262036355964,
+            "g": 0.4369247688650549,
+            "r": 0.08183870064446377,
+          },
+        },
+      },
+    },
+    "semantic.color.interactiveHover :: Mode 1": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 1,
+            "g": 0.4695719762827452,
+            "r": 0.11235380545103582,
+          },
+        },
+      },
+    },
+    "semantic.color.interactiveHover :: Mode 2": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 1,
+            "g": 0.5698785327908361,
+            "r": 0.23839335086950914,
+          },
+        },
+      },
+    },
+    "semantic.color.interactiveMuted :: Mode 1": {
+      "alphaIntent": {
+        "eligible": true,
+        "opacityTokenPath": null,
+        "percent": 18,
+        "targetPath": "color.primary",
+      },
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 0.18,
+            "b": 1,
+            "g": 0.4,
+            "r": 0,
+          },
+        },
+      },
+    },
+    "semantic.color.interactiveMuted :: Mode 2": {
+      "alphaIntent": {
+        "eligible": true,
+        "opacityTokenPath": null,
+        "percent": 12,
+        "targetPath": "color.primary",
+      },
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 0.12,
+            "b": 1,
+            "g": 0.5333333333333333,
+            "r": 0.2,
+          },
+        },
+      },
+    },
+    "semantic.color.interactiveSubtle :: Mode 1": {
+      "alphaIntent": {
+        "eligible": true,
+        "opacityTokenPath": null,
+        "percent": 12,
+        "targetPath": "color.primary",
+      },
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 0.12,
+            "b": 1,
+            "g": 0.4,
+            "r": 0,
+          },
+        },
+      },
+    },
+    "semantic.color.interactiveSubtle :: Mode 2": {
+      "alphaIntent": {
+        "eligible": true,
+        "opacityTokenPath": null,
+        "percent": 12,
+        "targetPath": "color.primary",
+      },
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 0.12,
+            "b": 1,
+            "g": 0.5333333333333333,
+            "r": 0.2,
+          },
+        },
+      },
+    },
+    "semantic.color.statusSuccess :: Mode 1": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "oklch(0.73 0.15 150)",
+        },
+      },
+    },
+    "semantic.color.statusSuccess :: Mode 2": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "oklch(0.62 0.13 150)",
+        },
+      },
+    },
+    "semantic.color.statusSuccessOverlay :: Mode 1": {
+      "alphaIntent": {
+        "eligible": true,
+        "opacityTokenPath": null,
+        "percent": 40,
+        "targetPath": "color.statusSuccess",
+      },
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 0.4,
+            "b": 0.4522833706330918,
+            "g": 0.7586991185900382,
+            "r": 0.3392207904058159,
+          },
+        },
+      },
+    },
+    "semantic.color.statusSuccessOverlay :: Mode 2": {
+      "alphaIntent": {
+        "eligible": true,
+        "opacityTokenPath": null,
+        "percent": 35,
+        "targetPath": "color.statusSuccess",
+      },
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 0.35,
+            "b": 0.3546792182052774,
+            "g": 0.6099002191193024,
+            "r": 0.25810885424237506,
+          },
+        },
+      },
+    },
+    "semantic.color.textAccent :: Mode 1": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 1,
+            "g": 0.480513964661932,
+            "r": 0.5008808415832701,
+          },
+        },
+      },
+    },
+    "semantic.color.textAccent :: Mode 2": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 0.9054275411874096,
+            "g": 0.7472748969355077,
+            "r": 0,
+          },
+        },
+      },
+    },
+    "semantic.color.textMuted :: Mode 1": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 0.8512118447840511,
+            "g": 0.5782382883901983,
+            "r": 0.31969363174560744,
+          },
+        },
+      },
+    },
+    "semantic.color.textMuted :: Mode 2": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 0.885372916476007,
+            "g": 0.6933039759526483,
+            "r": 0.4416678363731089,
+          },
+        },
+      },
+    },
+    "semantic.color.textPrimary :: Mode 1": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": true,
+          "targetPath": "color.neutral",
+        },
+      },
+    },
+    "semantic.color.textPrimary :: Mode 2": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": true,
+          "targetPath": "color.neutral",
+        },
+      },
+    },
+    "semantic.spacing.lg :: Mode 1": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 24,
+        },
+      },
+    },
+    "semantic.spacing.lg :: Mode 2": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 24,
+        },
+      },
+    },
+    "semantic.spacing.md :: Mode 1": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 16,
+        },
+      },
+    },
+    "semantic.spacing.md :: Mode 2": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 16,
+        },
+      },
+    },
+  },
+  "validationErrors": [],
+}
+`;
+
+exports[`regression baseline > generateExampleJSON {"modeCount":"2","includeDescription":true,"includeScope":true} 1`] = `
+{
+  "tokens": {
+    "foundation.color.accent :: Mode 1": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "oklch(0.65 0.2 250)",
+        },
+      },
+    },
+    "foundation.color.accent :: Mode 2": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "oklch(0.75 0.18 250)",
+        },
+      },
+    },
+    "foundation.color.accentSubtle :: Mode 1": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "oklch(0.65 0.2 250 / 0.15)",
+        },
+      },
+    },
+    "foundation.color.accentSubtle :: Mode 2": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "oklch(0.75 0.18 250 / 0.2)",
+        },
+      },
+    },
+    "foundation.color.neutral :: Mode 1": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "oklch(0.85 0.02 220)",
+        },
+      },
+    },
+    "foundation.color.neutral :: Mode 2": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "oklch(0.4 0.02 220)",
+        },
+      },
+    },
+    "foundation.color.primary :: Mode 1": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "#0066FF",
+        },
+      },
+    },
+    "foundation.color.primary :: Mode 2": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "#3388FF",
+        },
+      },
+    },
+    "foundation.color.surface :: Mode 1": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "#FFFFFF",
+        },
+      },
+    },
+    "foundation.color.surface :: Mode 2": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "#1A1A1A",
+        },
+      },
+    },
+    "foundation.opacity.subtle :: Mode 1": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 0.12,
+        },
+      },
+    },
+    "foundation.opacity.subtle :: Mode 2": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 0.12,
+        },
+      },
+    },
+    "foundation.spacing.base :: Mode 1": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 8,
+        },
+      },
+    },
+    "foundation.spacing.base :: Mode 2": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 8,
+        },
+      },
+    },
+    "semantic.color.background :: Mode 1": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": true,
+          "targetPath": "color.surface",
+        },
+      },
+    },
+    "semantic.color.background :: Mode 2": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": true,
+          "targetPath": "color.surface",
+        },
+      },
+    },
+    "semantic.color.interactive :: Mode 1": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": true,
+          "targetPath": "color.primary",
+        },
+      },
+    },
+    "semantic.color.interactive :: Mode 2": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": true,
+          "targetPath": "color.primary",
+        },
+      },
+    },
+    "semantic.color.interactiveActive :: Mode 1": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 0.8822276042792658,
+            "g": 0.28449151721632665,
+            "r": 0,
+          },
+        },
+      },
+    },
+    "semantic.color.interactiveActive :: Mode 2": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 0.8950262036355964,
+            "g": 0.4369247688650549,
+            "r": 0.08183870064446377,
+          },
+        },
+      },
+    },
+    "semantic.color.interactiveHover :: Mode 1": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 1,
+            "g": 0.4695719762827452,
+            "r": 0.11235380545103582,
+          },
+        },
+      },
+    },
+    "semantic.color.interactiveHover :: Mode 2": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 1,
+            "g": 0.5698785327908361,
+            "r": 0.23839335086950914,
+          },
+        },
+      },
+    },
+    "semantic.color.interactiveMuted :: Mode 1": {
+      "alphaIntent": {
+        "eligible": true,
+        "opacityTokenPath": null,
+        "percent": 18,
+        "targetPath": "color.primary",
+      },
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 0.18,
+            "b": 1,
+            "g": 0.4,
+            "r": 0,
+          },
+        },
+      },
+    },
+    "semantic.color.interactiveMuted :: Mode 2": {
+      "alphaIntent": {
+        "eligible": true,
+        "opacityTokenPath": null,
+        "percent": 12,
+        "targetPath": "color.primary",
+      },
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 0.12,
+            "b": 1,
+            "g": 0.5333333333333333,
+            "r": 0.2,
+          },
+        },
+      },
+    },
+    "semantic.color.interactiveSubtle :: Mode 1": {
+      "alphaIntent": {
+        "eligible": true,
+        "opacityTokenPath": null,
+        "percent": 12,
+        "targetPath": "color.primary",
+      },
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 0.12,
+            "b": 1,
+            "g": 0.4,
+            "r": 0,
+          },
+        },
+      },
+    },
+    "semantic.color.interactiveSubtle :: Mode 2": {
+      "alphaIntent": {
+        "eligible": true,
+        "opacityTokenPath": null,
+        "percent": 12,
+        "targetPath": "color.primary",
+      },
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 0.12,
+            "b": 1,
+            "g": 0.5333333333333333,
+            "r": 0.2,
+          },
+        },
+      },
+    },
+    "semantic.color.statusSuccess :: Mode 1": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "oklch(0.73 0.15 150)",
+        },
+      },
+    },
+    "semantic.color.statusSuccess :: Mode 2": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "oklch(0.62 0.13 150)",
+        },
+      },
+    },
+    "semantic.color.statusSuccessOverlay :: Mode 1": {
+      "alphaIntent": {
+        "eligible": true,
+        "opacityTokenPath": null,
+        "percent": 40,
+        "targetPath": "color.statusSuccess",
+      },
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 0.4,
+            "b": 0.4522833706330918,
+            "g": 0.7586991185900382,
+            "r": 0.3392207904058159,
+          },
+        },
+      },
+    },
+    "semantic.color.statusSuccessOverlay :: Mode 2": {
+      "alphaIntent": {
+        "eligible": true,
+        "opacityTokenPath": null,
+        "percent": 35,
+        "targetPath": "color.statusSuccess",
+      },
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 0.35,
+            "b": 0.3546792182052774,
+            "g": 0.6099002191193024,
+            "r": 0.25810885424237506,
+          },
+        },
+      },
+    },
+    "semantic.color.textAccent :: Mode 1": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 1,
+            "g": 0.480513964661932,
+            "r": 0.5008808415832701,
+          },
+        },
+      },
+    },
+    "semantic.color.textAccent :: Mode 2": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 0.9054275411874096,
+            "g": 0.7472748969355077,
+            "r": 0,
+          },
+        },
+      },
+    },
+    "semantic.color.textMuted :: Mode 1": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 0.8512118447840511,
+            "g": 0.5782382883901983,
+            "r": 0.31969363174560744,
+          },
+        },
+      },
+    },
+    "semantic.color.textMuted :: Mode 2": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": {
+            "a": 1,
+            "b": 0.885372916476007,
+            "g": 0.6933039759526483,
+            "r": 0.4416678363731089,
+          },
+        },
+      },
+    },
+    "semantic.color.textPrimary :: Mode 1": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": true,
+          "targetPath": "color.neutral",
+        },
+      },
+    },
+    "semantic.color.textPrimary :: Mode 2": {
+      "alphaIntent": null,
+      "resolved": {
+        "result": {
+          "isAlias": true,
+          "targetPath": "color.neutral",
+        },
+      },
+    },
+    "semantic.spacing.lg :: Mode 1": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 24,
+        },
+      },
+    },
+    "semantic.spacing.lg :: Mode 2": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 24,
+        },
+      },
+    },
+    "semantic.spacing.md :: Mode 1": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 16,
+        },
+      },
+    },
+    "semantic.spacing.md :: Mode 2": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 16,
+        },
+      },
+    },
+  },
+  "validationErrors": [],
+}
+`;
+
+exports[`regression baseline > math 1`] = `
+{
+  "tokens": {
+    "math.a :: (all modes)": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 8,
+        },
+      },
+    },
+    "math.add :: (all modes)": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 11,
+        },
+      },
+    },
+    "math.aliasA :: (all modes)": {
+      "resolved": {
+        "result": {
+          "isAlias": true,
+          "targetPath": "math.a",
+        },
+      },
+    },
+    "math.b :: (all modes)": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 3,
+        },
+      },
+    },
+    "math.big :: (all modes)": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 1e+21,
+        },
+      },
+    },
+    "math.bigOperand :: (all modes)": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 2e+21,
+        },
+      },
+    },
+    "math.chain :: (all modes)": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 22,
+        },
+      },
+    },
+    "math.div :: (all modes)": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 2.6666666666666665,
+        },
+      },
+    },
+    "math.exponentLiteral :: (all modes)": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 8000,
+        },
+      },
+    },
+    "math.floating :: (all modes)": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 0.30000000000000004,
+        },
+      },
+    },
+    "math.literalOnly :: (all modes)": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 2.5,
+        },
+      },
+    },
+    "math.mathAbs :: (all modes)": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 4,
+        },
+      },
+    },
+    "math.mathMinMax :: (all modes)": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 17,
+        },
+      },
+    },
+    "math.mathNested :: (all modes)": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 2.8,
+        },
+      },
+    },
+    "math.mathPi :: (all modes)": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 6.283185307179586,
+        },
+      },
+    },
+    "math.mathPow :: (all modes)": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 27,
+        },
+      },
+    },
+    "math.mathRound :: (all modes)": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 10,
+        },
+      },
+    },
+    "math.minusNegative :: (all modes)": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 12,
+        },
+      },
+    },
+    "math.modes :: dark": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 6,
+        },
+      },
+    },
+    "math.modes :: light": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 4,
+        },
+      },
+    },
+    "math.mul :: (all modes)": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 24,
+        },
+      },
+    },
+    "math.neg :: (all modes)": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": -4,
+        },
+      },
+    },
+    "math.numericString :: (all modes)": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 12,
+        },
+      },
+    },
+    "math.parentheses :: (all modes)": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 5.5,
+        },
+      },
+    },
+    "math.perMode :: dark": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 1.5,
+        },
+      },
+    },
+    "math.perMode :: light": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 8,
+        },
+      },
+    },
+    "math.percentLiteral :: (all modes)": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "50%",
+        },
+      },
+    },
+    "math.power :: (all modes)": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 9,
+        },
+      },
+    },
+    "math.powerRightAssoc :: (all modes)": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 512,
+        },
+      },
+    },
+    "math.precedence :: (all modes)": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 14,
+        },
+      },
+    },
+    "math.remainder :: (all modes)": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 2,
+        },
+      },
+    },
+    "math.sub :: (all modes)": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 5,
+        },
+      },
+    },
+    "math.throughAlias :: (all modes)": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 16,
+        },
+      },
+    },
+    "math.timesNegative :: (all modes)": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": -12,
+        },
+      },
+    },
+    "math.unaryMinus :: (all modes)": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": -8,
+        },
+      },
+    },
+    "math.unaryPlus :: (all modes)": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 16,
+        },
+      },
+    },
+  },
+  "validationErrors": [],
+}
+`;
+
+exports[`regression baseline > strings 1`] = `
+{
+  "tokens": {
+    "sizes.base :: (all modes)": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": 16,
+        },
+      },
+    },
+    "text.family :: (all modes)": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "Inter",
+        },
+      },
+    },
+    "text.modes :: dark": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "Dark",
+        },
+      },
+    },
+    "text.modes :: light": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "Light Inter",
+        },
+      },
+    },
+    "text.plain :: (all modes)": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "hello world",
+        },
+      },
+    },
+    "text.stack :: (all modes)": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "Inter, sans-serif",
+        },
+      },
+    },
+    "text.twoRefs :: (all modes)": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "Inter / hello world",
+        },
+      },
+    },
+    "text.withNumber :: (all modes)": {
+      "resolved": {
+        "result": {
+          "isAlias": false,
+          "value": "Size: 16px",
+        },
+      },
+    },
+  },
+  "validationErrors": [],
+}
+`;
