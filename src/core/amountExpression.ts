@@ -1,6 +1,6 @@
 import { arithmeticSyntaxError, evaluateArithmetic } from './arithmetic';
 import { AmountUnit } from './arithmeticTokens';
-import { PATTERNS } from './constants';
+import { extractTokenReferences } from './tokenUtils';
 
 export type AmountScale = 'percent' | 'degrees';
 
@@ -21,8 +21,7 @@ export function evaluateAmountExpression(
 ): number {
 	// References first, so their errors (which name the token) take precedence over syntax errors
 	const referenceValues = new Map<string, number>();
-	for (const match of expression.matchAll(PATTERNS.tokenReference)) {
-		const tokenPath = match[1];
+	for (const tokenPath of extractTokenReferences(expression)) {
 		if (!referenceValues.has(tokenPath)) {
 			referenceValues.set(tokenPath, resolveReference(tokenPath));
 		}

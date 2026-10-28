@@ -26,6 +26,8 @@ const DECIMAL_LITERAL = /^(?:\d+\.?\d*|\.\d+)(?:[eE][+-]?\d+)?/;
 const PREFIXED_LITERAL = /^0(?:[xX][0-9a-fA-F]+|[bB][01]+|[oO][0-7]+)/;
 // JS reads "010" as octal 8 in sloppy mode; reject it rather than silently read 10.
 const LEADING_ZERO_INTEGER = /^0\d/;
+// The whole malformed number, for the error message: "2px" rather than "2".
+const NUMBER_LIKE_TEXT = /^[\w$.%]+/;
 const IDENTIFIER = /^[A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)*/;
 const IDENTIFIER_CHAR = /[\w$]/;
 const REFERENCE = /^\{([^}]+)\}/;
@@ -64,7 +66,7 @@ function readNumber(rest: string, position: number, options: TokenizeOptions): R
 	const length = text.length + unitLength(rest, text.length, position, options);
 	const followedByWordChar = IDENTIFIER_CHAR.test(rest.charAt(length));
 	if (followedByWordChar || (!prefixed && LEADING_ZERO_INTEGER.test(text))) {
-		throw new Error(`Invalid number at position ${position + 1}: "${rest.match(/^[\w$.%]+/)?.[0] ?? text}".`);
+		throw new Error(`Invalid number at position ${position + 1}: "${rest.match(NUMBER_LIKE_TEXT)?.[0] ?? text}".`);
 	}
 	return { token: { kind: 'number', value: Number(text), position }, length };
 }

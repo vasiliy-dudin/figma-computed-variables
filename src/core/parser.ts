@@ -31,6 +31,8 @@ export function parseExpression(input: string | number, type: TokenType): Expres
 			amount: { kind: 'reference', tokenPath: alphaRefMatch[2] }
 		};
 	}
+	// Expression amounts come after the literal and reference forms: returned here for alpha(),
+	// and for the other colour functions only once their own literal and reference forms fail below.
 	const amountExpression = parseAmountExpression(valueStr);
 	if (amountExpression?.type === 'alpha') {
 		return amountExpression;

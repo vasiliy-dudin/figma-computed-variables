@@ -5,6 +5,7 @@ import { CircularDependencyError } from './validator';
 import { PATTERNS, COLOR_OPACITY_SCOPE } from './constants';
 import { evaluateArithmetic } from './arithmetic';
 import { evaluateAmountExpression } from './amountExpression';
+import { extractTokenReferences } from './tokenUtils';
 
 const toRgb = converter('rgb');
 const toOklch = converter('oklch');
@@ -305,11 +306,7 @@ function evaluateMath(
 ): number {
 	// References are resolved before parsing, so their errors take precedence over syntax errors
 	const referenceValues = new Map<string, number>();
-	const tokenRegex = /\{([^}]+)\}/g;
-	let match;
-
-	while ((match = tokenRegex.exec(expression)) !== null) {
-		const tokenPath = match[1];
+	for (const tokenPath of extractTokenReferences(expression)) {
 		const tokenValue = resolveToConcreteValue(tokenPath, mode, tokenMap, new Set(visited));
 
 		if (typeof tokenValue.value !== 'number') {
